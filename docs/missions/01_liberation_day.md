@@ -98,10 +98,30 @@ CCM 전용 `.SC2Mod`에 넣는다. StarCoop 폴더에는 `sc2assets`가 없어�
 |---|---|---|
 | `FenixCoop` | StarCoop | 받음 |
 | `Ravasaur` | 군심 캠페인 `swarm.sc2campaign` gamedata (드라이브 폴더 `1dBE26jAoAOnbRFFlIe5zPoT27-6Ma3-N`, 10-06 업로드본) | 받음 |
-| `ZealotPurifier` | 공허 캠페인 `void.sc2campaign` gamedata로 추정 | 드라이브 사본에 `actordata`, `modeldata`만 있어 **필요** |
+| `ZealotPurifier` | 공허 캠페인 `void.sc2campaign` gamedata (`parent="Zealot"`) | 받음 |
 
 core, voidmulti, void.sc2mod, swarm.sc2mod, liberty·libertystory, swarmstory, voidstory에는 `ZealotPurifier` 정의가 없다.
 StarCoop에는 둘 다 일부 수정본만 있다.
+
+### 동맹 데이터를 넣는 방법
+
+캠페인 데이터를 종속성으로 통째로 걸면 1번 미션 유닛이 바뀐다 (각 데이터의 `unitdata.xml` 확인):
+
+| 종속성 후보 | 1번 미션 유닛 중 덮어쓰는 것 |
+|---|---|
+| StarCoop | Marine, Firebat, VikingFighter, Raven, LogisticsHeadquarters |
+| void.sc2campaign | Marine, Firebat, WarPig, Raynor01, Zealot |
+| swarm.sc2campaign | VikingFighter, Raynor01 |
+| void.sc2mod / swarm.sc2mod | Zealot / Raven, Zealot (기본 모드 층, 공허 적용 상태의 일부) |
+
+그래서 캠페인·협동전 데이터는 종속성으로 걸지 않고, 피닉스·정화자 광전사·라바사우르에 필요한
+엔트리만 CCM 전용 데이터로 복사한다.
+
+### 맵 플레이어 설정 (`documentheader`/`mapinfo`, 바이너리)
+
+원본에는 플레이어 0~7이 정의돼 있다: 1 레이너, 2 자치령, 3·5 마 사라 주민, 4 레이너 특공대(연출),
+6 연출, 7 `Lvl80 ETC`. 동맹 2명은 8·9번 같은 새 슬롯이 필요하다.
+이 두 파일은 바이너리라 편집기에서 추가한다 (사용자 작업).
 
 ### 다음 단계
 
