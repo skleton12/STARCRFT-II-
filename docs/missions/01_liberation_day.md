@@ -92,6 +92,13 @@
 CCM 전용 `.SC2Mod`에 넣는다. StarCoop 폴더에는 `sc2assets`가 없어서 모델·텍스처는 기본 게임
 에셋에 있는 것으로 보인다 (게임에서 확인 필요).
 
+### 동맹 유닛 원본 정의 위치 (조사 중)
+
+`ZealotPurifier`, `Ravasaur`는 StarCoop에 일부 수정본만 있고 본래 정의가 없다.
+core, voidmulti, liberty·libertystory, swarmstory, void·voidstory 캠페인 데이터에도 없었다.
+남은 후보는 `mods/void.sc2mod`, `mods/swarm.sc2mod` (캠페인 유닛 기본 모드)이고 아직 받지 않았다.
+`FenixCoop`은 StarCoop에 전체 정의가 있다.
+
 ### 다음 단계
 
 1. 동맹 2명(AI) 슬롯 추가. 맵 플레이어 설정(`mapinfo`, 바이너리)에 자리가 없어 편집기 작업이 필요할 수 있다
