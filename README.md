@@ -9,9 +9,13 @@
 |---|---|
 | `source/` | CascView로 꺼낸 원본 (`mods/starcoop/...`), 드라이브에서 내려받음 |
 | `coop/<사령관>/` | 추출 결과 |
-| `tools/extract_commander.py` | 추출기 |
+| `tools/extract_commander.py` | 협동전 사령관 추출기 |
+| `tools/lookup_upgrade.py` | 연구 이름/비용/효과 조회 |
+| `tools/drive_download.py` | 드라이브 폴더 내려받기 |
+| `tools/patch_mission01.py` | 1번 미션 패치 → `build/TRaynor01.SC2Map` |
+| `docs/` | 기획 결정, 미션별 문서, 연구 조사 |
 
-`source/`와 `coop/`는 블리자드 데이터라서 `.gitignore`로 빼 두었다.
+`source/`, `coop/`, `build/`는 블리자드 데이터라서 `.gitignore`로 빼 두었다.
 
 ## 원본 위치 (CascView)
 
