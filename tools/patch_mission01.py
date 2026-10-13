@@ -7,7 +7,7 @@
 
 적(2번 자치령)과 연출용(4번) 해병, 자치령 해병 처치 통계 조건은 건드리지 않는다.
 """
-import os, re, shutil, sys
+import os, re, shutil, struct, sys
 
 ROOT = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 SRC = os.path.join(ROOT, 'source', 'liberty.sc2campaign', 'base.sc2maps', 'maps', 'campaign', 'traynor01.sc2map')
@@ -67,6 +67,57 @@ def patch_galaxy(text):
     return text, total
 
 
+# 동맹 AI 플레이어 슬롯 (사용자 확정 2026-10-13: 동맹 2명은 AI)
+# 바이트 구성은 GPT가 만든 사본(RaynorMercs_WoL_CCM_Players8_9.zip)과 같다. 게임 시험 미실행
+ALLY_PLAYERS = [
+    # (번호, 종족, 이름)
+    (8, b'Prot', '정화자'),
+    (9, b'Zerg', '원시 저그'),
+]
+HEADER_LOCALES = ['SUne', 'RFrf', 'EDed', 'SEse', 'XMse', 'URur', 'RKok', 'NChz', 'WThz', 'LPlp', 'TIti', 'RBtp']
+
+
+def patch_mapinfo(d):
+    """플레이어 레코드 뒤에 동맹 레코드를 붙인다.
+
+    레코드: 번호(1) 조종(1, 1=사용자 2=컴퓨터) 0(3) 색(i32) 종족(4) 고정 13바이트 + 데칼 이름(NUL 끝).
+    0x87 바이트는 레코드 수 + 1이다 (원본 6 = 레코드 5개).
+    """
+    count = d[0x87]
+    p = 0xa2
+    for _ in range(count - 1):
+        p = d.index(b'\x00', p + 26) + 1
+    recs = b''.join(bytes([n, 2]) + b'\x00' * 3 + struct.pack('<i', -1) + race + b'\x00' * 14
+                    for n, race, _ in ALLY_PLAYERS)
+    d = bytearray(d[:p] + recs + d[p:])
+    d[0x87] = count + len(ALLY_PLAYERS)
+    return bytes(d)
+
+
+def patch_header(d):
+    """의존성 목록 뒤 속성 표에 동맹 플레이어 이름을 언어마다 추가한다.
+
+    속성: 키 길이(u16) 키 언어(4) 값 길이(u16) 값(UTF-8). 앞에 속성 수(u32).
+    """
+    marker = b'Campaigns/LibertyStory.SC2Campaign\x00'
+    p = d.index(marker) + len(marker)
+    n = struct.unpack('<I', d[p:p + 4])[0]
+    add = b''
+    for loc in HEADER_LOCALES:
+        for num, _, name in ALLY_PLAYERS:
+            k = f'MapInfo/Player{num:02d}/Name'.encode()
+            v = name.encode('utf-8')
+            add += struct.pack('<H', len(k)) + k + loc.encode() + struct.pack('<H', len(v)) + v
+    return d[:p] + struct.pack('<I', n + len(HEADER_LOCALES) * len(ALLY_PLAYERS)) + d[p + 4:] + add
+
+
+def patch_strings(text):
+    lines = ''.join(f'MapInfo/Player{num:02d}/Name={name}\r\n' for num, _, name in ALLY_PLAYERS)
+    if not text.endswith('\n'):
+        text += '\r\n'
+    return text + lines
+
+
 def main():
     if not os.path.isdir(SRC):
         sys.exit(f'원본 맵 없음: {SRC}')
@@ -88,11 +139,25 @@ def main():
     with open(p, 'w', encoding='utf-8', newline='') as f:
         f.write(g)
 
+    for fn, fix in (('mapinfo', patch_mapinfo), ('documentheader', patch_header)):
+        p = os.path.join(OUT, fn)
+        with open(p, 'rb') as f:
+            b = f.read()
+        with open(p, 'wb') as f:
+            f.write(fix(b))
+    p = os.path.join(OUT, 'kokr.sc2data', 'localizeddata', 'gamestrings.txt')
+    with open(p, encoding='utf-8', newline='') as f:
+        t = f.read()
+    with open(p, 'w', encoding='utf-8', newline='') as f:
+        f.write(patch_strings(t))
+
     if n != len(P1_MARINE_CALLS):
         sys.exit(f'mapscript.galaxy 변경 {n}곳, 트리거 {len(done)}곳: 개수가 다름')
     print(f'{OUT}')
     for d in done:
         print(f'  - {d}: Marine -> {MERC_MARINE}')
+    for num, race, name in ALLY_PLAYERS:
+        print(f'  - 플레이어 {num} 추가: {race.decode()} 컴퓨터 "{name}"')
 
 
 if __name__ == '__main__':
