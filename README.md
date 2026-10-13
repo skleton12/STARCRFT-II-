@@ -21,6 +21,8 @@ CCM 구조: `metadata.txt` + 원본과 같은 파일명의 미션 맵(바꿔치�
 | `tools/lookup_upgrade.py` | 연구 이름/비용/효과 조회 |
 | `tools/drive_download.py` | 드라이브 폴더 내려받기 |
 | `tools/patch_mission01.py` | 1번 미션 패치 → `build/TRaynor01.SC2Map` |
+| `tools/port_units.py` | 다른 캠페인·협동전 유닛을 맵 데이터로 복사 |
+| `tools/fetch_assets.py` | 에셋을 맵 안에 넣기 (원본 에셋 필요, 아직 미사용) |
 | `tools/build_ccm.py` | CCM zip 빌드 → `build/RaynorMercs_WoL_CCM.zip` |
 | `docs/` | 기획 결정, 미션별 문서, 연구 조사 |
 

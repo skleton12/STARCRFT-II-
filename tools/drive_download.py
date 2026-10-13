@@ -34,8 +34,13 @@ def dl(j):
     i,p=j; os.makedirs(os.path.dirname(p),exist_ok=True)
     data=get(f"https://drive.usercontent.google.com/download?id={i}&export=download&confirm=t")
     open(p,'wb').write(data); return len(data)
-for spec in sys.argv[1:]:
-    fid,dest=spec.split('=',1); walk(fid,dest)
-print(len(jobs),'files', file=sys.stderr)
-with cf.ThreadPoolExecutor(8) as ex: tot=sum(ex.map(dl,jobs))
-print('bytes',tot, file=sys.stderr)
+def main():
+    for spec in sys.argv[1:]:
+        fid, dest = spec.split('=', 1); walk(fid, dest)
+    print(len(jobs), 'files', file=sys.stderr)
+    with cf.ThreadPoolExecutor(8) as ex: tot = sum(ex.map(dl, jobs))
+    print('bytes', tot, file=sys.stderr)
+
+
+if __name__ == '__main__':
+    main()
