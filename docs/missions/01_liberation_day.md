@@ -94,10 +94,14 @@ CCM 전용 `.SC2Mod`에 넣는다. StarCoop 폴더에는 `sc2assets`가 없어�
 
 ### 동맹 유닛 원본 정의 위치 (조사 중)
 
-`ZealotPurifier`, `Ravasaur`는 StarCoop에 일부 수정본만 있고 본래 정의가 없다.
-core, voidmulti, liberty·libertystory, swarmstory, void·voidstory 캠페인 데이터에도 없었다.
-남은 후보는 `mods/void.sc2mod`, `mods/swarm.sc2mod` (캠페인 유닛 기본 모드)이고 아직 받지 않았다.
-`FenixCoop`은 StarCoop에 전체 정의가 있다.
+| 유닛 | 본래 정의 위치 | 상태 |
+|---|---|---|
+| `FenixCoop` | StarCoop | 받음 |
+| `Ravasaur` | 군심 캠페인 `swarm.sc2campaign` gamedata (드라이브 폴더 `1dBE26jAoAOnbRFFlIe5zPoT27-6Ma3-N`, 10-06 업로드본) | 받음 |
+| `ZealotPurifier` | 공허 캠페인 `void.sc2campaign` gamedata로 추정 | 드라이브 사본에 `actordata`, `modeldata`만 있어 **필요** |
+
+core, voidmulti, void.sc2mod, swarm.sc2mod, liberty·libertystory, swarmstory, voidstory에는 `ZealotPurifier` 정의가 없다.
+StarCoop에는 둘 다 일부 수정본만 있다.
 
 ### 다음 단계
 
