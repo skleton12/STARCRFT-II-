@@ -1,4 +1,12 @@
-# 자날 모드용 협동전 사령관 데이터
+# 자날 협동 CCM
+
+```bash
+python3 tools/build_ccm.py   # build/RaynorMercs_WoL_CCM.zip
+```
+
+CCM 구조: `metadata.txt` + 원본과 같은 파일명의 미션 맵(바꿔치기). 공용 데이터 `.SC2Mod`는 필요해지면 추가.
+
+## 협동전 사령관 데이터
 
 협동전 사령관 5명(피닉스, 알라라크, 제라툴, 멩스크, 데하카)의 데이터를 뽑아
 자유의 날개(Liberty) 모드로 옮겨 붙이기 위한 작업 공간.
@@ -13,6 +21,7 @@
 | `tools/lookup_upgrade.py` | 연구 이름/비용/효과 조회 |
 | `tools/drive_download.py` | 드라이브 폴더 내려받기 |
 | `tools/patch_mission01.py` | 1번 미션 패치 → `build/TRaynor01.SC2Map` |
+| `tools/build_ccm.py` | CCM zip 빌드 → `build/RaynorMercs_WoL_CCM.zip` |
 | `docs/` | 기획 결정, 미션별 문서, 연구 조사 |
 
 `source/`, `coop/`, `build/`는 블리자드 데이터라서 `.gitignore`로 빼 두었다.
