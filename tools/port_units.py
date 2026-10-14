@@ -46,6 +46,8 @@ GAMEPLAY = {'unitdata.xml', 'abildata.xml', 'effectdata.xml', 'behaviordata.xml'
             'buttondata.xml', 'actordata.xml', 'modeldata.xml', 'sounddata.xml', 'moverdata.xml',
             'footprintdata.xml', 'turretdata.xml', 'accumulatordata.xml', 'targetsortdata.xml',
             'targetfinddata.xml', 'alertdata.xml'}
+# 거꾸로 찾기에서 '지켜보는 대상'으로 볼 카탈로그
+REVERSE_TARGET_FILES = {'weapondata.xml', 'effectdata.xml', 'unitdata.xml', 'abildata.xml', 'behaviordata.xml'}
 # 빈 연결 채우기에서 복사할 카탈로그 (유닛·연출은 넣지 않는다: 상관없는 유닛을 끌고 오기 때문)
 LEAF_FILES = {'abildata.xml', 'effectdata.xml', 'behaviordata.xml', 'weapondata.xml', 'validatordata.xml',
               'requirementdata.xml', 'requirementnodedata.xml', 'upgradedata.xml', 'buttondata.xml',
@@ -138,19 +140,39 @@ def main():
             sys.exit(f'{s}: 원본 층에 없음')
         for fn in by_id[s] & GAMEPLAY:
             selected.add((fn, s)); queue.append((fn, s)); seed_keys.add((fn, s))
-    while queue:
-        key = queue.pop()
-        for _, lay in layers:
-            for el in lay.get(key, []):
-                for t in tokens(el):
-                    if not copyable(t):
-                        continue
-                    if len(refcnt[t]) > SHARED_LIMIT and not seed_re.search(t) and key not in seed_keys:
-                        shared.add(t)
-                        continue
-                    for fn in by_id[t] & EXPAND.get(key[0], set()):
-                        if (fn, t) not in selected:
-                            selected.add((fn, t)); queue.append((fn, t))
+    def expand():
+        while queue:
+            key = queue.pop()
+            for _, lay in layers:
+                for el in lay.get(key, []):
+                    for t in tokens(el):
+                        if not copyable(t):
+                            continue
+                        if len(refcnt[t]) > SHARED_LIMIT and not seed_re.search(t) and key not in seed_keys:
+                            shared.add(t)
+                            continue
+                        for fn in by_id[t] & EXPAND.get(key[0], set()):
+                            if (fn, t) not in selected:
+                                selected.add((fn, t)); queue.append((fn, t))
+
+    expand()
+
+    # 거꾸로 찾기: 무기·효과·유닛·능력·행동을 지켜보다 반응하는 연출 액터 (공격 모션, 투사체, 포탑, 폭발 등).
+    # 액터가 대상을 가리키는 구조라 위의 정방향 탐색으로는 못 찾는다 (2026-10-14 동맹 무기 연출 누락).
+    # 유닛 액터(CActorUnit)는 같은 ID의 유닛을 고를 때 이미 따라오므로 제외한다
+    watched = {i for fn, i in selected if fn in REVERSE_TARGET_FILES}
+    rev = set()
+    for _, lay in layers:
+        for (fn, i), els in lay.items():
+            if fn != 'actordata.xml' or (fn, i) in selected or not copyable(i):
+                continue
+            if any(el.tag == 'CActorUnit' for el in els):
+                continue
+            if any(t in watched for el in els for t in tokens(el)):
+                rev.add((fn, i))
+    for k in rev:
+        selected.add(k); queue.append(k)
+    expand()
 
     # 빈 연결 채우기: 고른 엔트리가 가리키는데 맵에도 기본 층에도 없는 것을 한 번 더 복사한다
     # (종족 PZrg처럼 공용이라 따라가지 않았지만 없으면 게임이 오류를 내는 것). 여기서는 더 따라가지 않는다
@@ -245,7 +267,7 @@ def main():
         text += ''.join(f'{k}={v}{nl}' for k, v in sorted(add.items()))
         with open(sp, 'w', encoding='utf-8', newline='') as f:
             f.write(text)
-    print(f'빈 연결 채우기 {len(leaves)}개')
+    print(f'거꾸로 찾은 연출 액터 {len(rev)}개, 빈 연결 채우기 {len(leaves)}개')
     print(f'총 {total}개 엔트리, 파일 {len(out_files)}개, 문자열 {len(add)}줄, 따라가지 않은 공용 엔트리 {len(shared)}개')
     with open(os.path.join(map_dir, 'ported_shared_refs.txt'), 'w', encoding='utf-8') as f:
         f.write('\n'.join(sorted(shared)) + '\n')
