@@ -191,20 +191,30 @@ def main():
     with open(sp, encoding='utf-8', newline='') as f:
         text = f.read()
     have = {l.split('=', 1)[0] for l in text.splitlines() if '=' in l}
+    def read_strings(loc):
+        out = {}
+        for name, _ in COPY_LAYERS:
+            root = os.path.join(S, *(['starcoop', 'starcoop.sc2mod'] if name == 'starcoop' else [name]))
+            for fn in ('gamestrings.txt', 'objectstrings.txt'):
+                q = os.path.join(root, f'{loc}.sc2data', 'localizeddata', fn)
+                if not os.path.exists(q):
+                    continue
+                with open(q, encoding='utf-8-sig', errors='replace') as f:
+                    for line in f:
+                        if '=' in line:
+                            k, v = line.rstrip('\r\n').split('=', 1)
+                            out[k] = v  # 높은 층이 덮어씀
+        return out
+
+    ko, en = read_strings('kokr'), read_strings('enus')
     add = {}
-    for name, _ in COPY_LAYERS:
-        root = os.path.join(S, *(['starcoop', 'starcoop.sc2mod'] if name == 'starcoop' else [name]))
-        for fn in ('gamestrings.txt', 'objectstrings.txt'):
-            q = os.path.join(root, 'kokr.sc2data', 'localizeddata', fn)
-            if not os.path.exists(q):
-                continue
-            with open(q, encoding='utf-8-sig', errors='replace') as f:
-                for line in f:
-                    if '=' not in line:
-                        continue
-                    k, v = line.rstrip('\r\n').split('=', 1)
-                    if k not in have and any(seg in ids for seg in k.split('/')[1:]):
-                        add[k] = v  # 높은 층이 덮어씀
+    for k, v in ko.items():
+        if k in have or not any(seg in ids for seg in k.split('/')[1:]):
+            continue
+        # 원본 맵 문자열 형식 '한국어 /// English'에 맞춘다
+        if ' /// ' not in v and en.get(k) and en[k] != v:
+            v = f'{v} /// {en[k]}'
+        add[k] = v
     nl = '\r\n' if '\r\n' in text else '\n'
     if add:
         if not text.endswith(nl):

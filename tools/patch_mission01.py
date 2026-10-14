@@ -70,9 +70,9 @@ def patch_galaxy(text):
 # 동맹 AI 플레이어 슬롯 (사용자 확정 2026-10-13: 동맹 2명은 AI)
 # 바이트 구성은 GPT가 만든 사본(RaynorMercs_WoL_CCM_Players8_9.zip)과 같다. 게임 시험 미실행
 ALLY_PLAYERS = [
-    # (번호, 종족, 이름)
-    (8, b'Prot', '정화자'),
-    (9, b'Zerg', '원시 저그'),
+    # (번호, 종족, 한국어 이름, 영어 이름)
+    (8, b'Prot', '정화자', 'Purifiers'),
+    (9, b'Zerg', '원시 저그', 'Primal Zerg'),
 ]
 HEADER_LOCALES = ['SUne', 'RFrf', 'EDed', 'SEse', 'XMse', 'URur', 'RKok', 'NChz', 'WThz', 'LPlp', 'TIti', 'RBtp']
 
@@ -88,7 +88,7 @@ def patch_mapinfo(d):
     for _ in range(count - 1):
         p = d.index(b'\x00', p + 26) + 1
     recs = b''.join(bytes([n, 2]) + b'\x00' * 3 + struct.pack('<i', -1) + race + b'\x00' * 14
-                    for n, race, _ in ALLY_PLAYERS)
+                    for n, race, *_ in ALLY_PLAYERS)
     d = bytearray(d[:p] + recs + d[p:])
     d[0x87] = count + len(ALLY_PLAYERS)
     return bytes(d)
@@ -104,19 +104,20 @@ def patch_header(d):
     n = struct.unpack('<I', d[p:p + 4])[0]
     add = b''
     for loc in HEADER_LOCALES:
-        for num, _, name in ALLY_PLAYERS:
+        for num, _, ko, en in ALLY_PLAYERS:
             k = f'MapInfo/Player{num:02d}/Name'.encode()
-            v = name.encode('utf-8')
+            v = (ko if loc == 'RKok' else en).encode('utf-8')  # 원본처럼 한국어 칸만 한국어
             add += struct.pack('<H', len(k)) + k + loc.encode() + struct.pack('<H', len(v)) + v
     return d[:p] + struct.pack('<I', n + len(HEADER_LOCALES) * len(ALLY_PLAYERS)) + d[p + 4:] + add
 
 
-# 원본 문자열을 구하지 못한 이름 (군심 캠페인 한국어 문자열이 드라이브에 없음)
-EXTRA_STRINGS = {'Unit/Name/Ravasaur': '라바사우르'}
+# 원본 문자열을 구하지 못한 이름
+EXTRA_STRINGS = {}
 
 
 def patch_strings(text):
-    lines = ''.join(f'MapInfo/Player{num:02d}/Name={name}\r\n' for num, _, name in ALLY_PLAYERS)
+    # 원본 맵 문자열 형식: '한국어 /// English'
+    lines = ''.join(f'MapInfo/Player{num:02d}/Name={ko} /// {en}\r\n' for num, _, ko, en in ALLY_PLAYERS)
     lines += ''.join(f'{k}={v}\r\n' for k, v in EXTRA_STRINGS.items() if f'\n{k}=' not in text)
     if not text.endswith('\n'):
         text += '\r\n'
@@ -129,7 +130,7 @@ def patch_strings(text):
 ALLY_UNITS = [  # (유닛, 수, 플레이어 변수, x 오프셋, y 오프셋) - 레이너 시작 지점(505) 기준
     ('FenixCoop', 1, 'gv_rm_PURIFIER', -3.0, 0.0),
     ('ZealotPurifier', 3, 'gv_rm_PURIFIER', -3.0, -2.0),
-    ('Ravasaur', 1, 'gv_p1_USER', 2.0, -2.0),   # 원시 저그 용병, 레이너 조종 (사용자 확정)
+    ('DehakaRavasaur', 1, 'gv_p1_USER', 2.0, -2.0),   # 협동전 라바사우르스 (군심 Ravasaur 아님), 원시 저그 용병, 레이너 조종 (사용자 확정)
 ]
 ALLY_COLORS = {8: 3, 9: 6}  # 플레이어 색 번호: 정화자 청록, 원시 저그 주황 (임시)
 
@@ -310,8 +311,8 @@ def main():
     print(f'{OUT}')
     for d in done:
         print(f'  - {d}: Marine -> {MERC_MARINE}')
-    for num, race, name in ALLY_PLAYERS:
-        print(f'  - 플레이어 {num} 추가: {race.decode()} 컴퓨터 "{name}"')
+    for num, race, ko, en in ALLY_PLAYERS:
+        print(f'  - 플레이어 {num} 추가: {race.decode()} 컴퓨터 "{ko} / {en}"')
     for unit, n, player, *_ in ALLY_UNITS:
         print(f'  - 시작 배치: {unit} x{n} ({player})')
 
