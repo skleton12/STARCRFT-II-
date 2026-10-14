@@ -141,6 +141,8 @@ const int gv_rm_PURIFIER = 8;
 const int gv_rm_PRIMAL = 9;
 unitgroup gv_rm_purifierUnits;
 trigger gt_rm_AllyFollow;
+trigger gt_rm_AllyPing;
+point gv_rm_pingTarget;
 
 void gf_rm_SetAllyPlayer (int lp_p) {
     libNtve_gf_SetAlliance(gv_p1_USER, lp_p, libNtve_ge_AllianceSetting_AllyWithSharedVision);
@@ -150,12 +152,39 @@ void gf_rm_SetAllyPlayer (int lp_p) {
     libNtve_gf_SetAlliance(gv_p5_RIKSVILLE_PUSHY, lp_p, libNtve_ge_AllianceSetting_Neutral);
 }
 
-// Ally AI: every 2s, idle Purifier units farther than 6 from Raynor attack-move to him
+// A new human ping replaces current orders; automatic follow cannot override it.
+bool gt_rm_AllyPing_Func (bool testConds, bool runActions) {
+    unitgroup lv_g;
+    int lv_i;
+    unit lv_u;
+    point lv_point;
+    if (!runActions) {
+        return true;
+    }
+    if (EventPlayer() != gv_p1_USER || gv_gameOver || gv_inCinematic || !UnitIsAlive(gv_raynor)) {
+        return true;
+    }
+    lv_point = EventPingPoint();
+    if (lv_point == null) {
+        return true;
+    }
+    gv_rm_pingTarget = Point(PointGetX(lv_point), PointGetY(lv_point));
+    lv_g = UnitGroup(null, gv_rm_PURIFIER, RegionEntireMap(), UnitFilter(0, 0, (1 << c_targetFilterMissile) | (1 << c_targetFilterStructure), (1 << (c_targetFilterDead - 32)) | (1 << (c_targetFilterHidden - 32))), 0);
+    lv_i = UnitGroupCount(lv_g, c_unitCountAll);
+    for ( ; lv_i > 0 ; lv_i -= 1) {
+        lv_u = UnitGroupUnit(lv_g, lv_i);
+        UnitIssueOrder(lv_u, OrderTargetingPoint(AbilityCommand("attack", 0), gv_rm_pingTarget), c_orderQueueReplace);
+    }
+    return true;
+}
+
+// Idle units follow Raynor until the first ping, then rally around the last ping.
 bool gt_rm_AllyFollow_Func (bool testConds, bool runActions) {
     unitgroup lv_g;
     int lv_i;
     unit lv_u;
     point lv_target;
+    fixed lv_radius;
 
     if (!runActions) {
         return true;
@@ -164,11 +193,16 @@ bool gt_rm_AllyFollow_Func (bool testConds, bool runActions) {
         return true;
     }
     lv_target = UnitGetPosition(gv_raynor);
+    lv_radius = 6.0;
+    if (gv_rm_pingTarget != null) {
+        lv_target = gv_rm_pingTarget;
+        lv_radius = 3.0; // Trial arrival tolerance; do not force units onto one point.
+    }
     lv_g = UnitGroup(null, gv_rm_PURIFIER, RegionEntireMap(), UnitFilter(0, 0, (1 << c_targetFilterMissile) | (1 << c_targetFilterStructure), (1 << (c_targetFilterDead - 32)) | (1 << (c_targetFilterHidden - 32))), 0);
     lv_i = UnitGroupCount(lv_g, c_unitCountAll);
     for ( ; lv_i > 0 ; lv_i -= 1) {
         lv_u = UnitGroupUnit(lv_g, lv_i);
-        if (UnitOrderCount(lv_u) == 0 && DistanceBetweenPoints(UnitGetPosition(lv_u), lv_target) > 6.0) {
+        if (UnitOrderCount(lv_u) == 0 && DistanceBetweenPoints(UnitGetPosition(lv_u), lv_target) > lv_radius) {
             UnitIssueOrder(lv_u, OrderTargetingPoint(AbilityCommand("attack", 0), lv_target), c_orderQueueReplace);
         }
     }
@@ -176,6 +210,7 @@ bool gt_rm_AllyFollow_Func (bool testConds, bool runActions) {
 }
 
 void gf_rm_AllyInit () {
+    gv_rm_pingTarget = null;
     gv_rm_purifierUnits = UnitGroupEmpty();
     gf_rm_SetAllyPlayer(gv_rm_PURIFIER);
     gf_rm_SetAllyPlayer(gv_rm_PRIMAL);
@@ -184,12 +219,16 @@ void gf_rm_AllyInit () {
     gt_rm_AllyFollow = TriggerCreate("gt_rm_AllyFollow_Func");
     TriggerAddEventTimePeriodic(gt_rm_AllyFollow, 2.0, c_timeGame);
     TriggerEnable(gt_rm_AllyFollow, false);
+    gt_rm_AllyPing = TriggerCreate("gt_rm_AllyPing_Func");
+    TriggerAddEventPing(gt_rm_AllyPing, gv_p1_USER);
+    TriggerEnable(gt_rm_AllyPing, false);
 }
 
 void gf_rm_SpawnAllies () {
     point lv_pt = PointFromId(505);
 %(spawns)s
     TriggerEnable(gt_rm_AllyFollow, true);
+    TriggerEnable(gt_rm_AllyPing, true);
 }
 
 """
@@ -202,6 +241,8 @@ GALAXY_ANCHOR_SPAWN = ('    libNtve_gf_CreateUnitsAtPoint2(1, "%s", 0, gv_p1_USE
 
 
 def patch_galaxy_allies(g):
+    if 'const int gv_rm_PURIFIER = 8;' in g:
+        sys.exit('동맹 코드가 이미 있음: 패치된 맵 대신 원본에서 빌드해야 함')
     nl = '\r\n' if '\r\n' in g else '\n'
     spawns = []
     for unit, n, player, dx, dy in ALLY_UNITS:
@@ -277,3 +318,4 @@ def main():
 
 if __name__ == '__main__':
     main()
+
