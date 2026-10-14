@@ -31,7 +31,14 @@ MAPS = [
 ]
 
 
+def check_version(v):
+    # 사용자 규칙 (2026-10-14): 완성 전까지 버전은 1 이상이 되면 안 된다
+    if float(v.split('.')[0] + '.' + ''.join(v.split('.')[1:2] or ['0'])) >= 1:
+        sys.exit(f'버전 {v}: 완성 전까지 1 이상 금지 (0.x만 사용)')
+
+
 def main():
+    check_version(METADATA['version'])
     if os.path.exists(STAGE):
         shutil.rmtree(STAGE)
     os.makedirs(STAGE)
