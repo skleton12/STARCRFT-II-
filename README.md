@@ -4,6 +4,8 @@
 python3 tools/build_ccm.py   # build/RaynorMercs_WoL_CCM.zip
 ```
 
+다른 컴퓨터에서 이어서 만들기: [`docs/SETUP.md`](docs/SETUP.md) (저장소 받기 → `tools/setup_source.py`로 원본 데이터 넣기 → 빌드)
+
 CCM 구조: `metadata.txt` + 원본과 같은 파일명의 미션 맵(바꿔치기). 공용 데이터 `.SC2Mod`는 필요해지면 추가.
 
 ## 협동전 사령관 데이터
@@ -25,6 +27,9 @@ CCM 구조: `metadata.txt` + 원본과 같은 파일명의 미션 맵(바꿔치�
 | `tools/check_links.py` | 맵 데이터의 빈 연결 검사 |
 | `tools/fetch_assets.py` | 에셋을 맵 안에 넣기 (원본 에셋 필요, 아직 미사용) |
 | `tools/build_ccm.py` | CCM zip 빌드 → `build/RaynorMercs_WoL_CCM.zip` |
+| `tools/patch_mission02.py` | 2번 미션 패치 → `build/TRaynor02.SC2Map` |
+| `tools/setup_source.py` / `make_source_pack.py` | 새 컴퓨터에 원본 데이터 넣기 / 묶기 |
+| `tools/render_map.py`, `expand_map.py`, `pack_sc2map.py`, `make_edit_map02.py` | 지형 그림, 지형 확장, 단일 맵 파일, 편집용 맵 |
 | `docs/` | 기획 결정, 미션별 문서, 연구 조사, 진행 보고서(`docs/REPORT.md`) |
 
 `source/`, `coop/`, `build/`는 블리자드 데이터라서 `.gitignore`로 빼 두었다.
