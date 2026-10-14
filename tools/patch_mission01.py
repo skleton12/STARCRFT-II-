@@ -131,7 +131,8 @@ ALLY_UNITS = [  # (유닛, 수, 플레이어 변수, x 오프셋, y 오프셋) -
     # 2026-10-14 사용자 지시: 피닉스 대신 칼달리스 1 + 파수병 4 (밸런스)
     ('FenixKaldalisZealot', 1, 'gv_rm_PURIFIER', -3.0, 0.0),   # 칼달리스 (협동전 피닉스 용사), 돌진 기본 보유
     ('ZealotPurifier', 4, 'gv_rm_PURIFIER', -3.0, -2.0),
-    ('DehakaRavasaur', 1, 'gv_p1_USER', 2.0, -2.0),   # 협동전 라바사우르스 (군심 Ravasaur 아님), 원시 저그 용병, 레이너 조종 (사용자 확정)
+    # 2026-10-14 사용자 지시: 라바사우르스 3기를 두 번째 동맹(원시 저그 9번)이 통제 (전에는 레이너 1기)
+    ('DehakaRavasaur', 3, 'gv_rm_PRIMAL', 2.0, -2.0),   # 협동전 라바사우르스 (군심 Ravasaur 아님)
 ]
 ALLY_COLORS = {8: 3, 9: 6}  # 플레이어 색 번호: 정화자 청록, 원시 저그 주황 (임시)
 
@@ -165,6 +166,14 @@ trigger gt_rm_AllyFollow;
 trigger gt_rm_AllyPing;
 point gv_rm_pingTarget;
 
+// Living, visible, non-structure units of both AI allies (Purifiers 8, Primal Zerg 9)
+unitgroup gf_rm_AllyArmy () {
+    unitfilter lv_f = UnitFilter(0, 0, (1 << c_targetFilterMissile) | (1 << c_targetFilterStructure), (1 << (c_targetFilterDead - 32)) | (1 << (c_targetFilterHidden - 32)));
+    unitgroup lv_g = UnitGroup(null, gv_rm_PURIFIER, RegionEntireMap(), lv_f, 0);
+    UnitGroupAddUnitGroup(lv_g, UnitGroup(null, gv_rm_PRIMAL, RegionEntireMap(), lv_f, 0));
+    return lv_g;
+}
+
 void gf_rm_SetAllyPlayer (int lp_p) {
     libNtve_gf_SetAlliance(gv_p1_USER, lp_p, libNtve_ge_AllianceSetting_AllyWithSharedVision);
     libNtve_gf_SetAlliance(gv_p2_DOMINION_RED, lp_p, libNtve_ge_AllianceSetting_Enemy);
@@ -190,7 +199,7 @@ bool gt_rm_AllyPing_Func (bool testConds, bool runActions) {
         return true;
     }
     gv_rm_pingTarget = Point(PointGetX(lv_point), PointGetY(lv_point));
-    lv_g = UnitGroup(null, gv_rm_PURIFIER, RegionEntireMap(), UnitFilter(0, 0, (1 << c_targetFilterMissile) | (1 << c_targetFilterStructure), (1 << (c_targetFilterDead - 32)) | (1 << (c_targetFilterHidden - 32))), 0);
+    lv_g = gf_rm_AllyArmy();
     lv_i = UnitGroupCount(lv_g, c_unitCountAll);
     for ( ; lv_i > 0 ; lv_i -= 1) {
         lv_u = UnitGroupUnit(lv_g, lv_i);
@@ -219,7 +228,7 @@ bool gt_rm_AllyFollow_Func (bool testConds, bool runActions) {
         lv_target = gv_rm_pingTarget;
         lv_radius = 3.0; // Trial arrival tolerance; do not force units onto one point.
     }
-    lv_g = UnitGroup(null, gv_rm_PURIFIER, RegionEntireMap(), UnitFilter(0, 0, (1 << c_targetFilterMissile) | (1 << c_targetFilterStructure), (1 << (c_targetFilterDead - 32)) | (1 << (c_targetFilterHidden - 32))), 0);
+    lv_g = gf_rm_AllyArmy();
     lv_i = UnitGroupCount(lv_g, c_unitCountAll);
     for ( ; lv_i > 0 ; lv_i -= 1) {
         lv_u = UnitGroupUnit(lv_g, lv_i);
