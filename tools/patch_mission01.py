@@ -141,6 +141,10 @@ ALLY_UPGRADES = [('gv_rm_PURIFIER', 'Charge', 1)]
 
 # 후반부 적 증강 (사용자 지시 2026-10-14: 적이 너무 약함, 후반부 적 수를 늘림)
 # 병참 본부(배치 ID 158) 기준 오프셋에 자치령 수비대를 추가한다. 수와 위치는 시험값
+# 적(자치령)의 최소 업그레이드 단계 (사용자 지시 2026-10-14: 우리는 용병이니 적 업그레이드 1)
+# 원본은 어려움 이상에서만 보병 공격/방어 1을 준다(Init 06). 이미 그 단계 이상이면 더하지 않는다
+ENEMY_MIN_UPGRADES = [('TerranInfantryWeaponsLevel1', 1), ('TerranInfantryArmorsLevel1', 1)]
+
 # 2026-10-14 2차: 우리 병력도 좀 소모되는 정도로 → 해병 12, 화염방사병 6 (시험값)
 LATE_DEFENDERS = [  # (유닛, 수, x 오프셋, y 오프셋)
     ('Marine', 4, -5.0, -8.0),
@@ -248,12 +252,18 @@ void gf_rm_SpawnLateDefenders () {
 %(defenders)s
 }
 
+// Dominion gets at least these upgrade levels on every difficulty (never stacks past them)
+void gf_rm_EnemyMinUpgrades () {
+%(enemy_upgrades)s
+}
+
 void gf_rm_SpawnAllies () {
     point lv_pt = PointFromId(505);
 %(spawns)s
     TriggerEnable(gt_rm_AllyFollow, true);
     TriggerEnable(gt_rm_AllyPing, true);
     gf_rm_SpawnLateDefenders();
+    gf_rm_EnemyMinUpgrades();
 }
 
 """
@@ -278,8 +288,12 @@ def patch_galaxy_allies(g):
     defenders = '\n'.join(f'    UnitCreate({n}, "{u}", 0, gv_p2_DOMINION_RED, PointWithOffset(lv_hq, {dx}, {dy}), 90.0);'
                           for u, n, dx, dy in LATE_DEFENDERS)
     upgrades = '\n'.join(f'    TechTreeUpgradeAddLevel({p}, "{u}", {lv});' for p, u, lv in ALLY_UPGRADES)
+    enemy_upgrades = '\n'.join(
+        f'    if (TechTreeUpgradeCount(gv_p2_DOMINION_RED, "{u}", c_techCountCompleteOnly) < {lv}) {{\n'
+        f'        TechTreeUpgradeAddLevel(gv_p2_DOMINION_RED, "{u}", {lv} - TechTreeUpgradeCount(gv_p2_DOMINION_RED, "{u}", c_techCountCompleteOnly));\n'
+        f'    }}' for u, lv in ENEMY_MIN_UPGRADES)
     block = GALAXY_ALLY_BLOCK % {'spawns': '\n'.join(spawns), 'colors': colors, 'defenders': defenders,
-                                 'upgrades': upgrades}
+                                 'upgrades': upgrades, 'enemy_upgrades': enemy_upgrades}
     block = block.replace('\n', nl)
     for anchor in (GALAXY_ANCHOR_BLOCK, GALAXY_ANCHOR_INIT):
         if g.count(anchor) != 1:
@@ -375,6 +389,8 @@ def main():
         print(f'  - 시작 배치: {unit} x{n} ({player})')
     for p, u, lv in ALLY_UPGRADES:
         print(f'  - 동맹 업그레이드: {u} {lv}단계 ({p})')
+    for u, lv in ENEMY_MIN_UPGRADES:
+        print(f'  - 적 최소 업그레이드: {u} {lv}단계')
     for u, n, *_ in LATE_DEFENDERS:
         print(f'  - 후반부 적 추가 (시험값): {u} x{n}')
 
