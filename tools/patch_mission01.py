@@ -157,14 +157,17 @@ ENEMY_BUFF_PERCENT = (0, 5, 15, 35)
 # 중앙(마을) 자치령 해병 증강 (사용자 지시 2026-10-14). 남·북 사이(y 50~90)에 있는 해병마다 추가할 수 (시험값)
 MID_REGION = (0.0, 50.0, 136.0, 90.0)
 MID_EXTRA_PER_MARINE = 1
+# 2026-10-14 사용자 '적 병력 살짝만 줄여줘' → 해병 2명마다 1기만 추가 (17 → 약 34 에서 약 25로)
+MID_EVERY_NTH = 2
 
 # 2026-10-14 2차: 우리 병력도 좀 소모되는 정도로 → 해병 12, 화염방사병 6 (시험값)
+# 2026-10-14 3차 '적 병력 살짝만 줄여줘' → 해병 9, 화염방사병 4 (2차: 해병 12, 화염 6)
 LATE_DEFENDERS = [  # (유닛, 수, x 오프셋, y 오프셋)
-    ('Marine', 4, -5.0, -8.0),
-    ('Marine', 4, 0.0, -9.0),
-    ('Marine', 4, 5.0, -8.0),
-    ('Firebat', 3, -3.0, -6.0),
-    ('Firebat', 3, 3.0, -6.0),
+    ('Marine', 3, -5.0, -8.0),
+    ('Marine', 3, 0.0, -9.0),
+    ('Marine', 3, 5.0, -8.0),
+    ('Firebat', 2, -3.0, -6.0),
+    ('Firebat', 2, 3.0, -6.0),
 ]  # 플레이어 색 번호: 정화자 청록, 원시 저그 주황 (임시)
 
 GALAXY_ALLY_BLOCK = """
@@ -286,8 +289,10 @@ void gf_rm_SpawnMidReinforce () {
     int lv_i = UnitGroupCount(lv_g, c_unitCountAll);
     unit lv_u;
     for ( ; lv_i > 0 ; lv_i -= 1) {
-        lv_u = UnitGroupUnit(lv_g, lv_i);
-        UnitCreate(%(mid_extra)s, "Marine", 0, gv_p2_DOMINION_RED, UnitGetPosition(lv_u), UnitGetFacing(lv_u));
+        if (ModI(lv_i, %(mid_every)s) == 0) {
+            lv_u = UnitGroupUnit(lv_g, lv_i);
+            UnitCreate(%(mid_extra)s, "Marine", 0, gv_p2_DOMINION_RED, UnitGetPosition(lv_u), UnitGetFacing(lv_u));
+        }
     }
 }
 
@@ -337,7 +342,7 @@ def patch_galaxy_allies(g):
                                  'upgrades': upgrades, 'enemy_upgrades': enemy_upgrades,
                                  'buff': ', '.join(str(b) for b in ENEMY_BUFF_PERCENT),
                                  'mid_region': ', '.join(str(v) for v in MID_REGION),
-                                 'mid_extra': MID_EXTRA_PER_MARINE}
+                                 'mid_extra': MID_EXTRA_PER_MARINE, 'mid_every': MID_EVERY_NTH}
     block = block.replace('\n', nl)
     for anchor in (GALAXY_ANCHOR_BLOCK, GALAXY_ANCHOR_INIT):
         if g.count(anchor) != 1:
@@ -436,7 +441,7 @@ def main():
     for u, lv in ENEMY_MIN_UPGRADES:
         print(f'  - 적 최소 업그레이드: {u} {lv}단계')
     print(f'  - 적 공격·방어 강화 % (쉬움/보통/어려움/아주 어려움): {ENEMY_BUFF_PERCENT}')
-    print(f'  - 중앙 해병 증강: 해병마다 +{MID_EXTRA_PER_MARINE} (시험값)')
+    print(f'  - 중앙 해병 증강: 해병 {MID_EVERY_NTH}명마다 +{MID_EXTRA_PER_MARINE} (시험값)')
     for u, n, *_ in LATE_DEFENDERS:
         print(f'  - 후반부 적 추가 (시험값): {u} x{n}')
 
