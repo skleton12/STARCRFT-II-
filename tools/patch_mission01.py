@@ -267,6 +267,34 @@ def patch_galaxy_allies(g):
     return g
 
 
+# 한국어 이외 언어는 전부 영어로 채운다 (사용자 지시 2026-10-14). 맵 구성 목록에 이미 있는 언어들
+OTHER_LOCALES = ['enus', 'dede', 'eses', 'esmx', 'frfr', 'itit', 'plpl', 'ptbr', 'ruru', 'zhcn', 'zhtw']
+
+
+def write_other_locales(map_dir):
+    """한국어 문자열('한국어 /// English')에서 영어만 뽑아 다른 언어 파일을 만든다."""
+    src = os.path.join(map_dir, 'kokr.sc2data', 'localizeddata', 'gamestrings.txt')
+    with open(src, encoding='utf-8', newline='') as f:
+        text = f.read()
+    nl = '\r\n' if '\r\n' in text else '\n'
+    out = []
+    for line in text.splitlines():
+        if '=' in line:
+            k, v = line.split('=', 1)
+            if ' /// ' in v:
+                v = v.split(' /// ', 1)[1]
+            elif re.search('[\uac00-\ud7a3]', v):
+                v = k.rsplit('/', 1)[-1]  # 영어 원문이 없는 한국어는 ID 이름으로 대신
+            line = f'{k}={v}'
+        out.append(line)
+    body = nl.join(out) + nl
+    for loc in OTHER_LOCALES:
+        d = os.path.join(map_dir, f'{loc}.sc2data', 'localizeddata')
+        os.makedirs(d, exist_ok=True)
+        with open(os.path.join(d, 'gamestrings.txt'), 'w', encoding='utf-8', newline='') as f:
+            f.write(body)
+
+
 def main():
     if not os.path.isdir(SRC):
         sys.exit(f'원본 맵 없음: {SRC}')
@@ -305,6 +333,8 @@ def main():
     import subprocess
     subprocess.run([sys.executable, os.path.join(ROOT, 'tools', 'port_units.py'), OUT] + [u for u, *_ in ALLY_UNITS],
                    check=True, stdout=subprocess.DEVNULL)
+
+    write_other_locales(OUT)
 
     if n != len(P1_MARINE_CALLS):
         sys.exit(f'mapscript.galaxy 변경 {n}곳, 트리거 {len(done)}곳: 개수가 다름')
