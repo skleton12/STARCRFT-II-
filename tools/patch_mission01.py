@@ -136,6 +136,9 @@ ALLY_UNITS = [  # (유닛, 수, 플레이어 변수, x 오프셋, y 오프셋) -
 ]
 ALLY_COLORS = {8: 3, 9: 6}  # 플레이어 색 번호: 정화자 청록, 원시 저그 주황 (임시)
 
+# 핑 유지 시간 (사용자 지시 2026-10-14): 핑 후 이 시간(게임 초) 동안 새 핑이 없으면 동맹이 다시 레이너를 따라간다
+PING_HOLD_SECONDS = 30.0
+
 # 동맹에게 처음부터 주는 업그레이드 (사용자 지시 2026-10-14: 돌진 같은 업그레이드)
 # 'Charge'는 광전사(파수병) 돌진 능력의 조건(UseCharge). 칼달리스 돌진은 업그레이드 없이 기본
 ALLY_UPGRADES = [('gv_rm_PURIFIER', 'Charge', 1)]
@@ -180,6 +183,7 @@ unitgroup gv_rm_purifierUnits;
 trigger gt_rm_AllyFollow;
 trigger gt_rm_AllyPing;
 point gv_rm_pingTarget;
+fixed gv_rm_pingTime;
 
 // Living, visible, non-structure units of both AI allies (Purifiers 8, Primal Zerg 9)
 unitgroup gf_rm_AllyArmy () {
@@ -214,6 +218,7 @@ bool gt_rm_AllyPing_Func (bool testConds, bool runActions) {
         return true;
     }
     gv_rm_pingTarget = Point(PointGetX(lv_point), PointGetY(lv_point));
+    gv_rm_pingTime = GameGetMissionTime();
     lv_g = gf_rm_AllyArmy();
     lv_i = UnitGroupCount(lv_g, c_unitCountAll);
     for ( ; lv_i > 0 ; lv_i -= 1) {
@@ -239,6 +244,10 @@ bool gt_rm_AllyFollow_Func (bool testConds, bool runActions) {
     }
     lv_target = UnitGetPosition(gv_raynor);
     lv_radius = 6.0;
+    // Ping hold expires after %(ping_hold)s s without a new ping; allies resume following Raynor
+    if (gv_rm_pingTarget != null && GameGetMissionTime() - gv_rm_pingTime >= %(ping_hold)s) {
+        gv_rm_pingTarget = null;
+    }
     if (gv_rm_pingTarget != null) {
         lv_target = gv_rm_pingTarget;
         lv_radius = 3.0; // Trial arrival tolerance; do not force units onto one point.
@@ -342,7 +351,8 @@ def patch_galaxy_allies(g):
                                  'upgrades': upgrades, 'enemy_upgrades': enemy_upgrades,
                                  'buff': ', '.join(str(b) for b in ENEMY_BUFF_PERCENT),
                                  'mid_region': ', '.join(str(v) for v in MID_REGION),
-                                 'mid_extra': MID_EXTRA_PER_MARINE, 'mid_every': MID_EVERY_NTH}
+                                 'mid_extra': MID_EXTRA_PER_MARINE, 'mid_every': MID_EVERY_NTH,
+                                 'ping_hold': PING_HOLD_SECONDS}
     block = block.replace('\n', nl)
     for anchor in (GALAXY_ANCHOR_BLOCK, GALAXY_ANCHOR_INIT):
         if g.count(anchor) != 1:
