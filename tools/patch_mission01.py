@@ -146,6 +146,15 @@ ALLY_UPGRADES = [('gv_rm_PURIFIER', 'Charge', 1)]
 # 원본은 어려움 이상에서만 보병 공격/방어 1을 준다(Init 06). 이미 그 단계 이상이면 더하지 않는다
 ENEMY_MIN_UPGRADES = [('TerranInfantryWeaponsLevel1', 1), ('TerranInfantryArmorsLevel1', 1)]
 
+# 난이도별 적(자치령) 공격·방어 강화 (사용자 지시 2026-10-14: 아주 어려움 50%, 약하면 150%; 난이도에 따라 다르게)
+# 순서: 쉬움, 보통, 어려움, 아주 어려움. 공격 = 주는 피해 증가 %, 방어 = 받는 피해 감소로 환산 (100 / (1 + %))
+# 아주 어려움 50%는 사용자 값, 나머지 단계는 시험값. 150%로 올리려면 마지막 값을 150으로
+ENEMY_BUFF_PERCENT = (0, 15, 30, 50)
+
+# 중앙(마을) 자치령 해병 증강 (사용자 지시 2026-10-14). 남·북 사이(y 50~90)에 있는 해병마다 추가할 수 (시험값)
+MID_REGION = (0.0, 50.0, 136.0, 90.0)
+MID_EXTRA_PER_MARINE = 1
+
 # 2026-10-14 2차: 우리 병력도 좀 소모되는 정도로 → 해병 12, 화염방사병 6 (시험값)
 LATE_DEFENDERS = [  # (유닛, 수, x 오프셋, y 오프셋)
     ('Marine', 4, -5.0, -8.0),
@@ -261,6 +270,24 @@ void gf_rm_SpawnLateDefenders () {
 %(defenders)s
 }
 
+// Difficulty-scaled Dominion damage dealt / taken (co-op uses the same player properties)
+void gf_rm_EnemyDifficultyBuff () {
+    int lv_buff = libNtve_gf_DifficultyValueInt(%(buff)s);
+    PlayerModifyPropertyInt(gv_p2_DOMINION_RED, c_playerPropDamageDealtPercent, c_playerPropOperSetTo, 100 + lv_buff);
+    PlayerModifyPropertyInt(gv_p2_DOMINION_RED, c_playerPropDamageTakenPercent, c_playerPropOperSetTo, 10000 / (100 + lv_buff));
+}
+
+// Extra Dominion marines next to every marine in the town band (trial value)
+void gf_rm_SpawnMidReinforce () {
+    unitgroup lv_g = UnitGroup("Marine", gv_p2_DOMINION_RED, RegionRect(%(mid_region)s), UnitFilter(0, 0, (1 << c_targetFilterMissile), (1 << (c_targetFilterDead - 32)) | (1 << (c_targetFilterHidden - 32))), 0);
+    int lv_i = UnitGroupCount(lv_g, c_unitCountAll);
+    unit lv_u;
+    for ( ; lv_i > 0 ; lv_i -= 1) {
+        lv_u = UnitGroupUnit(lv_g, lv_i);
+        UnitCreate(%(mid_extra)s, "Marine", 0, gv_p2_DOMINION_RED, UnitGetPosition(lv_u), UnitGetFacing(lv_u));
+    }
+}
+
 // Dominion gets at least these upgrade levels on every difficulty (never stacks past them)
 void gf_rm_EnemyMinUpgrades () {
 %(enemy_upgrades)s
@@ -272,7 +299,9 @@ void gf_rm_SpawnAllies () {
     TriggerEnable(gt_rm_AllyFollow, true);
     TriggerEnable(gt_rm_AllyPing, true);
     gf_rm_SpawnLateDefenders();
+    gf_rm_SpawnMidReinforce();
     gf_rm_EnemyMinUpgrades();
+    gf_rm_EnemyDifficultyBuff();
 }
 
 """
@@ -302,7 +331,10 @@ def patch_galaxy_allies(g):
         f'        TechTreeUpgradeAddLevel(gv_p2_DOMINION_RED, "{u}", {lv} - TechTreeUpgradeCount(gv_p2_DOMINION_RED, "{u}", c_techCountCompleteOnly));\n'
         f'    }}' for u, lv in ENEMY_MIN_UPGRADES)
     block = GALAXY_ALLY_BLOCK % {'spawns': '\n'.join(spawns), 'colors': colors, 'defenders': defenders,
-                                 'upgrades': upgrades, 'enemy_upgrades': enemy_upgrades}
+                                 'upgrades': upgrades, 'enemy_upgrades': enemy_upgrades,
+                                 'buff': ', '.join(str(b) for b in ENEMY_BUFF_PERCENT),
+                                 'mid_region': ', '.join(str(v) for v in MID_REGION),
+                                 'mid_extra': MID_EXTRA_PER_MARINE}
     block = block.replace('\n', nl)
     for anchor in (GALAXY_ANCHOR_BLOCK, GALAXY_ANCHOR_INIT):
         if g.count(anchor) != 1:
@@ -400,6 +432,8 @@ def main():
         print(f'  - 동맹 업그레이드: {u} {lv}단계 ({p})')
     for u, lv in ENEMY_MIN_UPGRADES:
         print(f'  - 적 최소 업그레이드: {u} {lv}단계')
+    print(f'  - 적 공격·방어 강화 % (쉬움/보통/어려움/아주 어려움): {ENEMY_BUFF_PERCENT}')
+    print(f'  - 중앙 해병 증강: 해병마다 +{MID_EXTRA_PER_MARINE} (시험값)')
     for u, n, *_ in LATE_DEFENDERS:
         print(f'  - 후반부 적 추가 (시험값): {u} x{n}')
 
