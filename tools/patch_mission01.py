@@ -128,20 +128,26 @@ def patch_strings(text):
 # 편집기에서 맵을 저장하면 트리거 데이터로 스크립트를 다시 만들어 이 부분이 사라진다.
 # 그래서 맵은 편집기로 저장하지 말고 이 도구로 원본에서 다시 만든다.
 ALLY_UNITS = [  # (유닛, 수, 플레이어 변수, x 오프셋, y 오프셋) - 레이너 시작 지점(505) 기준
-    ('FenixDragoon', 1, 'gv_rm_PURIFIER', -3.0, 0.0),   # 협동전 피닉스 용기병 무장 (사용자 지정 2026-10-14)
-    ('ZealotPurifier', 3, 'gv_rm_PURIFIER', -3.0, -2.0),
+    # 2026-10-14 사용자 지시: 피닉스 대신 칼달리스 1 + 파수병 4 (밸런스)
+    ('FenixKaldalisZealot', 1, 'gv_rm_PURIFIER', -3.0, 0.0),   # 칼달리스 (협동전 피닉스 용사), 돌진 기본 보유
+    ('ZealotPurifier', 4, 'gv_rm_PURIFIER', -3.0, -2.0),
     ('DehakaRavasaur', 1, 'gv_p1_USER', 2.0, -2.0),   # 협동전 라바사우르스 (군심 Ravasaur 아님), 원시 저그 용병, 레이너 조종 (사용자 확정)
 ]
-ALLY_COLORS = {8: 3, 9: 6}
+ALLY_COLORS = {8: 3, 9: 6}  # 플레이어 색 번호: 정화자 청록, 원시 저그 주황 (임시)
+
+# 동맹에게 처음부터 주는 업그레이드 (사용자 지시 2026-10-14: 돌진 같은 업그레이드)
+# 'Charge'는 광전사(파수병) 돌진 능력의 조건(UseCharge). 칼달리스 돌진은 업그레이드 없이 기본
+ALLY_UPGRADES = [('gv_rm_PURIFIER', 'Charge', 1)]
 
 # 후반부 적 증강 (사용자 지시 2026-10-14: 적이 너무 약함, 후반부 적 수를 늘림)
 # 병참 본부(배치 ID 158) 기준 오프셋에 자치령 수비대를 추가한다. 수와 위치는 시험값
+# 2026-10-14 2차: 우리 병력도 좀 소모되는 정도로 → 해병 12, 화염방사병 6 (시험값)
 LATE_DEFENDERS = [  # (유닛, 수, x 오프셋, y 오프셋)
-    ('Marine', 3, -5.0, -8.0),
-    ('Marine', 3, 0.0, -9.0),
-    ('Marine', 3, 5.0, -8.0),
-    ('Firebat', 2, -3.0, -6.0),
-    ('Firebat', 2, 3.0, -6.0),
+    ('Marine', 4, -5.0, -8.0),
+    ('Marine', 4, 0.0, -9.0),
+    ('Marine', 4, 5.0, -8.0),
+    ('Firebat', 3, -3.0, -6.0),
+    ('Firebat', 3, 3.0, -6.0),
 ]  # 플레이어 색 번호: 정화자 청록, 원시 저그 주황 (임시)
 
 GALAXY_ALLY_BLOCK = """
@@ -227,6 +233,7 @@ void gf_rm_AllyInit () {
     gf_rm_SetAllyPlayer(gv_rm_PRIMAL);
     libNtve_gf_SetAlliance(gv_rm_PURIFIER, gv_rm_PRIMAL, libNtve_ge_AllianceSetting_AllyWithSharedVision);
 %(colors)s
+%(upgrades)s
     gt_rm_AllyFollow = TriggerCreate("gt_rm_AllyFollow_Func");
     TriggerAddEventTimePeriodic(gt_rm_AllyFollow, 2.0, c_timeGame);
     TriggerEnable(gt_rm_AllyFollow, false);
@@ -270,7 +277,9 @@ def patch_galaxy_allies(g):
     colors = '\n'.join(f'    PlayerSetColorIndex({p}, {c}, true);' for p, c in ALLY_COLORS.items())
     defenders = '\n'.join(f'    UnitCreate({n}, "{u}", 0, gv_p2_DOMINION_RED, PointWithOffset(lv_hq, {dx}, {dy}), 90.0);'
                           for u, n, dx, dy in LATE_DEFENDERS)
-    block = GALAXY_ALLY_BLOCK % {'spawns': '\n'.join(spawns), 'colors': colors, 'defenders': defenders}
+    upgrades = '\n'.join(f'    TechTreeUpgradeAddLevel({p}, "{u}", {lv});' for p, u, lv in ALLY_UPGRADES)
+    block = GALAXY_ALLY_BLOCK % {'spawns': '\n'.join(spawns), 'colors': colors, 'defenders': defenders,
+                                 'upgrades': upgrades}
     block = block.replace('\n', nl)
     for anchor in (GALAXY_ANCHOR_BLOCK, GALAXY_ANCHOR_INIT):
         if g.count(anchor) != 1:
@@ -364,6 +373,8 @@ def main():
         print(f'  - 플레이어 {num} 추가: {race.decode()} 컴퓨터 "{ko} / {en}"')
     for unit, n, player, *_ in ALLY_UNITS:
         print(f'  - 시작 배치: {unit} x{n} ({player})')
+    for p, u, lv in ALLY_UPGRADES:
+        print(f'  - 동맹 업그레이드: {u} {lv}단계 ({p})')
     for u, n, *_ in LATE_DEFENDERS:
         print(f'  - 후반부 적 추가 (시험값): {u} x{n}')
 
