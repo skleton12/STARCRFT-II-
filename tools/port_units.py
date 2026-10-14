@@ -46,6 +46,13 @@ GAMEPLAY = {'unitdata.xml', 'abildata.xml', 'effectdata.xml', 'behaviordata.xml'
             'buttondata.xml', 'actordata.xml', 'modeldata.xml', 'sounddata.xml', 'moverdata.xml',
             'footprintdata.xml', 'turretdata.xml', 'accumulatordata.xml', 'targetsortdata.xml',
             'targetfinddata.xml', 'alertdata.xml'}
+# 빈 연결 채우기에서 복사할 카탈로그 (유닛·연출은 넣지 않는다: 상관없는 유닛을 끌고 오기 때문)
+LEAF_FILES = {'abildata.xml', 'effectdata.xml', 'behaviordata.xml', 'weapondata.xml', 'validatordata.xml',
+              'requirementdata.xml', 'requirementnodedata.xml', 'upgradedata.xml', 'buttondata.xml',
+              'sounddata.xml', 'modeldata.xml', 'moverdata.xml'}
+# 맵 쪽에 없는 종족은 맵에 있는 종족으로 바꾼다. 종족 데이터(PZrg)는 원시 저그 건물·일꾼 등을
+# 줄줄이 가리켜 복사하면 빈 연결이 크게 늘어난다 (2026-10-14 확인)
+RACE_REMAP = {'PZrg': 'Zerg'}
 NO_UNIT = GAMEPLAY - {'unitdata.xml'}
 EXPAND = {
     'unitdata.xml': NO_UNIT,                 # 유닛 → 다른 유닛은 따라가지 않음 (별칭·도감 연결 폭발 방지)
@@ -145,6 +152,19 @@ def main():
                         if (fn, t) not in selected:
                             selected.add((fn, t)); queue.append((fn, t))
 
+    # 빈 연결 채우기: 고른 엔트리가 가리키는데 맵에도 기본 층에도 없는 것을 한 번 더 복사한다
+    # (종족 PZrg처럼 공용이라 따라가지 않았지만 없으면 게임이 오류를 내는 것). 여기서는 더 따라가지 않는다
+    leaves = set()
+    for key in list(selected):
+        for _, lay in layers:
+            for el in lay.get(key, []):
+                for t in tokens(el):
+                    if copyable(t):
+                        for fn in by_id[t] & LEAF_FILES:
+                            if (fn, t) not in selected:
+                                leaves.add((fn, t))
+    selected |= leaves
+
     # 층 순서대로 합친다: 첫 정의를 복사하고, 다음 층 요소의 자식들을 이어 붙인다
     out_files = defaultdict(list)
     for fn, i in sorted(selected):
@@ -158,6 +178,9 @@ def main():
                         merged.set(k, v)
                     for ch in el:
                         merged.append(copy.deepcopy(ch))
+        for node in merged.iter('Race'):
+            if node.get('value') in RACE_REMAP:
+                node.set('value', RACE_REMAP[node.get('value')])
         # 따라가지 않은 체계를 가리키는 배열 항목은 지운다
         for parent in list(merged.iter()):
             for ch in list(parent):
@@ -222,6 +245,7 @@ def main():
         text += ''.join(f'{k}={v}{nl}' for k, v in sorted(add.items()))
         with open(sp, 'w', encoding='utf-8', newline='') as f:
             f.write(text)
+    print(f'빈 연결 채우기 {len(leaves)}개')
     print(f'총 {total}개 엔트리, 파일 {len(out_files)}개, 문자열 {len(add)}줄, 따라가지 않은 공용 엔트리 {len(shared)}개')
     with open(os.path.join(map_dir, 'ported_shared_refs.txt'), 'w', encoding='utf-8') as f:
         f.write('\n'.join(sorted(shared)) + '\n')
