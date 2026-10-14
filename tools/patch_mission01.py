@@ -132,7 +132,17 @@ ALLY_UNITS = [  # (유닛, 수, 플레이어 변수, x 오프셋, y 오프셋) -
     ('ZealotPurifier', 3, 'gv_rm_PURIFIER', -3.0, -2.0),
     ('DehakaRavasaur', 1, 'gv_p1_USER', 2.0, -2.0),   # 협동전 라바사우르스 (군심 Ravasaur 아님), 원시 저그 용병, 레이너 조종 (사용자 확정)
 ]
-ALLY_COLORS = {8: 3, 9: 6}  # 플레이어 색 번호: 정화자 청록, 원시 저그 주황 (임시)
+ALLY_COLORS = {8: 3, 9: 6}
+
+# 후반부 적 증강 (사용자 지시 2026-10-14: 적이 너무 약함, 후반부 적 수를 늘림)
+# 병참 본부(배치 ID 158) 기준 오프셋에 자치령 수비대를 추가한다. 수와 위치는 시험값
+LATE_DEFENDERS = [  # (유닛, 수, x 오프셋, y 오프셋)
+    ('Marine', 3, -5.0, -8.0),
+    ('Marine', 3, 0.0, -9.0),
+    ('Marine', 3, 5.0, -8.0),
+    ('Firebat', 2, -3.0, -6.0),
+    ('Firebat', 2, 3.0, -6.0),
+]  # 플레이어 색 번호: 정화자 청록, 원시 저그 주황 (임시)
 
 GALAXY_ALLY_BLOCK = """
 //--------------------------------------------------------------------------------------------------
@@ -225,11 +235,18 @@ void gf_rm_AllyInit () {
     TriggerEnable(gt_rm_AllyPing, false);
 }
 
+// Extra Dominion defenders south of the Logistics HQ (trial values)
+void gf_rm_SpawnLateDefenders () {
+    point lv_hq = UnitGetPosition(UnitFromId(158));
+%(defenders)s
+}
+
 void gf_rm_SpawnAllies () {
     point lv_pt = PointFromId(505);
 %(spawns)s
     TriggerEnable(gt_rm_AllyFollow, true);
     TriggerEnable(gt_rm_AllyPing, true);
+    gf_rm_SpawnLateDefenders();
 }
 
 """
@@ -251,7 +268,9 @@ def patch_galaxy_allies(g):
         if player == 'gv_rm_PURIFIER':
             spawns.append('    UnitGroupAddUnitGroup(gv_rm_purifierUnits, UnitLastCreatedGroup());')
     colors = '\n'.join(f'    PlayerSetColorIndex({p}, {c}, true);' for p, c in ALLY_COLORS.items())
-    block = GALAXY_ALLY_BLOCK % {'spawns': '\n'.join(spawns), 'colors': colors}
+    defenders = '\n'.join(f'    UnitCreate({n}, "{u}", 0, gv_p2_DOMINION_RED, PointWithOffset(lv_hq, {dx}, {dy}), 90.0);'
+                          for u, n, dx, dy in LATE_DEFENDERS)
+    block = GALAXY_ALLY_BLOCK % {'spawns': '\n'.join(spawns), 'colors': colors, 'defenders': defenders}
     block = block.replace('\n', nl)
     for anchor in (GALAXY_ANCHOR_BLOCK, GALAXY_ANCHOR_INIT):
         if g.count(anchor) != 1:
@@ -345,6 +364,8 @@ def main():
         print(f'  - 플레이어 {num} 추가: {race.decode()} 컴퓨터 "{ko} / {en}"')
     for unit, n, player, *_ in ALLY_UNITS:
         print(f'  - 시작 배치: {unit} x{n} ({player})')
+    for u, n, *_ in LATE_DEFENDERS:
+        print(f'  - 후반부 적 추가 (시험값): {u} x{n}')
 
 
 if __name__ == '__main__':
