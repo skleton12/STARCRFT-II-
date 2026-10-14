@@ -24,7 +24,7 @@ CCM 구조: `metadata.txt` + 원본과 같은 파일명의 미션 맵(바꿔치�
 | `tools/port_units.py` | 다른 캠페인·협동전 유닛을 맵 데이터로 복사 |
 | `tools/fetch_assets.py` | 에셋을 맵 안에 넣기 (원본 에셋 필요, 아직 미사용) |
 | `tools/build_ccm.py` | CCM zip 빌드 → `build/RaynorMercs_WoL_CCM.zip` |
-| `docs/` | 기획 결정, 미션별 문서, 연구 조사 |
+| `docs/` | 기획 결정, 미션별 문서, 연구 조사, 진행 보고서(`docs/REPORT.md`) |
 
 `source/`, `coop/`, `build/`는 블리자드 데이터라서 `.gitignore`로 빼 두었다.
 
