@@ -28,6 +28,7 @@ ZIP_NAME = 'RaynorMercs_WoL_CCM'
 # 미션별 패치 스크립트와 결과 맵
 MAPS = [
     ('patch_mission01.py', 'TRaynor01.SC2Map'),
+    ('patch_mission02.py', 'TRaynor02.SC2Map'),
 ]
 
 
