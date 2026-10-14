@@ -128,7 +128,7 @@ def patch_strings(text):
 # 편집기에서 맵을 저장하면 트리거 데이터로 스크립트를 다시 만들어 이 부분이 사라진다.
 # 그래서 맵은 편집기로 저장하지 말고 이 도구로 원본에서 다시 만든다.
 ALLY_UNITS = [  # (유닛, 수, 플레이어 변수, x 오프셋, y 오프셋) - 레이너 시작 지점(505) 기준
-    ('FenixCoop', 1, 'gv_rm_PURIFIER', -3.0, 0.0),
+    ('FenixDragoon', 1, 'gv_rm_PURIFIER', -3.0, 0.0),   # 협동전 피닉스 용기병 무장 (사용자 지정 2026-10-14)
     ('ZealotPurifier', 3, 'gv_rm_PURIFIER', -3.0, -2.0),
     ('DehakaRavasaur', 1, 'gv_p1_USER', 2.0, -2.0),   # 협동전 라바사우르스 (군심 Ravasaur 아님), 원시 저그 용병, 레이너 조종 (사용자 확정)
 ]
