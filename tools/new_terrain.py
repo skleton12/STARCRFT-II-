@@ -195,6 +195,7 @@ def build_east(map_dir, seam, new_w, layout, camera_right, carve=(), relief=None
     camera = struct.unpack('<4I', mi[i:i + 16])
     open(P('mapinfo'), 'wb').write(bytes(mi))
 
+    _vertcol(P('t3vertcol'), seam, W, h)
     _minimap(P('minimap.tga'), lv, LV, old_w, W)
     removed = _remove_objects(P('objects'), seam, carve, carved)
     placed = _add_doodads(P('objects'), scatter(LV, seam)) if scatter else 0
@@ -289,6 +290,39 @@ def _terrain_lists(t, old_w, W, h, e_old, e_new, seam, carved):
     rows += [f'{ind}    <cc i="{i}"{out[i]}/>' for i in sorted(out)]
     rows.append(f'{ind}</cliffCellList>')
     return t[:m.start()] + nl.join(rows) + t[m.end():]
+
+
+def _vertcol(path, seam, W, h):
+    """t3vertcol(버텍스 색)을 새 가로에 맞춘다 (2026-10-15, '맵을 열 수 없음' 조사에서 확인).
+
+    형식: 머리 32(8에 항목 수), 항목 = key u32, kind u32, x0 y0 x1 y1 f32, u32, u32, n u32, n바이트.
+    kind 1 = 4x4칸 블록(5x5 꼭짓점 25바이트)이 지도 전체를 (y, x) 순서로 빠짐없이 덮음 (원본 34x34=1156, ReOverhaul 56x40=2240).
+    kind 2 = 칠한 자국 조각. 경계 동쪽 항목은 지우고, 새 블록은 25바이트 0xff(원본 기본값)로 채운다.
+    """
+    d = open(path, 'rb').read()
+    n = struct.unpack('<I', d[8:12])[0]
+    p, rows = 32, {}
+    row = 0
+    for _ in range(n):
+        key, kind, x0, y0, x1, y1, u1, u2, k = struct.unpack('<IIffffIII', d[p:p + 36])
+        rec = d[p:p + 36 + k]
+        p += 36 + k
+        if kind == 1:
+            row = int(round(y0)) // 4
+        if x1 <= seam + 1e-3:
+            rows.setdefault(row, []).append(rec)
+    tail = d[p:]
+    out, count = [], 0
+    for r in range(h // 4):
+        recs = rows.get(r, [])
+        out += recs
+        count += len(recs)
+        for x0 in range(seam, W, 4):
+            out.append(struct.pack('<IIffffIII', 0, 1, float(x0), float(4 * r), float(x0 + 4), float(4 * r + 4), 0, 0, 25) + b'\xff' * 25)
+            count += 1
+    head = bytearray(d[:32])
+    head[8:12] = struct.pack('<I', count)
+    open(path, 'wb').write(bytes(head) + b''.join(out) + tail)
 
 
 TILE = 64  # t3texturemasks: 텍스처 8장, 각 장은 (가로 칸x8) x (세로 칸x8) 픽셀, 64x64 타일 순서, 4비트(상위 니블 먼저)
