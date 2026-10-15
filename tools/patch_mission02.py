@@ -19,9 +19,15 @@ import os, re, shutil, subprocess, sys
 ROOT = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 sys.path.insert(0, os.path.join(ROOT, 'tools'))
 import patch_mission01 as m1
+import expand_map
 
 SRC = os.path.join(ROOT, 'source', 'liberty.sc2campaign', 'base.sc2maps', 'maps', 'campaign', 'traynor02.sc2map')
 OUT = os.path.join(ROOT, 'build', 'TRaynor02.SC2Map')
+
+# 동쪽 지형 확장 (사용자 지시 2026-10-15: 동쪽으로 50 정도). x=104 경계 동쪽을 서쪽 지형의 거울 복사로.
+# 원래 좌표는 그대로라 유닛·지점·스크립트는 영향 없음. 136 → 184 (+48, 8의 배수로 맞춤)
+EXPAND_SEAM = 104
+EXPAND_WIDTH = 184
 
 MERC = {'Marine': 'WarPig', 'Medic': 'MercMedic'}  # 레이너 측 용병 대응
 
@@ -372,6 +378,7 @@ def main():
     if os.path.exists(OUT):
         shutil.rmtree(OUT)
     shutil.copytree(SRC, OUT)
+    expanded = expand_map.expand_east(OUT, EXPAND_SEAM, EXPAND_WIDTH) if EXPAND_WIDTH else None
 
     p = os.path.join(OUT, 'mapscript.galaxy')
     g = open(p, encoding='utf-8', newline='').read()
@@ -397,6 +404,8 @@ def main():
     m1.write_other_locales(OUT)
 
     print(OUT)
+    if expanded:
+        print(f"  - 지형 확장: {expanded['old_w']} → {expanded['new_w']} x {expanded['h']}, 카메라 {expanded['camera']}")
     print(f'  - 스크립트 용병 교체 {changed}곳, 배치 해병 {placed}기 → WarPig')
     print(f'  - 병영 생산 링크 치환 (플레이어 1): {MERC}')
     for p, (x, y) in ALLY_HOME.items():

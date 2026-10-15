@@ -14,8 +14,9 @@ import patch_mission01 as m1
 import expand_map
 
 # 지형 확장 (사용자 지시 2026-10-14: 맵을 키우고 동쪽에 동맹 2). 값은 시험값
-EXPAND_SEAM = 104   # 이 x 경계 동쪽을 서쪽 지형의 거울 복사로 바꾼다
-EXPAND_WIDTH = None  # 사용 안 함 (사용자 지시 2026-10-14: 원본 맵 그대로). 확장하려면 200 등
+import patch_mission02
+EXPAND_SEAM = patch_mission02.EXPAND_SEAM    # 미션 패치와 같은 값
+EXPAND_WIDTH = patch_mission02.EXPAND_WIDTH
 
 # 동맹 시작 위치 표시 지점 (사용자 지시 2026-10-14). 편집기에서 옮기면 패치 도구가 그 위치를 쓴다
 ALLY_MARKERS = []  # 사용자가 원본 지도에 표시한 위치를 받으면 채운다 (예: ('rm Ally1 Purifier Start', 48.0, 78.0))
