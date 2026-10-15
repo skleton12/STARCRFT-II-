@@ -68,6 +68,7 @@
 ## 5. 주의 (실수했던 것)
 
 - `t3texturemasks`는 텍스처 8장 x (칸x8 픽셀), 64x64 타일, 4비트(상위 니블 먼저). `new_terrain.load_masks/save_masks`만 쓸 것. 0.2.1~0.2.4는 이걸 잘못 다뤄 텍스처가 깨졌을 수 있음.
+- 텍스처 마스크 픽셀마다 8장 비중의 합은 15 이하여야 함 (원본·편집기 맵 규칙). 0.2.8까지 16인 픽셀이 있었음.
 - 맵 크기를 바꾸면 `t3vertcol`(4x4칸 블록 격자, `new_terrain._vertcol`)도 새로 만들어야 함. 안 하면 "Unable to open map" 의심.
 - 맵 크기를 바꾸면 `t3terrain.xml`의 `blockTextureSetList`, `cliffCellList`도 다시 만들어야 함 (`new_terrain._terrain_lists`).
 - `tools/expand_map.py`(거울 복사)는 사용자 지시로 안 씀. 지형 목록 갱신도 안 함 — 쓰지 말 것.

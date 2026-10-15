@@ -75,7 +75,10 @@ def build_east(map_dir, seam, new_w, layout, camera_right, carve=(), relief=None
         if len(ys) == 0:
             continue
         blocks = np.stack([planes[:, 8 * y:8 * y + 8, 8 * x:8 * x + 8].mean(axis=(1, 2)) for y, x in zip(ys, xs)])
-        weights = np.clip(np.rint(blocks.mean(0)), 0, 15).astype(np.uint8)  # 텍스처 8장의 평균 비중
+        weights = np.clip(np.rint(blocks.mean(0)), 0, 15).astype(int)  # 텍스처 8장의 평균 비중
+        while weights.sum() > 15:  # 원본·편집기 맵은 픽셀마다 비중 합이 15 이하 (반올림으로 넘치면 '맵 열기 실패' 의심, 2026-10-15)
+            weights[int(np.argmax(weights))] -= 1
+        weights = weights.astype(np.uint8)
         key = Counter(sti[y, x].tobytes() for y, x in zip(ys, xs)).most_common(1)[0][0]
         tmpl_cell[L] = (weights, np.frombuffer(key, np.uint8).copy(), 2)
         a = np.array([hmv[y, x] for y, x in zip(ys, xs)], dtype=float)
