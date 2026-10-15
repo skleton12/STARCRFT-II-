@@ -10,7 +10,7 @@ expand_map.py(거울 복사)와 달리 새 땅은 원본을 복사하지 않는�
   - 텍스처(마스크·동기 정보) = 그 단계 평지 칸 중 가장 흔한 텍스처
 carve: 원본 쪽 칸을 직사각형으로 다시 그린다 [(x0, y0, x1, y1, 단계)] (양 끝 포함). 길을 뚫을 때 쓰고, 그 안 장식물은 지운다.
 relief(x, y, 단계) → 꼭짓점 높이 변화(게임 단위). 기복을 준다. 동기 높이는 원본에서 맞춘 1차식으로 다시 계산.
-texnoise(x, y, k) → 0~1. 단계별로 흔한 텍스처 3개를 픽셀 단위로 섞는다 (k=0: 1번째↔2번째, k=1: 3번째 섞는 양).
+texnoise: 사용 안 함 (2026-10-15 텍스처 형식 바로잡음. 새 땅은 단계별 평균 텍스처 비중으로 칠하고 세부는 편집기에서).
 scatter(LV, seam) → [(장식물 종류, x, y, 회전, 크기)]. 원본에 있는 같은 종류 장식물을 본떠 새로 놓는다.
 tidy=(x_min, (y, x) 시작 칸): x_min~seam 사이 원본 땅 중 시작 칸에서 걸어서 못 가는 낮은 자투리를 3단계 고원으로 메운다.
 경사로는 만들지 않는다 (단계가 다른 땅끼리는 절벽으로 막힘). 새 땅에는 장식물이 없다.
@@ -54,7 +54,7 @@ def build_east(map_dir, seam, new_w, layout, camera_right, carve=(), relief=None
     d = open(P('t3synctextureinfo'), 'rb').read()
     pre = len(d) - old_w * h * 8
     hx, sti, tx = _read(P('t3synctextureinfo'), pre, old_w, h, 8)
-    hk, mk, tk = _read(P('t3texturemasks'), 64, old_w, h, 256)
+    hk, planes, tk = load_masks(P('t3texturemasks'))
 
     clv = cl.view('<u2')[..., 0]
     lv = clv // 64
@@ -69,18 +69,15 @@ def build_east(map_dir, seam, new_w, layout, camera_right, carve=(), relief=None
         for dx in (-1, 0, 1):
             flat[1:-1, 1:-1] &= lv[1 + dy:h - 1 + dy, 1 + dx:old_w - 1 + dx] == lv[1:-1, 1:-1]
     flat &= ~ramp
-    tmpl_cell, tmpl_vert, tmpl_tex, sync_fit = {}, {}, {}, {}
+    tmpl_cell, tmpl_vert, sync_fit = {}, {}, {}
     for L in range(4):
         ys, xs = np.nonzero(flat & (lv == L))
         if len(ys) == 0:
             continue
-        counts = Counter(mk[y, x].tobytes() for y, x in zip(ys, xs)).most_common(3)
-        texs = []
-        for key, _ in counts:
-            y, x = next((y, x) for y, x in zip(ys, xs) if mk[y, x].tobytes() == key)
-            texs.append((mk[y, x].copy(), sti[y, x].copy()))
-        tmpl_tex[L] = texs
-        tmpl_cell[L] = (texs[0][0], texs[0][1], 2)
+        blocks = np.stack([planes[:, 8 * y:8 * y + 8, 8 * x:8 * x + 8].mean(axis=(1, 2)) for y, x in zip(ys, xs)])
+        weights = np.clip(np.rint(blocks.mean(0)), 0, 15).astype(np.uint8)  # 텍스처 8장의 평균 비중
+        key = Counter(sti[y, x].tobytes() for y, x in zip(ys, xs)).most_common(1)[0][0]
+        tmpl_cell[L] = (weights, np.frombuffer(key, np.uint8).copy(), 2)
         a = np.array([hmv[y, x] for y, x in zip(ys, xs)], dtype=float)
         sv = np.array([shv[y, x] for y, x in zip(ys, xs)], dtype=float)
         tmpl_vert[L] = (int(np.median(a[:, 0])), int(np.median(a[:, 1])), int(np.median(sv)))
@@ -128,7 +125,8 @@ def build_east(map_dir, seam, new_w, layout, camera_right, carve=(), relief=None
     CL = _widen(cl, W)
     CF = _widen(cf, W)
     STI = _widen(sti, W)
-    MK = _widen(mk, W)
+    PL = np.zeros((8, h * 8, W * 8), np.uint8)
+    PL[:, :, :old_w * 8] = planes
     CLv = CL.view('<u2')[..., 0]
     for y, x in redo:
         L = int(LV[y, x])
@@ -136,7 +134,7 @@ def build_east(map_dir, seam, new_w, layout, camera_right, carve=(), relief=None
         CF[y, x, 0] = 3 if (nb != L).any() else 2
         if x >= seam or (y, x) in carved:
             CLv[y, x] = L * 64
-            MK[y, x] = _mix_cell(tmpl_tex[L], x, y, texnoise) if texnoise else tmpl_cell[L][0]
+            PL[:, 8 * y:8 * y + 8, 8 * x:8 * x + 8] = tmpl_cell[L][0][:, None, None]
             STI[y, x] = tmpl_cell[L][1]
 
     HM = _widen(hm, VW)
@@ -167,7 +165,7 @@ def build_east(map_dir, seam, new_w, layout, camera_right, carve=(), relief=None
     _write(P('t3heightmap'), hh, HM, th, [(8, VW)])
     _write(P('t3syncheightmap'), hs, SH, ts, [(8, VW)])
     _write(P('t3synctextureinfo'), hx, STI, tx, [(8, W)])
-    _write(P('t3texturemasks'), hk, MK, tk, [(12, W * 8)])
+    save_masks(P('t3texturemasks'), hk, PL, tk)
     for n in os.listdir(map_dir):
         if n.startswith('cellattribute_'):
             d = open(P(n), 'rb').read()
@@ -245,24 +243,27 @@ def _remove_objects(path, seam, carve=(), cells=()):
     return n
 
 
-def _mix_cell(texs, x, y, noise):
-    """흔한 텍스처 2~3개를 픽셀마다 노이즈 비율로 섞은 마스크 한 칸 (줄 8 x 층 8 x 칸 8, 4비트)."""
-    def nib(m):
-        m = m.reshape(8, 8, 4)
-        return np.stack([m >> 4, m & 15], -1).reshape(8, 8, 8).astype(float)
-    T = [nib(t[0]) for t in texs]
-    out = np.zeros((8, 8, 8))
-    for r in range(8):
-        for c in range(8):
-            px, py = x + (c + 0.5) / 8, y + (r + 0.5) / 8
-            n0 = noise(px, py, 0)
-            v = T[0][r, :, c] * (1 - n0) + T[min(1, len(T) - 1)][r, :, c] * n0
-            if len(T) > 2:
-                n1 = noise(px, py, 1)
-                v = v * (1 - n1) + T[2][r, :, c] * n1
-            out[r, :, c] = v
-    q = np.clip(np.rint(out), 0, 15).astype(np.uint8)
-    return ((q[..., 0::2] << 4) | q[..., 1::2]).reshape(256)
+TILE = 64  # t3texturemasks: 텍스처 8장, 각 장은 (가로 칸x8) x (세로 칸x8) 픽셀, 64x64 타일 순서, 4비트(상위 니블 먼저)
+
+
+def load_masks(path):
+    """텍스처 마스크 → (머리, (8, 세로px, 가로px) 비중 0~15, 꼬리). 2026-10-15 원본으로 형식 확인."""
+    d = open(path, 'rb').read()
+    w, h = struct.unpack('<II', d[12:20])
+    n = w * h * 4
+    raw = np.frombuffer(d[64:64 + n], np.uint8)
+    nib = np.stack([raw >> 4, raw & 15], -1).reshape(8, h // TILE, w // TILE, TILE, TILE)
+    return d[:64], nib.transpose(0, 1, 3, 2, 4).reshape(8, h, w), d[64 + n:]
+
+
+def save_masks(path, head, planes, tail):
+    _, h, w = planes.shape
+    assert h % TILE == 0 and w % TILE == 0, (h, w)
+    t = planes.reshape(8, h // TILE, TILE, w // TILE, TILE).transpose(0, 1, 3, 2, 4).reshape(-1, 2)
+    raw = ((t[:, 0] << 4) | t[:, 1]).astype(np.uint8)
+    head = bytearray(head)
+    head[12:20] = struct.pack('<II', w, h)
+    open(path, 'wb').write(bytes(head) + raw.tobytes() + tail)
 
 
 def _add_doodads(path, items):

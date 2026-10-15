@@ -472,7 +472,8 @@ def main():
         shutil.rmtree(OUT)
     shutil.copytree(SRC, OUT)
     expanded = new_terrain.build_east(OUT, EXPAND_SEAM, EXPAND_WIDTH, east_layout, EXPAND_CAMERA_RIGHT, EAST_CARVE,
-                                       relief=east_relief, texnoise=east_texnoise, scatter=east_scatter,
+                                       relief=east_relief, scatter=None,  # 2026-10-15 사용자: 새 장식물(초록 점) 전부 빼기
+                                      
                                        tidy=EAST_TIDY) if EXPAND_WIDTH else None
 
     p = os.path.join(OUT, 'mapscript.galaxy')

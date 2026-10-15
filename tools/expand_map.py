@@ -11,7 +11,7 @@
   t3syncclifflevel 머리 32, 칸마다 u16 (64 = 1단계, 64의 배수가 아니면 경사로)
   t3cellflags      머리 32 (가로·세로는 24·28), 칸마다 1바이트
   t3synctextureinfo 머리+텍스처 이름, 칸마다 8바이트
-  t3texturemasks   머리 64, 칸마다 256바이트 = 8줄 x 8층 x 8칸(4비트, 상위 니블 먼저)
+  t3texturemasks   머리 64, 텍스처 8장 x (칸x8 픽셀) 4비트, 64x64 타일 순서 (new_terrain.load_masks)
   cellattribute_*  머리 4 (비트 수), 칸마다 1바이트
   t3fluffdoodad    머리 28, 항목마다 9바이트 (x, y float + 종류)
   t3terrain.xml    dim, uvtiling
@@ -108,16 +108,12 @@ def expand_east(map_dir, seam, new_w, flatten_ramps=True):
             out = body[:, [_src_cell(x, seam) for x in range(new_w)]]
             open(p, 'wb').write(struct.pack('<I', new_w * h * 8) + out.tobytes() + d[4 + old_w * h:])
 
-    # 텍스처 마스크: 칸 단위로 옮기고 새 영역은 칸 안 가로 순서를 뒤집는다
-    d = open(P('t3texturemasks'), 'rb').read()
-    cells = np.frombuffer(d[64:64 + old_w * h * 256], dtype=np.uint8).reshape(h, old_w, 8, 8, 4)
-    nib = np.stack([cells >> 4, cells & 15], -1).reshape(h, old_w, 8, 8, 8)  # 줄, 층, 칸
-    out = nib[:, [_src_cell(x, seam) for x in range(new_w)]].copy()
-    out[:, seam:] = out[:, seam:, :, :, ::-1]
-    packed = (out[..., 0::2] << 4) | out[..., 1::2]
-    head = bytearray(d[:64])
-    head[12:16] = struct.pack('<I', new_w * 8)
-    open(P('t3texturemasks'), 'wb').write(bytes(head) + packed.astype(np.uint8).tobytes() + d[64 + old_w * h * 256:])
+    # 텍스처 마스크 (2026-10-15 형식 바로잡음: 텍스처 8장 x 픽셀, 64 타일). 새 영역은 픽셀 단위 좌우 대칭
+    from new_terrain import load_masks, save_masks
+    head, planes, tail = load_masks(P('t3texturemasks'))
+    S8 = seam * 8
+    cols = [p if p < S8 else 2 * S8 - 1 - p for p in range(new_w * 8)]
+    save_masks(P('t3texturemasks'), head, planes[:, :, cols].copy(), tail)
 
     # 잔디 같은 자잘한 장식: 경계 동쪽 것을 지우고 서쪽 것을 대칭 복사
     d = open(P('t3fluffdoodad'), 'rb').read()

@@ -18,7 +18,7 @@ def grid(path):
     return w, h, d
 
 
-def render(mapdir, out, s=4, marks=(), shade=False, doodads=False):
+def render(mapdir, out, s=4, marks=(), shade=False, doodads=False, textures=False):
     w, h, d = grid(mapdir + '/t3syncclifflevel')
     cl = struct.unpack(f'<{w*h}H', d[32:32 + 2 * w * h])
     _, _, cf = grid(mapdir + '/t3cellflags')
@@ -35,11 +35,31 @@ def render(mapdir, out, s=4, marks=(), shade=False, doodads=False):
         gx = np.gradient(zc, axis=1)
         gy = np.gradient(zc, axis=0)
         shadef = np.clip(1.0 + 0.9 * (-gx + gy), 0.45, 1.5)
+    texcol = None
+    if textures:  # 바닥 텍스처 비중으로 색 섞기 (텍스처 목록 순서의 대략적인 색)
+        import numpy as np, sys as _s, os as _o
+        _s.path.insert(0, _o.path.dirname(_o.path.abspath(__file__)))
+        from new_terrain import load_masks
+        _, pl, _ = load_masks(mapdir + '/t3texturemasks')
+        cw = pl.reshape(8, h, 8, w, 8).mean(axis=(2, 4)) / 15.0
+        pal = np.array([(150, 120, 90), (70, 60, 55), (140, 100, 60), (120, 95, 70), (210, 180, 130),
+                        (150, 150, 150), (120, 85, 55), (190, 190, 185)], float)
+        base = np.array(pal[0])
+        texcol = np.zeros((h, w, 3))
+        for y in range(h):
+            for x in range(w):
+                c = base.copy()
+                for k in range(1, 8):
+                    c = c * (1 - cw[k, y, x]) + pal[k] * cw[k, y, x]
+                texcol[y, x] = c
     im = Image.new('RGB', (w * s, h * s))
     dr = ImageDraw.Draw(im)
     for y in range(h):
         for x in range(w):
             c = LEVEL.get(cl[y * w + x] // 64, (255, 255, 255))
+            if texcol is not None:
+                lvl = cl[y * w + x] // 64
+                c = tuple(int(t * (0.55 + 0.15 * lvl)) for t in texcol[y, x])
             if cf[y * w + x] & 1:  # 시험: 비트 1 = 이동 불가로 추정
                 c = tuple(v // 2 for v in c)
             if shadef is not None:
