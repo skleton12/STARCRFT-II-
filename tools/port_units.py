@@ -33,7 +33,7 @@ COPY_LAYERS = [
 ]
 # 따라가지 않는 협동전 성장·돌연변이 체계
 # EmergencyMedivac: 협동전 용병 투하 연출(용병 의무관에 딸려 옴). 끊긴 참조만 남겨서 따라가지 않음 (2026-10-15)
-SKIP_RE = re.compile(r'Mastery|Prestige|Mutator|Talent|AllUnitBehaviorController|CommanderLevel|Commander[A-Z][a-z]+Level|Amon|EmergencyMedivac')
+SKIP_RE = re.compile(r'Mastery|Prestige|Mutator|Talent|AllUnitBehaviorController|CommanderLevel|Commander[A-Z][a-z]+Level|Amon|EmergencyMedivac|Alarak|^VoidStalkerBlinkShieldRestore$|^ZagaraVoidCoopBroodlingIncubation$')
 TOKEN_RE = re.compile(r'[A-Za-z_][A-Za-z0-9_@]*')
 # 이보다 많은 엔트리가 참조하는 공용 엔트리는 따라가지 않는다 (시작 유닛 이름이 든 것은 예외)
 SHARED_LIMIT = 6
@@ -101,7 +101,14 @@ def protected_ids(map_dir):
 
 
 def main():
-    map_dir, seeds = sys.argv[1], sys.argv[2:]
+    args = sys.argv[1:]
+    # --liberty-base: 자날 기본 모드(Liberty.SC2Mod) 데이터도 '맵이 이미 가진 층'으로 본다 (2026-10-15, 2번 미션부터).
+    # 이게 없으면 점멸·관문 생산 같은 기본 항목까지 군단·공허·협동전 판으로 복사해 덮어쓴다.
+    # 1번 미션은 사용자 시험을 통과한 결과를 바꾸지 않으려고 이 옵션 없이 그대로 둔다.
+    if '--liberty-base' in args:
+        args.remove('--liberty-base')
+        BASE_LAYERS.append(gd('liberty.sc2mod'))
+    map_dir, seeds = args[0], args[1:]
     base = defaultdict(set)
     for p in BASE_LAYERS:
         for (fn, i) in load_layer(p):

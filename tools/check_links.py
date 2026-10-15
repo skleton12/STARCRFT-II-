@@ -12,8 +12,12 @@ import port_units as P
 
 
 def main():
-    gd = os.path.join(sys.argv[1], 'base.sc2data', 'gamedata')
-    starts = sys.argv[2:]
+    args = sys.argv[1:]
+    if '--liberty-base' in args:  # port_units.py와 같은 뜻: 자날 기본 모드도 이미 있는 층으로 봄
+        args.remove('--liberty-base')
+        P.BASE_LAYERS.append(P.gd('liberty.sc2mod'))
+    gd = os.path.join(args[0], 'base.sc2data', 'gamedata')
+    starts = args[1:]
     els = defaultdict(list)
     for fn in os.listdir(gd):
         for el in ET.parse(os.path.join(gd, fn)).getroot():

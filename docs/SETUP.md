@@ -34,6 +34,8 @@ python3 tools/setup_source.py --drive 드라이브파일ID
 
 `source/` 밖으로 풀리는 항목은 무시하고, 빌드에 필요한 경로가 빠지면 알려 준다.
 
+2026-10-15 이전에 만든 묶음에는 자날 기본 모드 게임 데이터가 없다. 그때는 `python3 tools/fetch_liberty_data.py`로 받는다 (2번 미션 빌드에 필요).
+
 ## 4. 빌드
 
 ```bash

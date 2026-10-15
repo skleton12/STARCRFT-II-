@@ -23,6 +23,7 @@ REQUIRED = [
     'source/swarm.sc2campaign/base.sc2data/gamedata',
     'source/void.sc2campaign/base.sc2data/gamedata',
     'source/starcoop/starcoop.sc2mod/base.sc2data/gamedata',
+    'source/liberty.sc2mod/base.sc2data/gamedata/abildata.xml',  # 없으면 tools/fetch_liberty_data.py
 ]
 
 

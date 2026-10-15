@@ -38,7 +38,7 @@ EAST_MESAS = [(114.0, 60.0, 5.0), (160.0, 66.0, 4.5), (134.0, 106.0, 4.0), (126.
 EAST_CRATERS = [(142.0, 50.0, 3.0), (117.0, 30.0, 2.6), (160.0, 104.0, 2.8)]  # 0단계 웅덩이
 # 원본 쪽 x 88~103의 걸어서 못 가는 낮은 자투리는 고원으로 메움 (사용자 2026-10-15 '안 쓰는 땅 다듬어')
 EAST_TIDY = (88, (29, 82))  # (x 시작, 레이너 본진 칸 (y, x))
-EAST_KEEP_CLEAR = 9.0      # 동맹 진영 둘레는 비워 둠 (반지름)
+EAST_KEEP_CLEAR = 12.0     # 동맹 진영 둘레는 평지로 비워 둠 (반지름). 회관·자원 자리 (2026-10-15 9 → 12)
 EAST_RELIEF = (0.8, 1.2)   # 기복 높이(게임 단위): 들판, 대지·고원
 
 
@@ -140,10 +140,35 @@ NEXT_WAVE = [
     ('DehakaRavasaur', 2, 'gv_rm_PRIMAL'),
 ]
 WAVE_INTERVAL = 90.0   # 추가 소환 간격 (게임 초, 시험값)
-WAVE_MAX = 6           # 첫 소환 포함 최대 횟수 (시험값)
+WAVE_MAX = 1           # 첫 소환만 (2026-10-15: 동맹이 직접 건설·생산하므로 무료 추가 소환 중단, 시험값. 이전 6)
 ATTACK_DELAY = 300.0   # C안: 미션 시작 후 이 시간이 지나면 자치령 기지 공격 (게임 초, 시험값)
 ATTACK_TARGET_UNIT = 48          # 자치령 사령부 배치 ID (43.5,101.5)
 ATTACK_TARGET_POINT = (45.0, 94.0)  # 사령부가 없으면 이 지점
+
+# 동맹 경제 (사용자 지시 2026-10-15: 동맹 AI가 건설·생산, 엔진 AI + 스크립트 혼합, 기본 지상 병력 위주). 수치는 시험값
+# 엔진 캠페인 AI가 stock(유지할 수)에 맞춰 채취·건설·생산하고, 병력 지휘는 gt_rm_AllyAI가 맡는다
+ALLY_ECON = {
+    'gv_rm_PURIFIER': dict(
+        hall='Nexus', worker='Probe', start_workers=8, start_extra=[], farm='Pylon', workers=16,
+        buildings=[('Assimilator', 2), ('Gateway', 3), ('CyberneticsCore', 1)],
+        army=[('Zealot', 'ZealotPurifier', 8), ('Stalker', 'StalkerPurifier', 6)],  # 파수병, 선동자(Instigator)
+    ),
+    'gv_rm_PRIMAL': dict(
+        hall='Hatchery', worker='Drone', start_workers=8, start_extra=[('Overlord', 1)], farm='Overlord', workers=16,
+        buildings=[('Extractor', 1), ('SpawningPool', 1), ('RoachWarren', 1)],
+        army=[('Zergling', 'PrimalZergling', 12), ('Roach', 'PrimalRoach', 8)],  # 원시 저글링, 원시 바퀴
+    ),
+}
+# 이식 시 같이 넣을 항목: 원시 바퀴가 협동전 데하카 바퀴 무기를 쓰는데 그 효과가 공용 제한에 걸려 빠짐 (끊긴 참조 방지)
+PORT_EXTRA_SEEDS = ['DehakaRoachDamage', 'DehakaRoachLM', 'DehakaRoachLevel2Damage', 'DehakaRoachLevel2LM',
+                    'DehakaRoachLevel3Damage', 'DehakaRoachLevel3LM',
+                    # 원시 바퀴 공격·사망 연출의 물리 효과, 먹기 능력 효과 (군단 데이터)
+                    'RoachAttackDeathForce', 'RoachMeleeAttackForce02', 'RoachMeleeAttackForce03',
+                    'RoachMeleeAttackRightBladeForce', 'MediumTastyCorpseSet', 'MurvarRangedWeapon']
+ALLY_START_MINERALS = 400   # 시작 광물 (시험값)
+ALLY_MINERAL_FIELDS = 8     # 진영마다 광물 덩이 (시험값)
+ALLY_GEYSERS = 2            # 진영마다 가스 (시험값)
+ALLY_EXIT_POINT = (100.0, 65.0)  # 자원은 이 점의 반대쪽(진영 뒤쪽)에, 집결·소환점은 이쪽(앞쪽)에 둔다
 
 ENEMY_PLAYERS = ['gv_pLAYER_02_DOMINION', 'gv_pLAYER_05_PATROL']
 # 자치령 기지 지역(배치 지역 ID 8 'Dominion Base') 해병 증강: 해병 N명마다 1기 (시험값)
@@ -221,9 +246,12 @@ void gf_rm_MercInit () {
 
 // ---- Allies ----
 unitgroup gf_rm_AllyArmy () {
-    unitfilter lv_f = UnitFilter(0, 0, (1 << c_targetFilterMissile) | (1 << c_targetFilterStructure), (1 << (c_targetFilterDead - 32)) | (1 << (c_targetFilterHidden - 32)));
+    // Army only: no workers, air (overlords), structures, larva or eggs
+    unitfilter lv_f = UnitFilter(0, 0, (1 << c_targetFilterMissile) | (1 << c_targetFilterStructure) | (1 << c_targetFilterAir) | (1 << c_targetFilterWorker), (1 << (c_targetFilterDead - 32)) | (1 << (c_targetFilterHidden - 32)));
     unitgroup lv_g = UnitGroup(null, gv_rm_PURIFIER, RegionEntireMap(), lv_f, 0);
     UnitGroupAddUnitGroup(lv_g, UnitGroup(null, gv_rm_PRIMAL, RegionEntireMap(), lv_f, 0));
+    UnitGroupRemoveUnitGroup(lv_g, UnitGroup("Larva", c_playerAny, RegionEntireMap(), UnitFilter(0, 0, 0, 0), 0));
+    UnitGroupRemoveUnitGroup(lv_g, UnitGroup("Egg", c_playerAny, RegionEntireMap(), UnitFilter(0, 0, 0, 0), 0));
     return lv_g;
 }
 
@@ -380,7 +408,13 @@ void gf_rm_SpawnBaseReinforce () {
 
 void gf_rm_Start () {
     gf_rm_ConvertMercs();
+    gf_rm_AllyBases();
+    gt_rm_AllyEcon = TriggerCreate("gt_rm_AllyEcon_Func");
+    TriggerAddEventTimePeriodic(gt_rm_AllyEcon, 5.0, c_timeGame);
+    TriggerExecute(gt_rm_AllyEcon, false, false);
     gf_rm_SpawnWave(true);
+    gf_rm_AnnounceAllies();
+    gf_rm_ResUIInit();
     TriggerEnable(gt_rm_AllyAI, true);
     TriggerEnable(gt_rm_AllyPing, true);
     TriggerEnable(gt_rm_AllyWave, true);
@@ -397,7 +431,193 @@ ANCHOR_START = 'TriggerExecute(gt_ObjectiveDestroytheDominionBaseDiscoverQ, true
 ANCHOR_RESCUE = 'UnitIssueOrder(UnitFromId(600), OrderTargetingPoint(AbilityCommand("move", 0), PointFromId(736)), c_orderQueueReplace);'
 
 
-def patch_galaxy(g):
+def plan_bases(map_dir):
+    """빌드된 지형(절벽 단계)에서 동맹 회관·광물·가스·집결점 위치를 정한다.
+
+    쓰는 칸은 모두 1단계이고 주변 1칸도 1단계(절벽 가장자리 아님)여야 한다.
+    자원은 ALLY_EXIT_POINT 반대쪽(진영 뒤), 집결점은 앞쪽. 광물 2x1, 가스 3x3, 회관 5x5.
+    """
+    import math, struct
+    import numpy as np
+    w, h = struct.unpack('<II', open(os.path.join(map_dir, 'mapinfo'), 'rb').read()[0x10:0x18])
+    cl = np.frombuffer(open(os.path.join(map_dir, 't3syncclifflevel'), 'rb').read()[32:32 + w * h * 2], '<u2').reshape(h, w)
+    good = np.zeros_like(cl, dtype=bool)
+    good[1:-1, 1:-1] = True
+    for dy in (-1, 0, 1):
+        for dx in (-1, 0, 1):
+            good[1:-1, 1:-1] &= cl[1 + dy:h - 1 + dy, 1 + dx:w - 1 + dx] == 64
+    ok = lambda cells: all(0 <= y < h and 0 <= x < w and good[y, x] for x, y in cells)
+    plans = {}
+    for p, (cx, cy) in ALLY_HOME.items():
+        tx, ty = math.floor(cx) + 0.5, math.floor(cy) + 0.5
+        town = {(int(tx) + i, int(ty) + j) for i in range(-2, 3) for j in range(-2, 3)}
+        assert ok(town), (p, '회관 자리가 평지가 아님')
+        ex, ey = ALLY_EXIT_POINT
+        back = math.atan2(ty - ey, tx - ex)
+        used = {(x + i, y + j) for x, y in town for i in (-1, 0, 1) for j in (-1, 0, 1)}
+
+        def angdiff(a):
+            return abs((a - back + math.pi) % (2 * math.pi) - math.pi)
+        # 광물: 회관 뒤쪽에 반지름 약 7의 호로 늘어놓음 (각도 간격 약 15도)
+        minerals = []
+        n = ALLY_MINERAL_FIELDS
+        for k in range(n):
+            a0 = back + (k - (n - 1) / 2) * math.radians(15)
+            for r in (7.0, 6.5, 7.5, 8.0, 6.0):
+                for da in (0.0, 0.08, -0.08):
+                    mx = round(tx + r * math.cos(a0 + da))
+                    my = math.floor(ty + r * math.sin(a0 + da)) + 0.5
+                    cells = {(mx - 1, int(my)), (mx, int(my))}
+                    if ok(cells) and not (cells & used):
+                        minerals.append((mx, my))
+                        used |= cells
+                        break
+                else:
+                    continue
+                break
+        geysers = []
+        cands = []
+        for x in range(int(tx) - 11, int(tx) + 12):
+            for y in range(int(ty) - 11, int(ty) + 12):
+                gx, gy = x + 0.5, y + 0.5
+                d = math.hypot(gx - tx, gy - ty)
+                a = angdiff(math.atan2(gy - ty, gx - tx))
+                if 7.0 <= d <= 9.0 and math.radians(60) <= a <= math.radians(120):
+                    cands.append((abs(a - math.radians(90)), d, gx, gy, {(x + i, y + j) for i in (-1, 0, 1) for j in (-1, 0, 1)}))
+        for _, _, gx, gy, cells in sorted(cands):
+            if len(geysers) >= ALLY_GEYSERS:
+                break
+            margin = {(a + i, b + j) for a, b in cells for i in (-1, 0, 1) for j in (-1, 0, 1)}
+            if ok(cells) and not (margin & used):
+                geysers.append((gx, gy))
+                used |= cells
+        rally = None
+        for r in (8.5, 7.5, 9.5, 10.5, 6.5):
+            for da in (0, 0.3, -0.3, 0.6, -0.6):
+                rx = tx - r * math.cos(back + da)
+                ry = ty - r * math.sin(back + da)
+                c = {(int(rx) + i, int(ry) + j) for i in (-1, 0, 1) for j in (-1, 0, 1)}
+                if ok(c) and not (c & used):
+                    rally = (round(rx, 1), round(ry, 1))
+                    break
+            if rally:
+                break
+        assert len(minerals) == ALLY_MINERAL_FIELDS and len(geysers) == ALLY_GEYSERS and rally, (p, len(minerals), len(geysers), rally)
+        plans[p] = dict(town=(tx, ty), minerals=minerals, geysers=geysers, rally=rally)
+    return plans
+
+
+ECON_GALAXY = """
+// ---- Ally economy (2026-10-15): engine campaign AI harvests/builds/trains from stock; gt_rm_AllyAI commands the army ----
+trigger gt_rm_AllyEcon;
+trigger gt_rm_ResUI;
+int gv_rm_resDlg;
+int gv_rm_resLbl;
+
+void gf_rm_AIStartAlly (int lp_p, point lp_town) {
+    AIStart(lp_p, true, DifficultyAPM(c_campAdvanced));
+    AIDeclareTown(lp_p, c_townOne, lp_town);
+    AISetMainTown(lp_p, c_townOne);
+    AIInitCampaignTowns(lp_p);
+    AIInitCampaignHarvest(lp_p);
+    AIHarvestRate(lp_p, 1);
+    AISetNumScouts(lp_p, 0);
+}
+
+void gf_rm_AllyBases () {
+@BASES@
+}
+
+bool gt_rm_AllyEcon_Func (bool testConds, bool runActions) {
+    if (!runActions) {
+        return true;
+    }
+    if (gv_gameOver) {
+        return true;
+    }
+@STOCK@
+    return true;
+}
+
+// Ally resource panel: real minerals/gas of players 8 and 9
+void gf_rm_ResUIUpdate () {
+    text lv_t;
+    lv_t = StringExternal("rm/AllyRes/Purifier") + StringExternal("rm/AllyRes/Minerals") + IntToText(PlayerGetPropertyInt(gv_rm_PURIFIER, c_playerPropMinerals));
+    lv_t = lv_t + StringExternal("rm/AllyRes/Gas") + IntToText(PlayerGetPropertyInt(gv_rm_PURIFIER, c_playerPropVespene));
+    lv_t = lv_t + StringToText("<n/>") + StringExternal("rm/AllyRes/Primal") + StringExternal("rm/AllyRes/Minerals") + IntToText(PlayerGetPropertyInt(gv_rm_PRIMAL, c_playerPropMinerals));
+    lv_t = lv_t + StringExternal("rm/AllyRes/Gas") + IntToText(PlayerGetPropertyInt(gv_rm_PRIMAL, c_playerPropVespene));
+    DialogControlSetPropertyAsText(gv_rm_resLbl, c_triggerControlPropertyText, PlayerGroupAll(), lv_t);
+}
+
+bool gt_rm_ResUI_Func (bool testConds, bool runActions) {
+    if (!runActions) {
+        return true;
+    }
+    gf_rm_ResUIUpdate();
+    return true;
+}
+
+void gf_rm_ResUIInit () {
+    gv_rm_resDlg = DialogCreate(330, 80, c_anchorTopLeft, 20, 180, false);
+    gv_rm_resLbl = DialogControlCreate(gv_rm_resDlg, c_triggerControlTypeLabel);
+    DialogControlSetSize(gv_rm_resLbl, PlayerGroupAll(), 310, 60);
+    DialogControlSetPosition(gv_rm_resLbl, PlayerGroupAll(), c_anchorTopLeft, 12, 10);
+    DialogSetVisible(gv_rm_resDlg, PlayerGroupAll(), true);
+    gf_rm_ResUIUpdate();
+    gt_rm_ResUI = TriggerCreate("gt_rm_ResUI_Func");
+    TriggerAddEventTimePeriodic(gt_rm_ResUI, 1.0, c_timeGame);
+}
+
+// Adjutant announces the reinforcements (subtitle only; no matching voice line chosen)
+void gf_rm_AnnounceAllies () {
+    TransmissionSend(PlayerGroupAll(), TransmissionSourceFromModel("AdjutantPortrait"), PortraitGetGame(), "Talk", null, StringExternal("rm/Adjutant/Name"), StringExternal("rm/Adjutant/Arrive"), 6.0, c_transmissionDurationSet, false);
+}
+
+"""
+
+
+def econ_galaxy(plans):
+    bases, stock = [], []
+    for p, e in ALLY_ECON.items():
+        pl = plans[p]
+        tx, ty = pl['town']
+        for mx, my in pl['minerals']:
+            bases.append(f'    UnitCreate(1, "MineralField", c_unitCreateIgnorePlacement, 0, Point({mx}, {my}), 0.0);')
+        for gx, gy in pl['geysers']:
+            bases.append(f'    UnitCreate(1, "VespeneGeyser", c_unitCreateIgnorePlacement, 0, Point({gx}, {gy}), 0.0);')
+        bases.append(f'    UnitCreate(1, "{e["hall"]}", c_unitCreateIgnorePlacement, {p}, Point({tx}, {ty}), 270.0);')
+        rx, ry = pl['rally']
+        bases.append(f'    UnitCreate({e["start_workers"]}, "{e["worker"]}", 0, {p}, Point({(tx + rx) / 2:.1f}, {(ty + ry) / 2:.1f}), 270.0);')
+        for u, n in e['start_extra']:
+            bases.append(f'    UnitCreate({n}, "{u}", 0, {p}, Point({tx}, {ty}), 270.0);')
+        bases.append(f'    PlayerModifyPropertyInt({p}, c_playerPropMinerals, c_playerPropOperSetTo, {ALLY_START_MINERALS});')
+        for base, real, _ in e['army']:
+            bases.append(f'    TechTreeUnitAllow({p}, "{real}", true);')
+            bases.append(f'    CatalogLinkReplace({p}, c_gameCatalogUnit, "{base}", "{real}");')
+        bases.append(f'    gf_rm_AIStartAlly({p}, Point({tx}, {ty}));')
+        stock.append(f'    AIClearStock({p});')
+        stock.append(f'    AISetStockUnitNext({p}, {e["workers"]}, "{e["worker"]}", false);')
+        stock.append(f'    AISetStock({p}, 1, "{e["hall"]}");')
+        stock.append(f'    AISetStockFarms({p}, "{e["farm"]}", true);')
+        for b, n in e['buildings']:
+            stock.append(f'    AISetStock({p}, {n}, "{b}");')
+        for base, real, n in e['army']:  # AI counts the base type; replaced units are counted here instead
+            stock.append(f'    AISetStock({p}, MaxI(0, {n} - TechTreeUnitCount({p}, "{real}", c_techCountCompleteOnly)), "{base}");')
+        stock.append(f'    AIEnableStock({p});')
+    return ECON_GALAXY.replace('@BASES@', '\n'.join(bases)).replace('@STOCK@', '\n'.join(stock))
+
+
+ECON_STRINGS = {  # 사용자 요구 문장. 부관 대사는 GPT 초안 (docs/missions/02_ally_resources_intro.md)
+    'rm/AllyRes/Purifier': ('정화자', 'Purifiers'),
+    'rm/AllyRes/Primal': ('원시 저그', 'Primal Zerg'),
+    'rm/AllyRes/Minerals': ('  광물 ', '  Minerals '),
+    'rm/AllyRes/Gas': ('  가스 ', '  Gas '),
+    'rm/Adjutant/Name': ('부관', 'Adjutant'),
+    'rm/Adjutant/Arrive': ('사령관님, 저그와 프로토스 지원군이 도착했습니다.', 'Commander, Zerg and Protoss reinforcements have arrived.'),
+}
+
+
+def patch_galaxy(g, plans=None):
     if 'const int gv_rm_PURIFIER = 8;' in g:
         sys.exit('동맹 코드가 이미 있음: 원본에서 빌드해야 함')
     nl = '\r\n' if '\r\n' in g else '\n'
@@ -426,7 +646,8 @@ def patch_galaxy(g):
     merc_link = '\n'.join(
         f'    TechTreeUnitAllow(gv_pLAYER_01_USER, "{b}", true);\n'
         f'    CatalogLinkReplace(gv_pLAYER_01_USER, c_gameCatalogUnit, "{a}", "{b}");' for a, b in MERC.items())
-    homes = '\n'.join(f'    if (lp_p == {p}) {{\n        return Point({x}, {y});\n    }}' for p, (x, y) in ALLY_HOME.items())
+    rallies = {p: plans[p]['rally'] for p in ALLY_HOME} if plans else ALLY_HOME
+    homes = '\n'.join(f'    if (lp_p == {p}) {{\n        return Point({x}, {y});\n    }}' for p, (x, y) in rallies.items())
     colors = '\n'.join(f'    PlayerSetColorIndex({p}, {c}, true);' for p, c in m1.ALLY_COLORS.items())
     upgrades = '\n'.join(f'    TechTreeUpgradeAddLevel({p}, "{u}", {lv});' for p, u, lv in m1.ALLY_UPGRADES)
     buff_lines = '\n'.join(
@@ -446,6 +667,8 @@ def patch_galaxy(g):
         'buff': ', '.join(str(b) for b in m1.ENEMY_BUFF_PERCENT), 'buff_lines': buff_lines,
         'enemy_upgrades': enemy_upgrades, 'base_region': BASE_REGION_ID, 'base_every': BASE_EVERY_NTH,
     }
+    if plans:
+        block = block.replace('void gf_rm_Start () {', econ_galaxy(plans) + 'void gf_rm_Start () {', 1)
     block = block.replace('\n', nl)
     for a in (ANCHOR_BLOCK, ANCHOR_INIT, ANCHOR_START, ANCHOR_RESCUE):
         if g.count(a) != 1:
@@ -482,7 +705,8 @@ def main():
 
     p = os.path.join(OUT, 'mapscript.galaxy')
     g = open(p, encoding='utf-8', newline='').read()
-    g, changed = patch_galaxy(g)
+    plans = plan_bases(OUT)
+    g, changed = patch_galaxy(g, plans)
     open(p, 'w', encoding='utf-8', newline='').write(g)
 
     p = os.path.join(OUT, 'objects')
@@ -496,11 +720,15 @@ def main():
         open(p, 'wb').write(fix(b))
     p = os.path.join(OUT, 'kokr.sc2data', 'localizeddata', 'gamestrings.txt')
     t = open(p, encoding='utf-8', newline='').read()
-    open(p, 'w', encoding='utf-8', newline='').write(m1.patch_strings(t))
+    t = m1.patch_strings(t)
+    nl = '\r\n' if '\r\n' in t else '\n'
+    t += ''.join(f'{k}={ko} /// {en}{nl}' for k, (ko, en) in ECON_STRINGS.items())
+    open(p, 'w', encoding='utf-8', newline='').write(t)
 
     # 소환 유닛 + 용병 대상 중 자날 기본 데이터에 없는 것 (GPT 검토 M02-02: MercMedic은 군단/공허 캠페인 정의)
-    units = sorted({u for u, *_ in FIRST_WAVE + NEXT_WAVE} | {'MercMedic'})
-    subprocess.run([sys.executable, os.path.join(ROOT, 'tools', 'port_units.py'), OUT] + units,
+    units = sorted({u for u, *_ in FIRST_WAVE + NEXT_WAVE} | {'MercMedic'}
+                   | {real for e in ALLY_ECON.values() for _, real, _ in e['army']})
+    subprocess.run([sys.executable, os.path.join(ROOT, 'tools', 'port_units.py'), '--liberty-base', OUT] + units + PORT_EXTRA_SEEDS,
                    check=True, stdout=subprocess.DEVNULL)
     # 따라오지 않은 협동전 응급 의료선(EmergencyMedivac)을 가리키는 행위자 이벤트 줄 제거
     p = os.path.join(OUT, 'base.sc2data', 'gamedata', 'actordata.xml')
@@ -519,6 +747,8 @@ def main():
     print(f'  - 첫 소환: {FIRST_WAVE}')
     print(f'  - 추가 소환 {WAVE_INTERVAL}초마다 최대 {WAVE_MAX}회: {NEXT_WAVE}')
     print(f'  - C안 공격 시작: {ATTACK_DELAY}초 (시험값)')
+    for p, pl in plans.items():
+        print(f"  - 동맹 기지 {p}: 회관 {pl['town']}, 광물 {len(pl['minerals'])}, 가스 {pl['geysers']}, 집결 {pl['rally']}")
 
 
 if __name__ == '__main__':

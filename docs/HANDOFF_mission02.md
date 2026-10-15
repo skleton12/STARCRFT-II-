@@ -1,6 +1,6 @@
 # 2번 미션 인수인계 (클로드 → 다음 작업자, 2026-10-15)
 
-현재 버전 **0.2.6** (브랜치 `claude/lucid-franklin-ed0eko`). 빌드: `python3 tools/build_ccm.py`.
+현재 버전 **0.2.7** (아래 3장 설계를 2026-10-15 구현함 — 4장 1번 완료) (브랜치 `claude/lucid-franklin-ed0eko`). 빌드: `python3 tools/build_ccm.py`.
 2번 미션 패치 도구: `tools/patch_mission02.py` (원본 `source/.../traynor02.sc2map` → `build/TRaynor02.SC2Map`).
 규칙은 `CLAUDE.md`, 결정 기록은 `docs/DECISIONS.md`, GPT 검토는 `docs/testing/2026-10-15_mission02_review.md`.
 새 컴퓨터 준비는 `docs/SETUP.md` (원본 데이터는 `source_pack.zip`, 공개 저장소에 올리지 않음).
@@ -60,7 +60,7 @@
 
 ## 4. 남은 일 (우선순위)
 
-1. 위 3장 구현 → `patch_mission02.py`의 `GALAXY_BLOCK`과 `gf_rm_Start`에 추가, 문자열은 `kokr` 게임 문자열에 `한국어 /// English`, 다른 언어는 `write_other_locales`로 영어.
+1. ~~위 3장 구현~~ **완료 (0.2.7)**: `ALLY_ECON`, `plan_bases`, `econ_galaxy`, `ECON_STRINGS`. 남은 끊긴 참조는 `PortraitPurifierStalker`(초상화 조명, lightdata 미이식) 하나. 위 3장 구현 → `patch_mission02.py`의 `GALAXY_BLOCK`과 `gf_rm_Start`에 추가, 문자열은 `kokr` 게임 문자열에 `한국어 /// English`, 다른 언어는 `write_other_locales`로 영어.
 2. 버전 0.2.7, `python3 tools/build_ccm.py`, `maps/TRaynor02.SC2Map` 갱신(단일 파일 묶기는 `tools/pack_sc2map.py` + StormLib, `docs/SETUP.md`).
 3. 사용자 질문 대기 항목(2장 4·6, 자원 수량) 답 받으면 반영.
 4. 게임 시험 항목: GPT 검토서 M02-04~06, 동맹 AI가 실제로 채취·건설·생산하는지, 바뀐 유닛이 나오는지, 자원 표시값이 실제 잔고와 같은지.
