@@ -8,6 +8,10 @@ expand_map.py(거울 복사)와 달리 새 땅은 원본을 복사하지 않는�
   - 꼭짓점 절벽 단계 = 맞닿은 칸 단계 중 최댓값, 높이·절벽 높이·동기 높이 = 그 단계 평지 꼭짓점의 중앙값
   - 칸 표시(t3cellflags) = 다른 단계와 맞닿으면 3(절벽), 아니면 2
   - 텍스처(마스크·동기 정보) = 그 단계 평지 칸 중 가장 흔한 텍스처
+carve: 원본 쪽 칸을 직사각형으로 다시 그린다 [(x0, y0, x1, y1, 단계)] (양 끝 포함). 길을 뚫을 때 쓰고, 그 안 장식물은 지운다.
+relief(x, y, 단계) → 꼭짓점 높이 변화(게임 단위). 기복을 준다. 동기 높이는 원본에서 맞춘 1차식으로 다시 계산.
+texnoise(x, y, k) → 0~1. 단계별로 흔한 텍스처 3개를 픽셀 단위로 섞는다 (k=0: 1번째↔2번째, k=1: 3번째 섞는 양).
+scatter(LV, seam) → [(장식물 종류, x, y, 회전, 크기)]. 원본에 있는 같은 종류 장식물을 본떠 새로 놓는다.
 경사로는 만들지 않는다 (단계가 다른 땅끼리는 절벽으로 막힘). 새 땅에는 장식물이 없다.
 """
 import os, re, struct
@@ -36,7 +40,7 @@ def _widen(a, new_w, fill=0):
     return out
 
 
-def build_east(map_dir, seam, new_w, layout, camera_right):
+def build_east(map_dir, seam, new_w, layout, camera_right, carve=(), relief=None, texnoise=None, scatter=None):
     P = lambda n: os.path.join(map_dir, n)
     old_w, h = struct.unpack('<II', open(P('mapinfo'), 'rb').read()[0x10:0x18])
     assert seam <= old_w <= new_w, (seam, old_w, new_w)
@@ -64,55 +68,80 @@ def build_east(map_dir, seam, new_w, layout, camera_right):
         for dx in (-1, 0, 1):
             flat[1:-1, 1:-1] &= lv[1 + dy:h - 1 + dy, 1 + dx:old_w - 1 + dx] == lv[1:-1, 1:-1]
     flat &= ~ramp
-    tmpl_cell, tmpl_vert = {}, {}
+    tmpl_cell, tmpl_vert, tmpl_tex, sync_fit = {}, {}, {}, {}
     for L in range(4):
         ys, xs = np.nonzero(flat & (lv == L))
         if len(ys) == 0:
             continue
-        common = Counter(mk[y, x].tobytes() for y, x in zip(ys, xs)).most_common(1)[0][0]
-        y, x = next((y, x) for y, x in zip(ys, xs) if mk[y, x].tobytes() == common)
-        tmpl_cell[L] = (mk[y, x].copy(), sti[y, x].copy(), cf[y, x, 0])
-        vs = [(y, x) for y, x in zip(ys, xs)]
-        a = np.array([hmv[y, x] for y, x in vs])
-        s = np.array([shv[y, x] for y, x in vs])
-        tmpl_vert[L] = (int(np.median(a[:, 0])), int(np.median(a[:, 1])), int(np.median(s)))
+        counts = Counter(mk[y, x].tobytes() for y, x in zip(ys, xs)).most_common(3)
+        texs = []
+        for key, _ in counts:
+            y, x = next((y, x) for y, x in zip(ys, xs) if mk[y, x].tobytes() == key)
+            texs.append((mk[y, x].copy(), sti[y, x].copy()))
+        tmpl_tex[L] = texs
+        tmpl_cell[L] = (texs[0][0], texs[0][1], 2)
+        a = np.array([hmv[y, x] for y, x in zip(ys, xs)], dtype=float)
+        sv = np.array([shv[y, x] for y, x in zip(ys, xs)], dtype=float)
+        tmpl_vert[L] = (int(np.median(a[:, 0])), int(np.median(a[:, 1])), int(np.median(sv)))
+        A = np.c_[a[:, 0], a[:, 1], np.ones(len(a))]
+        sync_fit[L] = np.linalg.lstsq(A, sv, rcond=None)[0]  # 동기 높이 ≈ 높이·절벽 높이의 1차식
+    qscale = float(re.search(r'quantizeScale="([-\d.e+]+)"', open(P('t3terrain.xml'), encoding='utf-8').read())[1])
 
     # 새 단계 격자
     LV = _widen(lv, W)
     for x in range(seam, W):
         for y in range(h):
             LV[y, x] = layout(x, y)
-    assert all(L in tmpl_cell for L in np.unique(LV[:, seam:])), '원본에 없는 단계를 썼음'
+    redo = {(y, x) for x in range(seam, W) for y in range(h)}
+    for x0, y0, x1, y1, L in carve:
+        for x in range(x0, x1 + 1):
+            for y in range(y0, y1 + 1):
+                LV[y, x] = L
+                redo.add((y, x))
+    assert all(L in tmpl_cell for L in np.unique([LV[c] for c in redo])), '원본에 없는 단계를 썼음'
+    carved = {c for c in redo if c[1] < seam}
+    for y, x in list(carved):  # 이웃 칸의 절벽 표시도 다시 계산
+        for dy in (-1, 0, 1):
+            for dx in (-1, 0, 1):
+                if 0 <= y + dy < h and 0 <= x + dx < W:
+                    redo.add((y + dy, x + dx))
 
     CL = _widen(cl, W)
     CF = _widen(cf, W)
     STI = _widen(sti, W)
     MK = _widen(mk, W)
     CLv = CL.view('<u2')[..., 0]
-    for x in range(seam, W):
-        for y in range(h):
-            L = int(LV[y, x])
+    for y, x in redo:
+        L = int(LV[y, x])
+        nb = LV[max(0, y - 1):y + 2, max(0, x - 1):x + 2]
+        CF[y, x, 0] = 3 if (nb != L).any() else 2
+        if x >= seam or (y, x) in carved:
             CLv[y, x] = L * 64
-            nb = LV[max(0, y - 1):y + 2, max(0, x - 1):x + 2]
-            CF[y, x, 0] = 3 if (nb != L).any() else 2
-            MK[y, x] = tmpl_cell[L][0]
+            MK[y, x] = _mix_cell(tmpl_tex[L], x, y, texnoise) if texnoise else tmpl_cell[L][0]
             STI[y, x] = tmpl_cell[L][1]
 
     HM = _widen(hm, VW)
     SH = _widen(sh, VW)
     HMv = HM.view('<u2')
     SHv = SH.view('<u4')[..., 0]
-    for vx in range(seam, VW):
-        for vy in range(VH):
-            cells = [LV[cy, cx] for cy in (vy - 1, vy) for cx in (vx - 1, vx) if 0 <= cy < h and 0 <= cx < W]
-            e = int(max(cells))
-            if vx == seam and int(HMv[vy, vx, 2]) == e:
-                continue  # 경계 꼭짓점은 단계가 같으면 원본 유지
-            a, b, s = tmpl_vert[e]
-            if vx > seam:
-                HMv[vy, vx, 0] = a
-            HMv[vy, vx, 1], HMv[vy, vx, 2] = b, e
-            SHv[vy, vx] = s
+    verts = {(vy, vx) for vx in range(seam, VW) for vy in range(VH)}
+    for y, x in carved:
+        verts |= {(y, x), (y + 1, x), (y, x + 1), (y + 1, x + 1)}
+    for vy, vx in verts:
+        cells = [LV[cy, cx] for cy in (vy - 1, vy) for cx in (vx - 1, vx) if 0 <= cy < h and 0 <= cx < W]
+        e = int(max(cells))
+        if vx <= seam and int(HMv[vy, vx, 2]) == e:
+            continue  # 원본 쪽 꼭짓점은 단계가 같으면 그대로
+        a, b, s = tmpl_vert[e]
+        if vx > seam:
+            if relief:
+                a = int(np.clip(a + relief(vx, vy, e) / qscale, 0, 65535))
+            HMv[vy, vx, 0] = a
+        else:
+            a = int(HMv[vy, vx, 0])
+        HMv[vy, vx, 1], HMv[vy, vx, 2] = b, e
+        c = sync_fit[e]
+        SHv[vy, vx] = int(c[0] * a + c[1] * b + c[2]) if relief else s
 
     _write(P('t3syncclifflevel'), hc, CL, tc, [(8, W)])
     _write(P('t3cellflags'), hf, CF, tf, [(24, W)])
@@ -124,7 +153,10 @@ def build_east(map_dir, seam, new_w, layout, camera_right):
         if n.startswith('cellattribute_'):
             d = open(P(n), 'rb').read()
             a = np.frombuffer(d[4:4 + old_w * h], np.uint8).reshape(h, old_w)
-            open(P(n), 'wb').write(struct.pack('<I', W * h * 8) + _widen(a, W).tobytes() + d[4 + old_w * h:])
+            a = _widen(a, W)
+            for y, x in carved:
+                a[y, x] = 0  # 뚫은 길은 이동·건설 가능
+            open(P(n), 'wb').write(struct.pack('<I', W * h * 8) + a.tobytes() + d[4 + old_w * h:])
 
     # 잔디 장식: 경계 동쪽 것은 지운다
     d = open(P('t3fluffdoodad'), 'rb').read()
@@ -146,8 +178,9 @@ def build_east(map_dir, seam, new_w, layout, camera_right):
     open(P('mapinfo'), 'wb').write(bytes(mi))
 
     _minimap(P('minimap.tga'), lv, LV, old_w, W)
-    removed = _remove_objects(P('objects'), seam)
-    return dict(old_w=old_w, new_w=W, h=h, camera=camera, removed=removed,
+    removed = _remove_objects(P('objects'), seam, carve)
+    placed = _add_doodads(P('objects'), scatter(LV, seam)) if scatter else 0
+    return dict(old_w=old_w, new_w=W, h=h, camera=camera, removed=removed, carved=len(carved), doodads=placed,
                 levels={int(L): int((LV[:, seam:] == L).sum()) for L in np.unique(LV[:, seam:])})
 
 
@@ -177,16 +210,63 @@ def _minimap(path, lv, LV, old_w, W):
     open(path, 'wb').write(d[:off] + out.tobytes() + d[off + tw * th * bpp:])
 
 
-def _remove_objects(path, seam):
+def _remove_objects(path, seam, carve=()):
     o = open(path, encoding='utf-8', newline='').read()
     n = 0
 
     def drop(m):
         nonlocal n
-        if float(m[2]) >= seam:
+        x, y = float(m[2]), float(m[3])
+        if x >= seam or (m[1] == 'ObjectDoodad' and any(x0 <= x <= x1 + 1 and y0 <= y <= y1 + 1 for x0, y0, x1, y1, _ in carve)):
             n += 1
             return ''
         return m[0]
-    o = re.sub(r'    <(Object\w+) [^>]*?Position="([-\d.e]+),[^"]*"[^>]*?(/>|>.*?</\1>)\r?\n', drop, o, flags=re.S)
+    o = re.sub(r'    <(Object\w+) [^>]*?Position="([-\d.e]+),([-\d.e]+)[^"]*"[^>]*?(/>|>.*?</\1>)\r?\n', drop, o, flags=re.S)
     open(path, 'w', encoding='utf-8', newline='').write(o)
     return n
+
+
+def _mix_cell(texs, x, y, noise):
+    """흔한 텍스처 2~3개를 픽셀마다 노이즈 비율로 섞은 마스크 한 칸 (줄 8 x 층 8 x 칸 8, 4비트)."""
+    def nib(m):
+        m = m.reshape(8, 8, 4)
+        return np.stack([m >> 4, m & 15], -1).reshape(8, 8, 8).astype(float)
+    T = [nib(t[0]) for t in texs]
+    out = np.zeros((8, 8, 8))
+    for r in range(8):
+        for c in range(8):
+            px, py = x + (c + 0.5) / 8, y + (r + 0.5) / 8
+            n0 = noise(px, py, 0)
+            v = T[0][r, :, c] * (1 - n0) + T[min(1, len(T) - 1)][r, :, c] * n0
+            if len(T) > 2:
+                n1 = noise(px, py, 1)
+                v = v * (1 - n1) + T[2][r, :, c] * n1
+            out[r, :, c] = v
+    q = np.clip(np.rint(out), 0, 15).astype(np.uint8)
+    return ((q[..., 0::2] << 4) | q[..., 1::2]).reshape(256)
+
+
+def _add_doodads(path, items):
+    """원본에 있는 같은 종류 장식물 하나를 본떠 새 위치에 놓는다 (지면 기준 높이, 새 ID)."""
+    o = open(path, encoding='utf-8', newline='').read()
+    nl = '\r\n' if '\r\n' in o else '\n'
+    nid = max(int(v) for v in re.findall(r' Id="(\d+)"', o)) + 1
+    tmpl = {}
+    for m in re.finditer(r'    <ObjectDoodad [^>]*?Type="(\w+)"[^>]*?(/>|>.*?</ObjectDoodad>)', o, re.S):
+        tmpl.setdefault(m[1], m[0])
+    add = []
+    for kind, x, y, rot, scale in items:
+        b = tmpl.get(kind)
+        if b is None:
+            continue
+        b = re.sub(r'<Flag Index="HeightAbsolute" Value="1"/>\s*', '', b)
+        b = re.sub(r'(<ObjectDoodad [^>]*?)>\s*</ObjectDoodad>', r'\1/>', b, flags=re.S)
+        b = re.sub(r' Id="\d+"', f' Id="{nid}"', b, 1)
+        b = re.sub(r' Position="[^"]*"', f' Position="{x:.4f},{y:.4f},0"', b, 1)
+        b = re.sub(r' Rotation="[^"]*"', f' Rotation="{rot:.4f}"', b, 1) if ' Rotation="' in b else b.replace(' Position=', f' Rotation="{rot:.4f}" Position=', 1)
+        b = re.sub(r' Scale="[^"]*"', f' Scale="{scale:.4f},{scale:.4f},{scale:.4f}"', b, 1)
+        add.append(b + nl)
+        nid += 1
+    end = o.rindex('</PlacedObjects>')
+    open(path, 'w', encoding='utf-8', newline='').write(o[:end] + ''.join(add) + o[end:])
+    return len(add)

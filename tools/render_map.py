@@ -18,12 +18,23 @@ def grid(path):
     return w, h, d
 
 
-def render(mapdir, out, s=4, marks=()):
+def render(mapdir, out, s=4, marks=(), shade=False, doodads=False):
     w, h, d = grid(mapdir + '/t3syncclifflevel')
     cl = struct.unpack(f'<{w*h}H', d[32:32 + 2 * w * h])
     _, _, cf = grid(mapdir + '/t3cellflags')
     cf = cf[32:]
     mi = open(mapdir + '/mapinfo', 'rb').read()
+    shadef = None
+    if shade:  # 높이로 음영 (북서쪽 빛)
+        hd = open(mapdir + '/t3heightmap', 'rb').read()
+        vw, vh = struct.unpack('<II', hd[8:16])
+        import numpy as np
+        hv = np.frombuffer(hd[32:32 + vw * vh * 6], '<u2').reshape(vh, vw, 3).astype(float)
+        z = (hv[..., 0] + hv[..., 1]) * 3.151101e-4
+        zc = (z[:-1, :-1] + z[1:, :-1] + z[:-1, 1:] + z[1:, 1:]) / 4
+        gx = np.gradient(zc, axis=1)
+        gy = np.gradient(zc, axis=0)
+        shadef = np.clip(1.0 + 0.9 * (-gx + gy), 0.45, 1.5)
     im = Image.new('RGB', (w * s, h * s))
     dr = ImageDraw.Draw(im)
     for y in range(h):
@@ -31,6 +42,8 @@ def render(mapdir, out, s=4, marks=()):
             c = LEVEL.get(cl[y * w + x] // 64, (255, 255, 255))
             if cf[y * w + x] & 1:  # 시험: 비트 1 = 이동 불가로 추정
                 c = tuple(v // 2 for v in c)
+            if shadef is not None:
+                c = tuple(min(255, int(v * shadef[y, x])) for v in c)
             dr.rectangle((x * s, (h - 1 - y) * s, x * s + s - 1, (h - y) * s - 1), fill=c)
     o = open(mapdir + '/objects', encoding='utf-8').read()
     for m in re.finditer(r'<ObjectUnit [^>]*?Position="([-\d.]+),([-\d.]+),[^"]*"[^>]*?UnitType="(\w+)" Player="(\d+)"', o):
@@ -38,6 +51,10 @@ def render(mapdir, out, s=4, marks=()):
         if p in COLS:
             X, Y = x * s, (h - y) * s
             dr.ellipse((X - 3, Y - 3, X + 3, Y + 3), fill=COLS[p], outline=(0, 0, 0))
+    if doodads:
+        for m in re.finditer(r'<ObjectDoodad [^>]*?Position="([-\d.]+),([-\d.]+)', o):
+            X, Y = float(m[1]) * s, (h - float(m[2])) * s
+            dr.ellipse((X - 1.5, Y - 1.5, X + 1.5, Y + 1.5), fill=(40, 90, 30))
     for g in range(0, max(w, h) + 1, 10):
         col = (90, 90, 90) if g % 20 else (40, 40, 40)
         dr.line((g * s, 0, g * s, h * s), fill=col)

@@ -46,7 +46,8 @@ def main():
         d = open(p, 'rb').read()
         open(p, 'wb').write(fn(d))
     if EXPAND_WIDTH:
-        print(new_terrain.build_east(OUT, EXPAND_SEAM, EXPAND_WIDTH, patch_mission02.east_layout, patch_mission02.EXPAND_CAMERA_RIGHT))
+        print(new_terrain.build_east(OUT, EXPAND_SEAM, EXPAND_WIDTH, patch_mission02.east_layout, patch_mission02.EXPAND_CAMERA_RIGHT, patch_mission02.EAST_CARVE,
+              relief=patch_mission02.east_relief, texnoise=patch_mission02.east_texnoise, scatter=patch_mission02.east_scatter))
     add_markers(os.path.join(OUT, 'objects'))
     z = OUT[:-len('.SC2Map')] + '.zip'
     with zipfile.ZipFile(z, 'w', zipfile.ZIP_DEFLATED) as zf:
