@@ -12,6 +12,7 @@ carve: 원본 쪽 칸을 직사각형으로 다시 그린다 [(x0, y0, x1, y1, �
 relief(x, y, 단계) → 꼭짓점 높이 변화(게임 단위). 기복을 준다. 동기 높이는 원본에서 맞춘 1차식으로 다시 계산.
 texnoise(x, y, k) → 0~1. 단계별로 흔한 텍스처 3개를 픽셀 단위로 섞는다 (k=0: 1번째↔2번째, k=1: 3번째 섞는 양).
 scatter(LV, seam) → [(장식물 종류, x, y, 회전, 크기)]. 원본에 있는 같은 종류 장식물을 본떠 새로 놓는다.
+tidy=(x_min, (y, x) 시작 칸): x_min~seam 사이 원본 땅 중 시작 칸에서 걸어서 못 가는 낮은 자투리를 3단계 고원으로 메운다.
 경사로는 만들지 않는다 (단계가 다른 땅끼리는 절벽으로 막힘). 새 땅에는 장식물이 없다.
 """
 import os, re, struct
@@ -40,7 +41,7 @@ def _widen(a, new_w, fill=0):
     return out
 
 
-def build_east(map_dir, seam, new_w, layout, camera_right, carve=(), relief=None, texnoise=None, scatter=None):
+def build_east(map_dir, seam, new_w, layout, camera_right, carve=(), relief=None, texnoise=None, scatter=None, tidy=None):
     P = lambda n: os.path.join(map_dir, n)
     old_w, h = struct.unpack('<II', open(P('mapinfo'), 'rb').read()[0x10:0x18])
     assert seam <= old_w <= new_w, (seam, old_w, new_w)
@@ -98,6 +99,24 @@ def build_east(map_dir, seam, new_w, layout, camera_right, carve=(), relief=None
             for y in range(y0, y1 + 1):
                 LV[y, x] = L
                 redo.add((y, x))
+    if tidy:
+        x_min, start = tidy
+        from collections import deque
+        seen, q = {start}, deque([start])
+        while q:
+            y, x = q.popleft()
+            for ny, nx in ((y + 1, x), (y - 1, x), (y, x + 1), (y, x - 1)):
+                if 0 <= ny < h and 0 <= nx < W and (ny, nx) not in seen:
+                    ra = x < old_w and ramp[y, x]
+                    rb = nx < old_w and ramp[ny, nx]
+                    if LV[y, x] == LV[ny, nx] or ra or rb:
+                        seen.add((ny, nx))
+                        q.append((ny, nx))
+        for x in range(x_min, seam):
+            for y in range(h):
+                if LV[y, x] < 3 and (y, x) not in seen and not ramp[y, x]:
+                    LV[y, x] = 3
+                    redo.add((y, x))
     assert all(L in tmpl_cell for L in np.unique([LV[c] for c in redo])), '원본에 없는 단계를 썼음'
     carved = {c for c in redo if c[1] < seam}
     for y, x in list(carved):  # 이웃 칸의 절벽 표시도 다시 계산
@@ -178,7 +197,7 @@ def build_east(map_dir, seam, new_w, layout, camera_right, carve=(), relief=None
     open(P('mapinfo'), 'wb').write(bytes(mi))
 
     _minimap(P('minimap.tga'), lv, LV, old_w, W)
-    removed = _remove_objects(P('objects'), seam, carve)
+    removed = _remove_objects(P('objects'), seam, carve, carved)
     placed = _add_doodads(P('objects'), scatter(LV, seam)) if scatter else 0
     return dict(old_w=old_w, new_w=W, h=h, camera=camera, removed=removed, carved=len(carved), doodads=placed,
                 levels={int(L): int((LV[:, seam:] == L).sum()) for L in np.unique(LV[:, seam:])})
@@ -210,14 +229,14 @@ def _minimap(path, lv, LV, old_w, W):
     open(path, 'wb').write(d[:off] + out.tobytes() + d[off + tw * th * bpp:])
 
 
-def _remove_objects(path, seam, carve=()):
+def _remove_objects(path, seam, carve=(), cells=()):
     o = open(path, encoding='utf-8', newline='').read()
     n = 0
 
     def drop(m):
         nonlocal n
         x, y = float(m[2]), float(m[3])
-        if x >= seam or (m[1] == 'ObjectDoodad' and any(x0 <= x <= x1 + 1 and y0 <= y <= y1 + 1 for x0, y0, x1, y1, _ in carve)):
+        if x >= seam or (m[1] == 'ObjectDoodad' and ((int(y), int(x)) in cells or any(x0 <= x <= x1 + 1 and y0 <= y <= y1 + 1 for x0, y0, x1, y1, _ in carve))):
             n += 1
             return ''
         return m[0]

@@ -36,6 +36,8 @@ EAST_ISLANDS = [(128.0, 72.0, 5.0), (146.0, 38.0, 4.0), (152.0, 94.0, 5.5)]  # �
 EAST_RIDGE = [(136.0, 58.0), (138.0, 66.0), (135.0, 74.0)]   # 남북으로 끊어진 3단계 능선 조각 (중심점)
 EAST_MESAS = [(114.0, 60.0, 5.0), (160.0, 66.0, 4.5), (134.0, 106.0, 4.0), (126.0, 44.0, 3.5)]  # 2단계 대지
 EAST_CRATERS = [(142.0, 50.0, 3.0), (117.0, 30.0, 2.6), (160.0, 104.0, 2.8)]  # 0단계 웅덩이
+# 원본 쪽 x 88~103의 걸어서 못 가는 낮은 자투리는 고원으로 메움 (사용자 2026-10-15 '안 쓰는 땅 다듬어')
+EAST_TIDY = (88, (29, 82))  # (x 시작, 레이너 본진 칸 (y, x))
 EAST_KEEP_CLEAR = 9.0      # 동맹 진영 둘레는 비워 둠 (반지름)
 EAST_RELIEF = (0.8, 1.2)   # 기복 높이(게임 단위): 들판, 대지·고원
 
@@ -99,9 +101,9 @@ def east_scatter(LV, seam):
     import random
     rnd = random.Random(20261015)
     h, w = LV.shape
-    edge_kinds = ['MarSaraTree', 'MarSaraTree', 'MarSaraTreeDead', 'MarSaraCactus', 'Rock', 'Brambles']
+    # 2026-10-15 사용자: 나무 제거, 안 쓰는 땅(들판 밖 고원) 장식 없음
+    edge_kinds = ['MarSaraCactus', 'Rock', 'Rock', 'Brambles', 'RockLarge']
     open_kinds = ['MarSaraCrack', 'MarSaraSkeletonSmall', 'MarSaraBones', 'MarSaraGroundProps', 'Rock', 'MarSaraCactus']
-    top_kinds = ['MarSaraTree', 'MarSaraTreeDead', 'RockLarge']
     out = []
     for y in range(2, h - 2):
         for x in range(seam + 2, w - 2):
@@ -111,9 +113,7 @@ def east_scatter(LV, seam):
             if L == 1:
                 if _near_base(x, y):
                     continue
-                kinds, p = (edge_kinds, 0.10) if edge else (open_kinds, 0.008)
-            elif L in (2, 3) and not edge:
-                kinds, p = top_kinds, 0.035
+                kinds, p = (edge_kinds, 0.06) if edge else (open_kinds, 0.008)
             else:
                 continue
             if rnd.random() < p:
@@ -472,7 +472,8 @@ def main():
         shutil.rmtree(OUT)
     shutil.copytree(SRC, OUT)
     expanded = new_terrain.build_east(OUT, EXPAND_SEAM, EXPAND_WIDTH, east_layout, EXPAND_CAMERA_RIGHT, EAST_CARVE,
-                                       relief=east_relief, texnoise=east_texnoise, scatter=east_scatter) if EXPAND_WIDTH else None
+                                       relief=east_relief, texnoise=east_texnoise, scatter=east_scatter,
+                                       tidy=EAST_TIDY) if EXPAND_WIDTH else None
 
     p = os.path.join(OUT, 'mapscript.galaxy')
     g = open(p, encoding='utf-8', newline='').read()
