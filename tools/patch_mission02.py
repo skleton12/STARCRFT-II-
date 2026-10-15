@@ -19,15 +19,33 @@ import os, re, shutil, subprocess, sys
 ROOT = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 sys.path.insert(0, os.path.join(ROOT, 'tools'))
 import patch_mission01 as m1
-import expand_map
+import new_terrain
 
 SRC = os.path.join(ROOT, 'source', 'liberty.sc2campaign', 'base.sc2maps', 'maps', 'campaign', 'traynor02.sc2map')
 OUT = os.path.join(ROOT, 'build', 'TRaynor02.SC2Map')
 
-# 동쪽 지형 확장 (사용자 지시 2026-10-15: 동쪽으로 50 정도). x=104 경계 동쪽을 서쪽 지형의 거울 복사로.
-# 원래 좌표는 그대로라 유닛·지점·스크립트는 영향 없음. 136 → 184 (+48, 8의 배수로 맞춤)
+# 동쪽 지형 확장 (사용자 지시 2026-10-15: 동쪽으로 50 정도, 반전 말고 새로 구성).
+# x=104 경계 동쪽을 새 배치도로 그린다 (tools/new_terrain.py). 136 → 184 (+48). 모양·수치는 시험값
 EXPAND_SEAM = 104
 EXPAND_WIDTH = 184
+EXPAND_CAMERA_RIGHT = 176
+EAST_ISLANDS = [(128.0, 72.0, 5.0), (146.0, 38.0, 4.0), (152.0, 94.0, 5.5)]  # 들판 안 고원 바위 (x, y, 반지름)
+
+
+def east_layout(x, y):
+    """새 동쪽 땅: 1단계 들판(원본 본진·중앙과 같은 높이)을 3단계 고원이 둘러싼다."""
+    import math
+    lo = 16 + 3 * math.sin(x / 6.0) + 2 * math.sin(x / 2.3)          # 남쪽 끝
+    hi = 112 + 3 * math.sin(x / 5.0 + 1) + 2 * math.sin(x / 2.9)     # 북쪽 끝
+    east = 166 + 3 * math.sin(y / 6.0) + 2 * math.sin(y / 2.7)       # 동쪽 끝
+    if not (lo <= y <= hi and x <= east):
+        return 3
+    for cx, cy, r in EAST_ISLANDS:
+        rr = r + 1.2 * math.sin(math.atan2(y - cy, x - cx) * 3 + cx)
+        if (x - cx) ** 2 + (y - cy) ** 2 <= rr * rr:
+            return 3
+    return 1
+
 
 MERC = {'Marine': 'WarPig', 'Medic': 'MercMedic'}  # 레이너 측 용병 대응
 
@@ -378,7 +396,7 @@ def main():
     if os.path.exists(OUT):
         shutil.rmtree(OUT)
     shutil.copytree(SRC, OUT)
-    expanded = expand_map.expand_east(OUT, EXPAND_SEAM, EXPAND_WIDTH) if EXPAND_WIDTH else None
+    expanded = new_terrain.build_east(OUT, EXPAND_SEAM, EXPAND_WIDTH, east_layout, EXPAND_CAMERA_RIGHT) if EXPAND_WIDTH else None
 
     p = os.path.join(OUT, 'mapscript.galaxy')
     g = open(p, encoding='utf-8', newline='').read()

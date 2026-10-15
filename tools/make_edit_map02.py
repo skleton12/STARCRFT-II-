@@ -11,7 +11,7 @@ import os, re, shutil, sys, zipfile
 ROOT = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 sys.path.insert(0, os.path.join(ROOT, 'tools'))
 import patch_mission01 as m1
-import expand_map
+import new_terrain
 
 # 지형 확장 (사용자 지시 2026-10-14: 맵을 키우고 동쪽에 동맹 2). 값은 시험값
 import patch_mission02
@@ -46,7 +46,7 @@ def main():
         d = open(p, 'rb').read()
         open(p, 'wb').write(fn(d))
     if EXPAND_WIDTH:
-        print(expand_map.expand_east(OUT, EXPAND_SEAM, EXPAND_WIDTH))
+        print(new_terrain.build_east(OUT, EXPAND_SEAM, EXPAND_WIDTH, patch_mission02.east_layout, patch_mission02.EXPAND_CAMERA_RIGHT))
     add_markers(os.path.join(OUT, 'objects'))
     z = OUT[:-len('.SC2Map')] + '.zip'
     with zipfile.ZipFile(z, 'w', zipfile.ZIP_DEFLATED) as zf:
