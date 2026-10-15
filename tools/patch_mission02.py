@@ -282,14 +282,18 @@ bool gt_rm_AllyAI_Func (bool testConds, bool runActions) {
     unit lv_u;
     point lv_target;
     fixed lv_radius;
+    bool lv_expired;
     if (!runActions) {
         return true;
     }
     if (gv_gameOver || gv_inCinematic) {
         return true;
     }
+    // Ping expiry: switch every ally to its default target once (GPT review M02-03), not only idle ones
+    lv_expired = false;
     if (gv_rm_pingTarget != null && GameGetMissionTime() - gv_rm_pingTime >= %(ping_hold)s) {
         gv_rm_pingTarget = null;
+        lv_expired = true;
     }
     lv_g = gf_rm_AllyArmy();
     lv_i = UnitGroupCount(lv_g, c_unitCountAll);
@@ -303,7 +307,7 @@ bool gt_rm_AllyAI_Func (bool testConds, bool runActions) {
             lv_target = gf_rm_DefaultTarget(UnitGetOwner(lv_u));
             lv_radius = 5.0;
         }
-        if (lv_target != null && UnitOrderCount(lv_u) == 0 && DistanceBetweenPoints(UnitGetPosition(lv_u), lv_target) > lv_radius) {
+        if (lv_target != null && (lv_expired || (UnitOrderCount(lv_u) == 0 && DistanceBetweenPoints(UnitGetPosition(lv_u), lv_target) > lv_radius))) {
             UnitIssueOrder(lv_u, OrderTargetingPoint(AbilityCommand("attack", 0), lv_target), c_orderQueueReplace);
         }
     }
@@ -494,9 +498,15 @@ def main():
     t = open(p, encoding='utf-8', newline='').read()
     open(p, 'w', encoding='utf-8', newline='').write(m1.patch_strings(t))
 
-    units = sorted({u for u, *_ in FIRST_WAVE + NEXT_WAVE})
+    # 소환 유닛 + 용병 대상 중 자날 기본 데이터에 없는 것 (GPT 검토 M02-02: MercMedic은 군단/공허 캠페인 정의)
+    units = sorted({u for u, *_ in FIRST_WAVE + NEXT_WAVE} | {'MercMedic'})
     subprocess.run([sys.executable, os.path.join(ROOT, 'tools', 'port_units.py'), OUT] + units,
                    check=True, stdout=subprocess.DEVNULL)
+    # 따라오지 않은 협동전 응급 의료선(EmergencyMedivac)을 가리키는 행위자 이벤트 줄 제거
+    p = os.path.join(OUT, 'base.sc2data', 'gamedata', 'actordata.xml')
+    t = open(p, encoding='utf-8', newline='').read()
+    t = re.sub(r'[ \t]*<On [^>]*EmergencyMedivac[^>]*/>\r?\n', '', t)
+    open(p, 'w', encoding='utf-8', newline='').write(t)
     m1.write_other_locales(OUT)
 
     print(OUT)

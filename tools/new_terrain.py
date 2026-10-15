@@ -185,6 +185,7 @@ def build_east(map_dir, seam, new_w, layout, camera_right, carve=(), relief=None
     t = t.replace(f'dim="{old_w + 1} {h + 1} "', f'dim="{VW} {VH} "', 1)
     m = re.search(r'uvtiling="([-\d.e+]+) ', t)
     t = t[:m.start(1)] + f'{float(m[1]) * W / old_w:.6f}' + t[m.end(1):]
+    t = _terrain_lists(t, old_w, W, h, hm.view('<u2')[..., 2], HMv[..., 2], seam, carved)
     open(P('t3terrain.xml'), 'w', encoding='utf-8', newline='').write(t)
 
     mi = bytearray(open(P('mapinfo'), 'rb').read())
@@ -241,6 +242,53 @@ def _remove_objects(path, seam, carve=(), cells=()):
     o = re.sub(r'    <(Object\w+) [^>]*?Position="([-\d.e]+),([-\d.e]+)[^"]*"[^>]*?(/>|>.*?</\1>)\r?\n', drop, o, flags=re.S)
     open(path, 'w', encoding='utf-8', newline='').write(o)
     return n
+
+
+def _terrain_lists(t, old_w, W, h, e_old, e_new, seam, carved):
+    """t3terrain.xml의 블록 목록을 새 가로에 맞춘다 (GPT 검토 M02-01, 2026-10-15).
+
+    blockTextureSetList: 8x8칸 블록마다 하나, 가로 순서 (원본 17x17 모두 tileSet 0).
+    cliffCellList: 2x2칸 블록마다 하나(가로 W/2), 점유 항목만 적음. 원본에서 '블록의 3x3 꼭짓점 절벽 단계가 다르면 점유'
+    규칙이 점유 1599개 중 1341개와 일치(틀린 것 0). 나머지는 편집기가 남긴 항목이라 원본 쪽은 그대로 옮긴다.
+    새로 그린 블록(경계 동쪽, 뚫거나 메운 칸)은 이 규칙으로 다시 만든다: f=1, cid=0, cvar는 칸 위치로 정한 0~3.
+    """
+    import re as _re
+    ob, nb = old_w // 8, W // 8
+    sets = _re.findall(r'<blockTextureSet i="(\d+)" tileSet="(\d+)"/>', t)
+    tile = {int(i): v for i, v in sets}
+    m = _re.search(r'( *)<blockTextureSetList num="\d+">.*?</blockTextureSetList>', t, _re.S)
+    ind = m[1]
+    nl = '\r\n' if '\r\n' in t else '\n'
+    rows = [f'{ind}<blockTextureSetList num="{nb * (h // 8)}">']
+    for by in range(h // 8):
+        for bx in range(nb):
+            v = tile.get(by * ob + bx, '0') if bx < ob else '0'
+            rows.append(f'{ind}    <blockTextureSet i="{by * nb + bx}" tileSet="{v}"/>')
+    rows.append(f'{ind}</blockTextureSetList>')
+    t = t[:m.start()] + nl.join(rows) + t[m.end():]
+
+    oc, nc = old_w // 2, W // 2
+    m = _re.search(r'( *)<cliffCellList num="\d+" numOccupied="\d+">(.*?)</cliffCellList>', t, _re.S)
+    ind = m[1]
+    old = {int(i): rest for i, rest in _re.findall(r'<cc i="(\d+)"( [^>]*)/>', m[2])}
+    redo_blocks = {(y // 2, x // 2) for y, x in carved}
+    out = {}
+    for i, rest in old.items():
+        by, bx = divmod(i, oc)
+        if bx * 2 >= seam or (by, bx) in redo_blocks:
+            continue
+        out[by * nc + bx] = rest
+    for by in range(h // 2):
+        for bx in range(nc):
+            if not (bx * 2 >= seam or (by, bx) in redo_blocks):
+                continue
+            blk = e_new[2 * by:2 * by + 3, 2 * bx:2 * bx + 3]
+            if len(set(blk.ravel().tolist())) > 1:
+                out[by * nc + bx] = f' f="1" cid="0" cvar="{(bx * 7 + by * 13) % 4}"'
+    rows = [f'{ind}<cliffCellList num="{nc * (h // 2)}" numOccupied="{len(out)}">']
+    rows += [f'{ind}    <cc i="{i}"{out[i]}/>' for i in sorted(out)]
+    rows.append(f'{ind}</cliffCellList>')
+    return t[:m.start()] + nl.join(rows) + t[m.end():]
 
 
 TILE = 64  # t3texturemasks: 텍스처 8장, 각 장은 (가로 칸x8) x (세로 칸x8) 픽셀, 64x64 타일 순서, 4비트(상위 니블 먼저)

@@ -32,7 +32,8 @@ COPY_LAYERS = [
     ('starcoop', gd('starcoop', 'starcoop.sc2mod')),
 ]
 # 따라가지 않는 협동전 성장·돌연변이 체계
-SKIP_RE = re.compile(r'Mastery|Prestige|Mutator|Talent|AllUnitBehaviorController|CommanderLevel|Commander[A-Z][a-z]+Level|Amon')
+# EmergencyMedivac: 협동전 용병 투하 연출(용병 의무관에 딸려 옴). 끊긴 참조만 남겨서 따라가지 않음 (2026-10-15)
+SKIP_RE = re.compile(r'Mastery|Prestige|Mutator|Talent|AllUnitBehaviorController|CommanderLevel|Commander[A-Z][a-z]+Level|Amon|EmergencyMedivac')
 TOKEN_RE = re.compile(r'[A-Za-z_][A-Za-z0-9_@]*')
 # 이보다 많은 엔트리가 참조하는 공용 엔트리는 따라가지 않는다 (시작 유닛 이름이 든 것은 예외)
 SHARED_LIMIT = 6

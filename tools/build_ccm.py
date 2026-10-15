@@ -21,7 +21,7 @@ METADATA = {
     'desc': 'Wings of Liberty rebuilt as a co-op campaign: Raynor commands only mercenaries, fighting alongside two AI allies',
     'author': 'dy7043',
     'campaign': 'WoL',
-    'version': '0.2.5',  # 0.미션.수정 (1번 미션 작업 중 = 0.1.x, 수정판을 보낼 때마다 마지막 숫자 +1)
+    'version': '0.2.6',  # 0.미션.수정 (1번 미션 작업 중 = 0.1.x, 수정판을 보낼 때마다 마지막 숫자 +1)
 }
 ZIP_NAME = 'RaynorMercs_WoL_CCM'
 
