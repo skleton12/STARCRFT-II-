@@ -242,6 +242,8 @@ bool gt_m3_Tick_Func (bool testConds,bool runActions) {
         gv_m3_dropBusy=true;
         TriggerExecute(gt_m3_drop,false,false);
     }
+    AIClearStock(10);
+    AIClearStock(11);
     AISetStockUnitNext(10,12,"Probe",false);
     AISetStock(10,1,"Nexus");
     AISetStock(10,2,"Pylon");
@@ -250,6 +252,8 @@ bool gt_m3_Tick_Func (bool testConds,bool runActions) {
     AISetStock(11,1,"Hatchery");
     AISetStock(11,1,"SpawningPool");
     AISetStockFarms(11,"Overlord",true);
+    AIEnableStock(10);
+    AIEnableStock(11);
     gf_m3_Attack(10);
     gf_m3_Attack(11);
     return true;
