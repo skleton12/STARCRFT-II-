@@ -40,6 +40,9 @@ KNOWN_EVENTS = {'Adept_Land', 'Drone_Land', 'Hydra_Land', 'Zealot_Land', 'Sentry
                 # 쓰지 않는 영웅(노바·케리건·데하카 영웅) 연출
                 'StimPackDevice_Nova', 'ZergHeroRevive'}
 
+# 원작·이식 원본에서부터 비어 있던 연결 (쓰지 않는 영웅·능력). 새로 생기면 실패.
+KNOWN_LINKS = set()
+
 fails = []
 
 
@@ -181,6 +184,17 @@ def check_map(base, name):
                 for x in re.findall(r'(?<![A-Za-z])Create ([A-Za-z0-9_@#]+)', s.replace('##unitName##', unit)):
                     if x not in actors and x not in KNOWN_EVENTS:
                         fail(f'{name} 액터 {aid}: 상속 이벤트 Create {x} 대상 없음')
+
+    # 유닛이 가진 무기·능력·행동 연결이 실제로 있는지 (0.3.25 피닉스 사도: 무기 Adept 없음 → 공격 못 함)
+    kinds = {'WeaponArray': 'weapondata.xml', 'AbilArray': 'abildata.xml', 'BehaviorArray': 'behaviordata.xml'}
+    for el in ET.parse(m / 'base.sc2data/gamedata/unitdata.xml').getroot():
+        if el.tag != 'CUnit':
+            continue
+        for tag, fn in kinds.items():
+            for a in el.findall(tag):
+                link = a.get('Link')
+                if link and a.get('removed') != '1' and link not in ids.get(fn, set()) and link not in KNOWN_LINKS:
+                    fail(f'{name} 유닛 {el.get("id")}: {tag} {link} 정의 없음')
 
     script = (m / 'mapscript.galaxy').read_text(encoding='utf-8')
     for x in re.findall(r'CreateModelAtPoint\("([A-Za-z0-9_]*Build)"', script):
