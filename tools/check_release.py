@@ -197,6 +197,15 @@ def check_map(base, name):
                     fail(f'{name} 유닛 {el.get("id")}: {tag} {link} 정의 없음')
 
     script = (m / 'mapscript.galaxy').read_text(encoding='utf-8')
+    # Galaxy: 함수는 정의나 앞선 선언 뒤에서만 부를 수 있다 (0.3.28 초안에서 gf_m3_Workers 호출이 정의보다 앞섰다).
+    first_decl = {}
+    for mm in re.finditer(r'^(?:static\s+)?[A-Za-z_][\w\[\]]*\s+(g[ft]_\w+)\s*\([^)]*\)\s*[;{]', script, re.M):
+        first_decl.setdefault(mm.group(1), mm.start())
+    for fname, pos in first_decl.items():
+        call = re.search(r'(?<![\w"])' + re.escape(fname) + r'\s*\(', script)
+        if call and call.start() < pos:
+            line = script.count('\n', 0, call.start()) + 1
+            fail(f'{name} 스크립트: {fname}를 선언 전에 부름 ({line}줄)')
     for x in re.findall(r'CreateModelAtPoint\("([A-Za-z0-9_]*Build)"', script):
         fail(f'{name} 스크립트가 고치/건설 모델 {x}를 땅에 띄움 (협동전 건설 방식으로)')
 
