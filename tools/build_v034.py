@@ -128,8 +128,10 @@ def clean_dangling(gd, before_ids):
         copyids |= {i for _, i in P.load_layer(p)}
     trees = {fn: E.parse(os.path.join(gd, fn)) for fn in os.listdir(gd) if fn.endswith('.xml')}
     have = {el.get('id') for t in trees.values() for el in t.getroot() if el.get('id')}
+    # 0.3.18: never treat names inside asset file paths as IDs (that wiped model/sound paths in 0.3.4).
+    is_path = lambda v: '\\' in v or '/' in v or re.search(r'\.(m3|m3a|dds|ogg|wav|tga)$', v, re.I)
     missing = lambda node: any(t in copyids and t not in base and t not in have
-                               for v in node.attrib.values() for t in P.TOKEN_RE.findall(v))
+                               for v in node.attrib.values() if not is_path(v) for t in P.TOKEN_RE.findall(v))
     removed = 0
     for fn, tree in trees.items():
         for el in tree.getroot():
