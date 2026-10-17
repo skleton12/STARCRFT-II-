@@ -1,0 +1,302 @@
+// Mission 03 support. Trial timings/coordinates are recorded in the handoff.
+// Slots 8/9 belong to the original Tauren/colonists. Allies use 10/11.
+trigger gt_m3_tick;
+trigger gt_m3_arrive;
+trigger gt_m3_warp;
+trigger gt_m3_drop;
+bool gv_m3_started;
+bool gv_m3_ready;
+bool gv_m3_warpBusy;
+bool gv_m3_dropBusy;
+fixed gv_m3_nextP;
+fixed gv_m3_nextZ;
+unit gv_m3_pylon;
+unit gv_m3_nexus;
+unit gv_m3_hatchery;
+point gv_m3_ping;
+fixed gv_m3_pingUntil;
+unitgroup gv_m3_pending;
+
+unitgroup gf_m3_Army (int p) {
+    unitgroup all;
+    unitgroup army;
+    unit u;
+    int i;
+    string t;
+    army=UnitGroupEmpty();
+    all=UnitGroup(null,p,RegionEntireMap(),UnitFilter(0,0,0,0),0);
+    i=UnitGroupCount(all,c_unitCountAll);
+    for (;i>0;i-=1) {
+        u=UnitGroupUnit(all,i);
+        t=UnitGetType(u);
+        if (UnitIsAlive(u) && (t=="ZealotPurifier" || t=="StalkerPurifier" || t=="RM21_Energizer" || t=="DehakaZerglingLevel2" || t=="DehakaRavasaur" || t=="DehakaHydraliskLevel2" || t=="DehakaRoachLevel2")) { UnitGroupAdd(army,u); }
+    }
+    return army;
+}
+
+fixed gf_m3_Supply () {
+    unitgroup g;
+    int i;
+    fixed total;
+    string t;
+    g=gf_m3_Army(11);
+    total=0.0;
+    i=UnitGroupCount(g,c_unitCountAll);
+    for (;i>0;i-=1) {
+        t=UnitGetType(UnitGroupUnit(g,i));
+        if (t=="DehakaZerglingLevel2") { total+=1.0; } else { total+=2.0; }
+    }
+    return total;
+}
+
+void gf_m3_Attack (int p) {
+    unitgroup g;
+    int i;
+    unit u;
+    point target;
+    // Help defend the player's western approach instead of the mission 2 target.
+    target=Point(65.0,47.0);
+    if (GameGetMissionTime()<gv_m3_pingUntil) { target=gv_m3_ping; }
+    g=gf_m3_Army(p);
+    i=UnitGroupCount(g,c_unitCountAll);
+    for (;i>0;i-=1) {
+        u=UnitGroupUnit(g,i);
+        if (!UnitGroupHasUnit(gv_m3_pending,u) && UnitOrderCount(u)==0) {
+            UnitIssueOrder(u,OrderTargetingPoint(AbilityCommand("attack",0),target),c_orderQueueReplace);
+        }
+    }
+}
+
+bool gt_m3_Ping_Func (bool testConds,bool runActions) {
+    if (!runActions || EventPlayer()!=1 || gv_gameOver || !gv_m3_ready) { return true; }
+    gv_m3_ping=EventPingPoint();
+    gv_m3_pingUntil=GameGetMissionTime()+30.0;
+    // Issue immediately; the periodic loop only reissues to idle units.
+    UnitGroupIssueOrder(gf_m3_Army(10),OrderTargetingPoint(AbilityCommand("attack",0),gv_m3_ping),c_orderQueueReplace);
+    UnitGroupIssueOrder(gf_m3_Army(11),OrderTargetingPoint(AbilityCommand("attack",0),gv_m3_ping),c_orderQueueReplace);
+    return true;
+}
+
+bool gf_m3_Build (string kind,int p,point at,int seconds) {
+    unit b;
+    int elapsed;
+    UnitCreate(1,kind,c_unitCreateConstruct,p,at,270.0);
+    b=UnitLastCreated();
+    if (kind=="Pylon") { gv_m3_pylon=b; }
+    if (kind=="Nexus") { gv_m3_nexus=b; }
+    if (kind=="Hatchery") { gv_m3_hatchery=b; }
+    for (elapsed=0;elapsed<seconds;elapsed+=2) {
+        if (gv_gameOver || !UnitIsAlive(b)) { return false; }
+        UnitSetProgressComplete(b,1,elapsed*100/seconds);
+        Wait(2.0,c_timeGame);
+    }
+    if (gv_gameOver || !UnitIsAlive(b)) { return false; }
+    UnitSetProgressComplete(b,1,100);
+    UnitSetProgressStage(b,1,c_unitProgressStageComplete);
+    return true;
+}
+
+bool gt_m3_Warp_Func (bool testConds,bool runActions) {
+    int i;
+    int k;
+    int wanted;
+    actor[4] fx;
+    point[4] at;
+    unit u;
+    if (!runActions) { return true; }
+    for (i=0;i<4;i+=1) {
+        if (gv_gameOver || !UnitIsAlive(gv_m3_pylon)) { break; }
+        if (i<2) { wanted=4; } else if (i==2) { wanted=2; } else { wanted=1; }
+        wanted=MinI(wanted,20-UnitGroupCount(gf_m3_Army(10),c_unitCountAlive));
+        if (wanted<=0) { break; }
+        for (k=0;k<wanted;k+=1) {
+            at[k]=Point(27.0+2.0*k,36.0+i);
+            fx[k]=libNtve_gf_CreateModelAtPoint("ProtossUnitBirth",at[k]);
+            ActorSend(fx[k],"AnimPlay Warp Birth NonLooping");
+        }
+        Wait(1.0,c_timeGame);
+        for (k=0;k<wanted;k+=1) {
+            if (!gv_gameOver && UnitIsAlive(gv_m3_pylon) && UnitGroupCount(gf_m3_Army(10),c_unitCountAlive)<20) {
+                if (i<2) { UnitCreate(1,"ZealotPurifier",0,10,at[k],0.0); }
+                else if (i==2) { UnitCreate(1,"StalkerPurifier",0,10,at[k],0.0); }
+                else { UnitCreate(1,"RM21_Energizer",0,10,at[k],0.0); }
+                u=UnitLastCreated();
+                UnitGroupAdd(gv_m3_pending,u);
+                UnitIssueOrder(u,OrderTargetingPoint(AbilityCommand("move",0),Point(33.0,40.0)),c_orderQueueReplace);
+            }
+            ActorSend(fx[k],"Destroy");
+        }
+        Wait(1.0,c_timeGame);
+    }
+    Wait(3.0,c_timeGame);
+    gv_m3_pending=UnitGroupEmpty();
+    gv_m3_nextP=GameGetMissionTime()+90.0;
+    gv_m3_warpBusy=false;
+    return true;
+}
+
+bool gt_m3_Drop_Func (bool testConds,bool runActions) {
+    actor pod;
+    int i;
+    string kind;
+    if (!runActions) { return true; }
+    pod=libNtve_gf_CreateModelAtPoint("ZergDropPod",Point(43.0,36.0));
+    ActorSend(pod,"AnimPlay Drop Birth NonLooping");
+    Wait(3.0,c_timeGame);
+    if (!gv_gameOver) {
+        for (i=0;i<12;i+=1) {
+            if (i<6) { kind="DehakaZerglingLevel2"; }
+            else if (i<8) { kind="DehakaRavasaur"; }
+            else if (i<10) { kind="DehakaHydraliskLevel2"; }
+            else { kind="DehakaRoachLevel2"; }
+            UnitCreate(1,kind,0,11,Point(40.0+2.0*(i%4),35.0+2.0*(i/4)),0.0);
+        }
+    }
+    ActorSend(pod,"Destroy");
+    gv_m3_nextZ=GameGetMissionTime()+90.0;
+    gv_m3_dropBusy=false;
+    return true;
+}
+
+void gf_m3_AI (int p,point town) {
+    AIStart(p,true,DifficultyAPM(c_campAdvanced));
+    AIDeclareTown(p,c_townOne,town);
+    AISetMainTown(p,c_townOne);
+    AIInitCampaignTowns(p);
+    AIInitCampaignHarvest(p);
+    AIHarvestRate(p,1);
+    AISetNumScouts(p,0);
+    PlayerModifyPropertyInt(p,c_playerPropMinerals,c_playerPropOperSetTo,1200);
+    PlayerModifyPropertyInt(p,c_playerPropVespene,c_playerPropOperSetTo,400);
+}
+
+bool gt_m3_Arrive_Func (bool testConds,bool runActions) {
+    unitgroup targets;
+    unit u;
+    unit source;
+    actor beam;
+    int i;
+    int pulse;
+    int p;
+    if (!runActions) { return true; }
+    // First entry only. Both marked sites are inside one enemy base.
+    Wait(12.0,c_timeGame);
+    if (gv_gameOver) { return true; }
+    UIDisplayMessage(PlayerGroupAll(),c_messageAreaSubtitle,StringExternal("rm3/Arrival"));
+    VisRevealerCreate(1,RegionCircle(Point(35.5,31.0),21.0));
+    VisRevealerCreate(10,RegionCircle(Point(35.5,31.0),21.0));
+    // Invisible source is player 10 so damage/kill credit belongs to the ally.
+    UnitCreate(1,"Pylon",0,10,Point(28.5,29.5),270.0);
+    source=UnitLastCreated();
+    libNtve_gf_ShowHideUnit(source,false);
+    libNtve_gf_MakeUnitInvulnerable(source,true);
+    Wait(3.0,c_timeGame);
+    // Sweep the local enemy base, not all enemy bases or mission objectives.
+    for (pulse=0;pulse<12;pulse+=1) {
+        if (gv_gameOver) { UnitRemove(source); return true; }
+        beam=libNtve_gf_CreateModelAtPoint("RM3_SolarLance",Point(20.0+pulse*2.5,30.0));
+        ActorSend(beam,"AnimPlay Attack Attack NonLooping");
+        for (p=2;p<=5;p+=1) {
+            targets=UnitGroup(null,p,RegionCircle(Point(35.0,31.0),20.0),UnitFilter(0,0,0,0),0);
+            i=UnitGroupCount(targets,c_unitCountAll);
+            for (;i>0;i-=1) {
+                u=UnitGroupUnit(targets,i);
+                if (UnitIsAlive(u)) { UnitDamage(source,"RM3_SolarDamage",u,0.0); }
+            }
+        }
+        Wait(0.5,c_timeGame);
+        ActorSend(beam,"Destroy");
+    }
+    UnitRemove(source);
+    if (gv_gameOver) { return true; }
+    CreepModify(Point(35.0,31.0),20.0,false,true);
+    // Workers arrive, then the actual construction states are progressed.
+    UnitCreate(6,"Probe",0,10,Point(27.0,35.0),270.0);
+    UnitCreate(6,"Drone",0,11,Point(43.0,35.0),270.0);
+    if (!gf_m3_Build("Pylon",10,Point(27.0,34.0),16)) { return true; }
+    gv_m3_warpBusy=true;
+    gv_m3_dropBusy=true;
+    TriggerExecute(gt_m3_warp,false,false);
+    TriggerExecute(gt_m3_drop,false,false);
+    if (!gf_m3_Build("Nexus",10,Point(28.5,29.5),40)) { return true; }
+    if (!gf_m3_Build("Hatchery",11,Point(42.5,29.5),40)) { return true; }
+    if (!gf_m3_Build("Gateway",10,Point(23.5,35.5),30)) { return true; }
+    if (!gf_m3_Build("SpawningPool",11,Point(46.5,33.5),30)) { return true; }
+    gf_m3_AI(10,Point(28.5,29.5));
+    gf_m3_AI(11,Point(42.5,29.5));
+    gv_m3_ready=true;
+    gv_m3_nextP=0.0;
+    gv_m3_nextZ=0.0;
+    UIDisplayMessage(PlayerGroupAll(),c_messageAreaSubtitle,StringExternal("rm3/Ready"));
+    return true;
+}
+
+bool gt_m3_Tick_Func (bool testConds,bool runActions) {
+    if (!runActions || gv_gameOver || gv_inCinematic) { return true; }
+    if (!gv_m3_ready) { return true; }
+    if (!gv_m3_warpBusy && UnitIsAlive(gv_m3_pylon) && GameGetMissionTime()>=gv_m3_nextP && UnitGroupCount(gf_m3_Army(10),c_unitCountAlive)<20) {
+        gv_m3_warpBusy=true;
+        TriggerExecute(gt_m3_warp,false,false);
+    }
+    if (!gv_m3_dropBusy && UnitIsAlive(gv_m3_hatchery) && GameGetMissionTime()>=gv_m3_nextZ && gf_m3_Supply()<20.0) {
+        gv_m3_dropBusy=true;
+        TriggerExecute(gt_m3_drop,false,false);
+    }
+    AISetStockUnitNext(10,12,"Probe",false);
+    AISetStock(10,1,"Nexus");
+    AISetStock(10,2,"Pylon");
+    AISetStock(10,1,"Gateway");
+    AISetStockUnitNext(11,12,"Drone",false);
+    AISetStock(11,1,"Hatchery");
+    AISetStock(11,1,"SpawningPool");
+    AISetStockFarms(11,"Overlord",true);
+    gf_m3_Attack(10);
+    gf_m3_Attack(11);
+    return true;
+}
+
+void gf_m3_Start () {
+    if (gv_m3_started) { return; }
+    gv_m3_started=true;
+    TriggerExecute(gt_m3_arrive,false,false);
+}
+
+void gf_m3_Init () {
+    int p;
+    int ally;
+    trigger ping;
+    gv_m3_pending=UnitGroupEmpty();
+    for (ally=10;ally<=11;ally+=1) {
+        for (p=1;p<=11;p+=1) {
+            if (p!=ally) {
+                if (p>=2 && p<=5) { libNtve_gf_SetAlliance(ally,p,libNtve_ge_AllianceSetting_Enemy); libNtve_gf_SetAlliance(p,ally,libNtve_ge_AllianceSetting_Enemy); }
+                else if (p==1 || p==6 || p==7 || p>=10) { libNtve_gf_SetAlliance(ally,p,libNtve_ge_AllianceSetting_AllyWithSharedVision); libNtve_gf_SetAlliance(p,ally,libNtve_ge_AllianceSetting_AllyWithSharedVision); }
+                else { libNtve_gf_SetAlliance(ally,p,libNtve_ge_AllianceSetting_Neutral); libNtve_gf_SetAlliance(p,ally,libNtve_ge_AllianceSetting_Neutral); }
+            }
+        }
+        CatalogFieldValueSet(c_gameCatalogUnit,"Pylon","Food",ally,"100");
+    }
+    CatalogFieldValueSet(c_gameCatalogActor,"Hatchery","Model",11,"RM3_PrimalHallModel");
+    TechTreeUpgradeAddLevel(10,"Charge",1);
+    TechTreeUpgradeAddLevel(10,"ZealotResearchReconstruction",1);
+    CatalogLinkReplace(1,c_gameCatalogUnit,"Marine","WarPig");
+    CatalogLinkReplace(1,c_gameCatalogUnit,"Medic","MercMedic");
+    TechTreeUnitAllow(1,"WarPig",true);
+    TechTreeUnitAllow(1,"MercMedic",true);
+    TechTreeUnitAllow(1,"MercCompound",true);
+    TechTreeUnitAllow(1,"BarracksTechLab",true);
+    TechTreeUnitAllow(1,"RMK_MarineMengsk",true);
+    TechTreeAbilityAllow(1,AbilityCommand("BarracksTechLabMorph",0),true);
+    TechTreeAbilityAllow(1,AbilityCommand("TerranBuild",12),true);
+    TechTreeAbilityAllow(1,AbilityCommand("SummonMercenaries",0),true);
+    UnitCreate(1,"MercCompound",0,1,Point(93.5,35.5),270.0);
+    PlayerSetColorIndex(10,2,true);
+    PlayerSetColorIndex(11,7,true);
+    gt_m3_warp=TriggerCreate("gt_m3_Warp_Func");
+    gt_m3_drop=TriggerCreate("gt_m3_Drop_Func");
+    gt_m3_arrive=TriggerCreate("gt_m3_Arrive_Func");
+    gt_m3_tick=TriggerCreate("gt_m3_Tick_Func");
+    TriggerAddEventTimePeriodic(gt_m3_tick,2.0,c_timeGame);
+    ping=TriggerCreate("gt_m3_Ping_Func");
+    TriggerAddEventPing(ping,1);
+}

@@ -2,7 +2,7 @@
 
 출처: `source/starcoop` (협동전 본체), `source/starcoop/commanders/arcturusmengsk.sc2mod` (멩스크).
 `python3 tools/lookup_upgrade.py <ID>`로 다시 뽑을 수 있다.
-비용은 미션 내 광물/가스다. 연구 시간은 이 데이터에 값이 없어(기본값 상속) **미확인**.
+비용은 미션 내 광물/가스다. 2026-10-16 추가 확인: starcoop BarracksTechLabResearch에 초 전투 자극제 90, 레이저 조준 시스템 60, 전투 안정제 60의 Time 값이 있다. 이는 XML 시간 값이며 실제 게임 속도 환산 시간은 아니다. 다른 항목의 시간은 개별 확인한다.
 자날 캠페인·노바 비밀 작전 원본 데이터는 아직 없어서 해당 열은 비워 둔다.
 
 모드 효과와 기획 상태는 CLAUDE.md 5장을 따른다. 여기 적힌 것은 원작 데이터일 뿐 확정 사양이 아니다.
