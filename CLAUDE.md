@@ -426,3 +426,8 @@ docs/research/coop_buildings.md 기준으로 3번 미션 원시저그를 실제 
 ## 2026-10-17: 보급 벙커 건설 정상화 — 0.3.22
 
 사용자 보고 "보급 벙커 건설 왜 그따위". 원인: 협동전 전용 발판 ID(자날에 없음), 벙커 템플릿이 찾는 RM3_SupplyBunkerBuild/Placement/Portrait 모델·아이콘 없음, 건설 시간 30(원작 20). 자날 2×2 발판, 모델 3개·아이콘 추가, 건설 20초. 게임 미실행. 도구: tools/build_v0322.py.
+
+
+## 2026-10-17: 원시 건물 협동전식 건설 — 0.3.23
+
+사용자 지시 "구 없애라고", "왜 협동전처럼 안 만듦". 스크립트가 땅에 띄우던 고치 모델을 없앴다. 대신 협동전처럼 건물이 '건설 중'으로 생기고, 건물 액터에 고치(Build A~D)가 붙는다. 0.3.4 이식에서 빠진 PrimalBuildInProgress·PrimalZergBuildingBuild·PrimalZergConstructionAttached·PrimalZergBuildingFacing·DehakaHatcheryBuild를 원본에서 복구했다. 건설 시간·위치는 그대로다. 게임 미실행. 상세: docs/testing/2026-10-17_v0323_primal_construction.md.
