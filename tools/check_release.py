@@ -43,6 +43,9 @@ KNOWN_EVENTS = {'Adept_Land', 'Drone_Land', 'Hydra_Land', 'Zealot_Land', 'Sentry
 # 원작·이식 원본에서부터 비어 있던 연결 (쓰지 않는 영웅·능력). 새로 생기면 실패.
 KNOWN_LINKS = set()
 
+# 협동전 사령관 레벨 요구조건 ID (예: FenixLevel04, MengskLevel06)
+COMMANDER_LEVEL = re.compile(r'^(Raynor|Kerrigan|Artanis|Swann|Zagara|Vorazun|Karax|Abathur|Alarak|Nova|Stukov|Fenix|Dehaka|Horner|Han|Tychus|Zeratul|Stetmann|Mengsk)Level\d\d$')
+
 fails = []
 
 
@@ -199,6 +202,12 @@ def check_map(base, name):
                 if turret and turret not in ids.get('turretdata.xml', set()):
                     # 0.3.29 원시 벌레: 포탑 NydusCanalAttacker가 없어 공격 못 함
                     fail(f'{name} 유닛 {el.get("id")}: 무기 포탑 {turret} 정의 없음')
+
+    # 사령관 레벨 잠금은 이 모드에 없다 (사용자 확정 2026-10-17). 진급 레벨은 자치령 용병(RMK_…Veterancy)에만 있다.
+    for f in glob.glob(str(m) + '/base.sc2data/gamedata/*.xml'):
+        for x in sorted(set(re.findall(r'"(\w+Level\d\d)"', Path(f).read_text(encoding='utf-8')))):
+            if COMMANDER_LEVEL.match(x):
+                fail(f'{name} {Path(f).name}: 사령관 레벨 {x} 남음 (레벨 잠금 버튼·요구조건 제거)')
 
     script = (m / 'mapscript.galaxy').read_text(encoding='utf-8')
     # Galaxy: 함수는 정의나 앞선 선언 뒤에서만 부를 수 있다 (0.3.28 초안에서 gf_m3_Workers 호출이 정의보다 앞섰다).
