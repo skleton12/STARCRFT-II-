@@ -1,0 +1,149 @@
+#!/usr/bin/env python3
+"""배포 전 검사 (CLAUDE.md 3·3-1·8). 하나라도 실패하면 종료 코드 1 — 그 ZIP은 배포하지 않는다.
+
+검사 항목
+  1. 파일 이름 RaynorMercs_WoL_CCM.zip, metadata 버전 0.x
+  2. 번역: 세 맵 kokr에 (a) 한글 없는 표시 문자열 (b) '///' 영어 없는 한국어 줄이 0개, 11개 언어 파일 존재
+  3. 모델 경로: 맵이 정의한 모델이 기본 경로(##id##)로 떨어지는데 원본에는 실제 경로가 있으면 실패 (오류 구 원인)
+  4. 부모: 이번에 새로 생긴 '정의되지 않은 부모' 레코드 (기준선은 원본 이식 시 남은 것)
+  5. 액터 이벤트: Create/ModelSwap 대상이 액터·모델 어디에도 없으면 실패 (기준선 제외)
+  6. 스크립트: 동맹 협동전 건물 고치를 땅에 따로 띄우는 CreateModelAtPoint("...Build") 금지 (0.3.23 규칙)
+
+사용법: python3 tools/check_release.py releases/RaynorMercs_WoL_CCM.zip
+"""
+import glob
+import re
+import sys
+import tempfile
+import zipfile
+import xml.etree.ElementTree as ET
+from pathlib import Path
+
+ROOT = Path(__file__).resolve().parent.parent
+S = ROOT / 'source'
+MAPS = ['TRaynor01.SC2Map', 'TRaynor02.SC2Map', 'TRaynor03.SC2Map']
+LOCALES = ['enus', 'dede', 'eses', 'esmx', 'frfr', 'itit', 'plpl', 'ptbr', 'ruru', 'zhcn', 'zhtw']
+DEPS = ['core.sc2mod', 'liberty.sc2mod', 'liberty.sc2campaign', 'libertystory.sc2campaign']
+ALL_SRC = DEPS + ['swarm.sc2mod', 'void.sc2mod', 'voidmulti.sc2mod', 'starcoop/starcoop.sc2mod',
+                  'swarm.sc2campaign', 'swarmstory.sc2campaign', 'void.sc2campaign', 'voidstory.sc2campaign']
+HANGUL = re.compile('[가-힣]')
+# 플레이어에게 보이지 않는 편집기 전용 문자열 (Editor*, 액터·모델·소리·검증기 등의 이름)
+EDITOR_ONLY = {'Actor', 'Model', 'Sound', 'Validator', 'Requirement', 'RequirementNode', 'Effect', 'Footprint',
+               'Light', 'Mover', 'VoiceOver', 'Race'}
+# 원본 이식 때부터 남아 있던 항목 (안 쓰는 노바·데하카 영웅 연출, 착지 소리). 새로 생기면 실패.
+KNOWN_PARENTS = {'NovaDeathWarpOutParent', 'DehakaConsumeEffectBase'}
+KNOWN_EVENTS = {'Adept_Land', 'Drone_Land', 'Hydra_Land', 'Zealot_Land', 'Sentry_Land', 'Stalker_Land',
+                'DetectionConeRevealText', 'HeroNovaMP1_Respawn', 'HeroNovaMP2_Respawn',
+                'ShieldBatteryRechargeEx5@SoundEnd', 'ShieldBatteryRechargeEx5@SoundLoop',
+                'ShieldBatteryRechargeEx5@SoundStart', 'SiegeTank_Land', 'SiegeTankSiegeModeRange',
+                'Templar_LandSweetener'}
+
+fails = []
+
+
+def fail(msg):
+    fails.append(msg)
+    print('  실패:', msg)
+
+
+def records(layers, fname):
+    d = {}
+    for L in layers:
+        for f in glob.glob(str(L) + '/base.sc2data/gamedata/' + fname):
+            for el in ET.parse(f).getroot():
+                if el.get('id'):
+                    d.setdefault(el.get('id'), []).append(el)
+    return d
+
+
+def model_path(d, i, seen=()):
+    if i not in d or i in seen:
+        return None
+    for el in reversed(d[i]):
+        m = el.find('Model')
+        if m is not None and m.get('value'):
+            return m.get('value')
+    for el in reversed(d[i]):
+        if el.get('parent'):
+            return model_path(d, el.get('parent'), seen + (i,))
+    return None
+
+
+def strings(path):
+    out = {}
+    for line in Path(path).read_text(encoding='utf-8-sig').splitlines():
+        if '=' in line:
+            k, v = line.split('=', 1)
+            out[k] = v
+    return out
+
+
+def check_map(base, name):
+    m = base / name
+    print(name)
+    ko = strings(m / 'kokr.sc2data/localizeddata/gamestrings.txt')
+    shown = {k: v for k, v in ko.items()
+             if k.split('/')[0] not in EDITOR_ONLY and not k.split('/')[1:2] == [''] and not (k.count('/') and k.split('/')[1].startswith('Editor'))}
+    no_ko = [k for k, v in shown.items() if v.strip() and not HANGUL.search(v) and re.search('[A-Za-z]', v)]
+    no_en = [k for k, v in ko.items() if HANGUL.search(v) and '///' not in v]
+    if no_ko: fail(f'{name} kokr 한글 없는 문자열 {len(no_ko)}개 {no_ko[:5]}')
+    if no_en: fail(f'{name} kokr 영어 없는 한국어 줄 {len(no_en)}개 {no_en[:5]}')
+    for loc in LOCALES:
+        if not (m / f'{loc}.sc2data/localizeddata/gamestrings.txt').exists():
+            fail(f'{name} {loc} 언어 파일 없음')
+
+    dep = [S / x for x in DEPS] + [m]
+    eff = records(dep, 'modeldata.xml')
+    mine = records([m], 'modeldata.xml')
+    src = records([S / x for x in ALL_SRC], 'modeldata.xml')
+    for i in sorted(mine):
+        p, q = model_path(eff, i), model_path(src, i)
+        if (p is None or '##' in p) and q and '##' not in q:
+            fail(f'{name} 모델 경로 빠짐 {i} (원본 {q})')
+
+    ids = {}
+    for L in dep:
+        for f in glob.glob(str(L) + '/base.sc2data/gamedata/*.xml'):
+            for el in ET.parse(f).getroot():
+                if el.get('id'):
+                    ids.setdefault(Path(f).name, set()).add(el.get('id'))
+    for f in glob.glob(str(m) + '/base.sc2data/gamedata/*.xml'):
+        for el in ET.parse(f).getroot():
+            p = el.get('parent')
+            if p and p not in ids.get(Path(f).name, ()) and p not in KNOWN_PARENTS:
+                fail(f'{name} 부모 없음 {el.tag} {el.get("id")} → {p}')
+
+    actors = ids.get('actordata.xml', set())
+    models = set(eff)
+    root = ET.parse(m / 'base.sc2data/gamedata/actordata.xml').getroot()
+    for el in root:
+        for o in el.iter('On'):
+            for kind, x in re.findall(r'(?<![A-Za-z])(Create|ModelSwap) ([A-Za-z0-9_@]+)', o.get('Send', '')):
+                if x in KNOWN_EVENTS:
+                    continue
+                if (kind == 'Create' and x not in actors and x not in models) or (kind == 'ModelSwap' and x not in models):
+                    fail(f'{name} 액터 {el.get("id")}: {kind} {x} 대상 없음')
+
+    script = (m / 'mapscript.galaxy').read_text(encoding='utf-8')
+    for x in re.findall(r'CreateModelAtPoint\("([A-Za-z0-9_]*Build)"', script):
+        fail(f'{name} 스크립트가 고치/건설 모델 {x}를 땅에 띄움 (협동전 건설 방식으로)')
+
+
+def main():
+    z = Path(sys.argv[1])
+    print('ZIP', z)
+    if z.name != 'RaynorMercs_WoL_CCM.zip': fail('파일 이름이 RaynorMercs_WoL_CCM.zip이 아님')
+    with zipfile.ZipFile(z) as zf, tempfile.TemporaryDirectory() as t:
+        if zf.testzip() is not None: fail('ZIP CRC 오류')
+        ver = re.search(rb'^version=(\S+)', zf.read('metadata.txt'), re.M).group(1).decode()
+        print('version', ver)
+        if not ver.startswith('0.'): fail(f'버전 {ver}: 완성 전에는 0.x')
+        zf.extractall(t)
+        for name in MAPS:
+            check_map(Path(t), name)
+    print('결과:', '통과' if not fails else f'실패 {len(fails)}개 — 배포하지 않는다')
+    sys.exit(1 if fails else 0)
+
+
+if __name__ == '__main__':
+    main()
