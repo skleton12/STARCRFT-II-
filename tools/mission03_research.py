@@ -1,12 +1,6 @@
 """Standalone mission 3 research. Costs are documented trial settings."""
 import xml.etree.ElementTree as E
 
-# Liberty/LibertyStory icons (0.3.2), loadable by a WoL-dependent map.
-ICONS = {'Stim1':'btn-ability-terran-stimpack.dds','Stim2':'btn-techupgrade-terran-stimpack.dds',
-         'Stim3':'btn-ability-terran-stimpack-color.dds','Shield':'btn-techupgrade-terran-combatshield-color.dds',
-         'Laser':'btn-upgrade-terran-hisecautotracking.dds','SupplyBunker':'btn-building-terran-supplybunkermengsk.dds',
-         'Armor':'btn-upgrade-terran-buildingarmor.dds'}
-
 
 def catalogs():
     out = {}
@@ -36,8 +30,8 @@ def catalogs():
              ('Armor','건물 장갑',150,150,90,'테란 기지 건물의 방어력 +2. 일반·보급 벙커 포함.')]
     for i,(suffix,name,m,g,time,tip) in enumerate(specs):
         ident='RM3_'+suffix
-        button(ident,name,tip,'Assets\\Textures\\'+ICONS[suffix])
-        up=add('upgrade',f'<CUpgrade id="{ident}"><Icon value="Assets\\Textures\\{ICONS[suffix]}"/><MaxLevel value="1"/></CUpgrade>')
+        button(ident,name,tip,r'Assets\Textures\btn-techupgrade-terran-combatshield-color.dds' if suffix=='Shield' else r'Assets\Textures\btn-upgrade-terran-infantryarmorlevel1.dds')
+        up=add('upgrade',f'<CUpgrade id="{ident}"><MaxLevel value="1"/></CUpgrade>')
         count(ident+'Done',ident,'CompleteOnly');count(ident+'Queued',ident,'QueuedOrBetter')
         add('requirementnode',f'<CRequirementNot id="{ident}NotQueued"><OperandArray index="0" value="{ident}Queued"/></CRequirementNot>')
         previous = 'RM3_Stim'+str(int(suffix[-1])-1)+'Done' if suffix in ['Stim2','Stim3'] else ''
@@ -89,7 +83,7 @@ def catalogs():
     add('model',r'<CModel id="RM3_SupplyBunkerModel" parent="Building"><Model value="Assets\COOP\Mengsk\Buildings\SupplyBunker_Mengsk_COOP\SupplyBunker_Mengsk_COOP.m3"/><ScaleMax value="0.75,0.75,0.75"/><ScaleMin value="0.75,0.75,0.75"/></CModel>')
     add('model',r'<CModel id="RM3_SupplyBunkerDeath" parent="BuildingDeath"><Model value="Assets\COOP\Mengsk\Buildings\SupplyBunker_Mengsk_COOP_Death\SupplyBunker_Mengsk_COOP_Death.m3"/></CModel>')
     strings['Unit/Name/RM3_SupplyBunker']='보급 벙커'
-    button('RM3_BuildSupplyBunker','보급 벙커 건설','병력 수용 공간 6과 보급품 12를 제공합니다. 건설비: 광물 100.',r'Assets\Textures\btn-building-terran-supplybunkermengsk.dds')
+    button('RM3_BuildSupplyBunker','보급 벙커 건설','병력 수용 공간 6과 보급품 12를 제공합니다. 건설비: 광물 100.',r'Assets\Textures\btn-building-terran-bunker.dds')
     req('RM3_CanBuildSupplyBunker','RM3_SupplyBunkerDone')
     add('abil','<CAbilBuild id="TerranBuild"><InfoArray index="Build17" Unit="RM3_SupplyBunker" Time="30"><Button DefaultButtonFace="RM3_BuildSupplyBunker" State="Available" Requirements="RM3_CanBuildSupplyBunker"/></InfoArray><InfoArray index="Build13"><Button State="Available" Requirements="HaveBarracks"/></InfoArray></CAbilBuild>')
     add('unit','<CUnit id="SCV"><CardLayouts index="1" CardId="TBl1"><LayoutButtons Face="RM3_BuildSupplyBunker" Type="AbilCmd" AbilCmd="TerranBuild,Build17" Row="2" Column="3"/><LayoutButtons Face="MercCompound" Type="AbilCmd" AbilCmd="TerranBuild,Build13" Row="1" Column="2"/></CardLayouts></CUnit>')

@@ -132,7 +132,7 @@ def build(source, original, output):
             info=E.SubElement(hire,'InfoArray',index='Train'+str(i))
             E.SubElement(info,'Button',State='Suppressed')
         files[GD+'abildata.xml']=merge(files[GD+'abildata.xml'],[hire])
-        files[GD+'buttondata.xml']=merge(files[GD+'buttondata.xml'],[E.fromstring(r'<CButton id="RM3_HireKorhal"><Icon value="Assets\Textures\btn-unit-terran-SoKmarine.dds"/><Name value="Button/Name/RM3_HireKorhal"/><Tooltip value="Button/Tooltip/RM3_HireKorhal"/></CButton>')])
+        files[GD+'buttondata.xml']=merge(files[GD+'buttondata.xml'],[E.fromstring(r'<CButton id="RM3_HireKorhal"><Icon value="Assets\Textures\btn-unit-terran-marine.dds"/><Name value="Button/Name/RM3_HireKorhal"/><Tooltip value="Button/Tooltip/RM3_HireKorhal"/></CButton>')])
         files[GD+'unitdata.xml']=merge(files[GD+'unitdata.xml'],[E.fromstring('<CUnit id="MercCompound"><CardLayouts index="0"><LayoutButtons Face="RM3_HireKorhal" Type="AbilCmd" AbilCmd="SummonMercenaries,Train1" Row="0" Column="0"/></CardLayouts></CUnit>')])
         strings.update({'Button/Name/RM3_HireKorhal':'코랄의 후예 고용','Button/Tooltip/RM3_HireKorhal':'코랄의 후예 4기를 유료 고용합니다. 기본 캠페인 고용 횟수와 재사용 대기시간을 따릅니다.',
                         'rm3/Arrival':'정화자: 남서쪽 적 기지를 정화합니다. 지원군 진입을 준비하십시오.',
