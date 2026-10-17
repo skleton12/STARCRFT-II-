@@ -11,7 +11,7 @@
 | 동맹 AI | 3번 스크립트가 2초마다 생산 목록만 추가하고 `AIClearStock`/`AIEnableStock`을 부르지 않음 | 매번 목록 비우기 → 설정 → 활성화 순서로 수정 (2번과 같은 방식) |
 
 변경 파일: metadata(0.3.2), 세 맵의 kokr gamestrings, 3번 buttondata·upgradedata·mapscript. 나머지는 바이트 동일 확인.
-재현 도구(`mission03_research.py`, `build_mission03.py`, `data/mission03_support.galaxy`)에도 같은 수정을 반영했다.
+재현 순서: `build_mission03.py`(0.3.1) → `build_v032.py` → `build_v033.py`. 앞 단계 도구는 바꾸지 않는다 (덧씌움 방식).
 
 ## 확인 못 한 것
 
