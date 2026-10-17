@@ -318,3 +318,8 @@ CRC·XML·31개 매장량 값 및 비대상 데이터 보존 검사를 통과했
 ## 2026-10-17: 협동전 건물 기준표·역할 분담
 
 사용자 지시로 docs/research/coop_buildings.md를 추가했다. 피닉스·카락스·데하카와 관련 테란 건물의 유닛/능력/모델 구분, 생산·건설 연결 및 0.3.1 차이를 참고한다. 특히 DehakaHatchery는 군락 유닛이고 DehakaHive는 모델이다. 정화자 병력은 협동전 피닉스·카락스 한정, 피닉스 중심이다. 구현은 Claude, Codex는 버전별 파일 검사를 담당한다. 이번 변경은 문서만이며 맵·구현 코드·배포 ZIP은 변경하지 않았다.
+
+
+## 2026-10-17: 협동전 건물 기준표 적용 — 0.3.4
+
+docs/research/coop_buildings.md 기준으로 3번 미션 원시저그를 실제 데하카 유닛(DehakaHatchery 원시 군락, DehakaBarracks 원시 감시자, DehakaDrone 원시 일벌레)으로 바꿨다. 일반 Hatchery/SpawningPool/Drone 외형 변경은 철회. 알 생산·뿌리 들기·굴·원시 벌레·연구는 이식하지 않았고 일벌레는 스크립트 보충(시험값). 정화자 선동자 2는 피닉스 사도(AdeptFenix) 2로 교체, 파수병·동력기는 유지하며 추가 피닉스 중심 재편은 사용자 결정 대기. 빌드 도구는 kokr 영어 잔존 시 중단한다. 게임·Galaxy 컴파일 미실행. 상세: docs/testing/2026-10-17_v034_coop_buildings.md.

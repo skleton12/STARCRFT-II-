@@ -105,9 +105,21 @@ def main():
     # --liberty-base: 자날 기본 모드(Liberty.SC2Mod) 데이터도 '맵이 이미 가진 층'으로 본다 (2026-10-15, 2번 미션부터).
     # 이게 없으면 점멸·관문 생산 같은 기본 항목까지 군단·공허·협동전 판으로 복사해 덮어쓴다.
     # 1번 미션은 사용자 시험을 통과한 결과를 바꾸지 않으려고 이 옵션 없이 그대로 둔다.
+    # --skip-existing: 맵에 이미 이식된 같은 ID는 건너뛴다 (앞선 이식분 재사용, 2026-10-17 3번 미션 데하카 건물)
+    skip_existing = '--skip-existing' in args
+    if skip_existing:
+        args.remove('--skip-existing')
     if '--liberty-base' in args:
         args.remove('--liberty-base')
         BASE_LAYERS.append(gd('liberty.sc2mod'))
+    # --drop=정규식: 이번 이식에서 따라가지 않을 ID (예: 데하카 알 생산·뿌리 들기·굴 건설). 해당 능력 버튼도 지운다
+    global SKIP_RE
+    drop = None
+    for a in list(args):
+        if a.startswith('--drop='):
+            args.remove(a)
+            drop = re.compile(a[len('--drop='):])
+            SKIP_RE = re.compile(SKIP_RE.pattern + '|' + drop.pattern)
     map_dir, seeds = args[0], args[1:]
     base = defaultdict(set)
     for p in BASE_LAYERS:
@@ -217,6 +229,8 @@ def main():
                 link = ch.get('Link') or ''
                 if link and SKIP_RE.search(link):
                     parent.remove(ch)
+                elif drop and drop.search((ch.get('AbilCmd') or '').split(',')[0] or '\0'):
+                    parent.remove(ch)
         out_files[fn].append(merged)
 
     gdir = os.path.join(map_dir, 'base.sc2data', 'gamedata')
@@ -227,6 +241,8 @@ def main():
         if os.path.exists(p):
             root = ET.parse(p).getroot()
             have = {e.get('id') for e in root}
+            if skip_existing:
+                els = [e for e in els if e.get('id') not in have]
             clash = [e.get('id') for e in els if e.get('id') in have]
             if clash:
                 sys.exit(f'{fn}: 맵에 이미 있는 ID와 겹침 {clash[:5]}')
