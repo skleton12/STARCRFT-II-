@@ -203,6 +203,16 @@ def check_map(base, name):
                     # 0.3.29 원시 벌레: 포탑 NydusCanalAttacker가 없어 공격 못 함
                     fail(f'{name} 유닛 {el.get("id")}: 무기 포탑 {turret} 정의 없음')
 
+    # 이식 유닛의 종족이 빠지면 기본 종족 Neut가 된다 (0.3.4 이식에서 원시 감시자·일벌레 종족이 빠짐, 짓는 중 안 보임 원인 후보)
+    base_units = records([S / x for x in DEPS], 'unitdata.xml')
+    src_units = records([S / x for x in ALL_SRC], 'unitdata.xml')
+    for el in ET.parse(m / 'base.sc2data/gamedata/unitdata.xml').getroot():
+        i = el.get('id')
+        if el.tag != 'CUnit' or el.get('parent') or i in base_units or el.find('Race') is not None:
+            continue
+        if any(s.find('Race') is not None for s in src_units.get(i, [])):
+            fail(f'{name} 유닛 {i}: 원본에 있는 종족(Race)이 빠짐')
+
     # 사령관 레벨 잠금은 이 모드에 없다 (사용자 확정 2026-10-17). 진급 레벨은 자치령 용병(RMK_…Veterancy)에만 있다.
     for f in glob.glob(str(m) + '/base.sc2data/gamedata/*.xml'):
         for x in sorted(set(re.findall(r'"(\w+Level\d\d)"', Path(f).read_text(encoding='utf-8')))):
