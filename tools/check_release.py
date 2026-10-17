@@ -36,7 +36,9 @@ KNOWN_EVENTS = {'Adept_Land', 'Drone_Land', 'Hydra_Land', 'Zealot_Land', 'Sentry
                 'DetectionConeRevealText', 'HeroNovaMP1_Respawn', 'HeroNovaMP2_Respawn',
                 'ShieldBatteryRechargeEx5@SoundEnd', 'ShieldBatteryRechargeEx5@SoundLoop',
                 'ShieldBatteryRechargeEx5@SoundStart', 'SiegeTank_Land', 'SiegeTankSiegeModeRange',
-                'Templar_LandSweetener'}
+                'Templar_LandSweetener',
+                # 쓰지 않는 영웅(노바·케리건·데하카 영웅) 연출
+                'StimPackDevice_Nova', 'ZergHeroRevive'}
 
 fails = []
 
@@ -121,8 +123,64 @@ def check_map(base, name):
             for kind, x in re.findall(r'(?<![A-Za-z])(Create|ModelSwap) ([A-Za-z0-9_@]+)', o.get('Send', '')):
                 if x in KNOWN_EVENTS:
                     continue
-                if (kind == 'Create' and x not in actors and x not in models) or (kind == 'ModelSwap' and x not in models):
+                if (kind == 'Create' and x not in actors) or (kind == 'ModelSwap' and x not in models):
                     fail(f'{name} 액터 {el.get("id")}: {kind} {x} 대상 없음')
+
+    # 템플릿(##unitName##)으로 만들어지는 이름: 맵 유닛 액터마다 부모를 따라 올라가 실제 이름으로 바꿔 확인한다.
+    # (0.3.22 보급 벙커: 'Create ##unitName##Build' 액터가 없어 건설 중 오류 구)
+    all_actors = {}
+    for L in dep:
+        for f in glob.glob(str(L) + '/base.sc2data/gamedata/actordata.xml'):
+            for el in ET.parse(f).getroot():
+                if el.get('id'):
+                    all_actors.setdefault(el.get('id'), []).append(el)
+    buildable = set()
+    for L in dep:
+        for f in glob.glob(str(L) + '/base.sc2data/gamedata/abildata.xml'):
+            for ab in ET.parse(f).getroot():
+                if ab.tag == 'CAbilBuild':
+                    buildable |= {i.get('Unit') for i in ab.iter('InfoArray') if i.get('Unit')}
+    done_ids = set()
+    for el in root:
+        aid = el.get('id')
+        recs = all_actors.get(aid, [])
+        unit = next((r.get('unitName') for r in reversed(recs) if r.get('unitName')), None)
+        if el.tag != 'CActorUnit' or not unit or aid in done_ids:
+            continue
+        done_ids.add(aid)
+        # 같은 ID의 모든 층 레코드를 최신 것부터 넣고, 부모는 어느 층이든 지정된 값을 따라간다.
+        chain, cur, seen = [], aid, set()
+        while cur in all_actors and cur not in seen:
+            seen.add(cur)
+            chain.extend(reversed(all_actors[cur]))
+            cur = next((r.get('parent') for r in reversed(all_actors[cur]) if r.get('parent')), None)
+        single = {}
+        for a in chain:  # 자식 값이 우선
+            for tag in ('PortraitModel', 'PlacementModel', 'BuildModel', 'Model'):
+                c = a.find(tag)
+                if c is not None and tag not in single:
+                    single[tag] = c.get('value', '')
+            c = a.find('EventDataFootprint')
+            if c is not None and c.get('Model') and 'Footprint' not in single:
+                single['Footprint'] = c.get('Model')
+        for tag, v in single.items():
+            # 발자국 모델은 원작에도 없는 경우가 많아 제외. 건설·배치 모델은 실제로 지을 수 있는 유닛만 본다.
+            if tag == 'Footprint' or (tag in ('BuildModel', 'PlacementModel') and unit not in buildable):
+                continue
+            v = v.replace('##unitName##', unit)
+            if v and '##' not in v and v not in models:
+                fail(f'{name} 액터 {aid}: {tag} {v} 모델 없음')
+        own = set(map(id, all_actors[aid]))
+        for a in chain:
+            if id(a) in own:
+                continue
+            for o in a.iter('On'):
+                s = o.get('Send', '')
+                if '##unitName##' not in s and '##unitName##' not in o.get('Terms', ''):
+                    continue
+                for x in re.findall(r'(?<![A-Za-z])Create ([A-Za-z0-9_@#]+)', s.replace('##unitName##', unit)):
+                    if x not in actors and x not in KNOWN_EVENTS:
+                        fail(f'{name} 액터 {aid}: 상속 이벤트 Create {x} 대상 없음')
 
     script = (m / 'mapscript.galaxy').read_text(encoding='utf-8')
     for x in re.findall(r'CreateModelAtPoint\("([A-Za-z0-9_]*Build)"', script):
