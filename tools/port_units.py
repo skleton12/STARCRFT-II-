@@ -112,6 +112,10 @@ def main():
     if '--liberty-base' in args:
         args.remove('--liberty-base')
         BASE_LAYERS.append(gd('liberty.sc2mod'))
+    # --with-mengsk: 멩스크 사령관 모드(arcturusmengsk)도 복사 원본 층에 넣는다 (2026-10-17, 3번 보급 벙커)
+    if '--with-mengsk' in args:
+        args.remove('--with-mengsk')
+        COPY_LAYERS.append(('arcturusmengsk', gd('starcoop', 'commanders', 'arcturusmengsk.sc2mod')))
     # --drop=정규식: 이번 이식에서 따라가지 않을 ID (예: 데하카 알 생산·뿌리 들기·굴 건설). 해당 능력 버튼도 지운다
     global SKIP_RE
     drop = None
@@ -263,7 +267,8 @@ def main():
     def read_strings(loc):
         out = {}
         for name, _ in COPY_LAYERS:
-            root = os.path.join(S, *(['starcoop', 'starcoop.sc2mod'] if name == 'starcoop' else [name]))
+            root = os.path.join(S, *(['starcoop', 'starcoop.sc2mod'] if name == 'starcoop' else
+                                     ['starcoop', 'commanders', 'arcturusmengsk.sc2mod'] if name == 'arcturusmengsk' else [name]))
             for fn in ('gamestrings.txt', 'objectstrings.txt'):
                 q = os.path.join(root, f'{loc}.sc2data', 'localizeddata', fn)
                 if not os.path.exists(q):

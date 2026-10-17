@@ -195,6 +195,10 @@ def check_map(base, name):
                 link = a.get('Link')
                 if link and a.get('removed') != '1' and link not in ids.get(fn, set()) and link not in KNOWN_LINKS:
                     fail(f'{name} 유닛 {el.get("id")}: {tag} {link} 정의 없음')
+                turret = a.get('Turret') if tag == 'WeaponArray' else None
+                if turret and turret not in ids.get('turretdata.xml', set()):
+                    # 0.3.29 원시 벌레: 포탑 NydusCanalAttacker가 없어 공격 못 함
+                    fail(f'{name} 유닛 {el.get("id")}: 무기 포탑 {turret} 정의 없음')
 
     script = (m / 'mapscript.galaxy').read_text(encoding='utf-8')
     # Galaxy: 함수는 정의나 앞선 선언 뒤에서만 부를 수 있다 (0.3.28 초안에서 gf_m3_Workers 호출이 정의보다 앞섰다).
