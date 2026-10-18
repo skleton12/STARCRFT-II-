@@ -398,8 +398,8 @@ void gf_m4_Init () {
     CatalogLinkReplace(8,c_gameCatalogUnit,"Zealot","ZealotPurifier");
     CatalogLinkReplace(8,c_gameCatalogUnit,"Stalker","AdeptFenix");
     // The player moves/builds with the ally workers (control + spending shared). Ally army types are Uncommandable.
-    libNtve_gf_SetAlliance(8,1,libNtve_ge_AllianceSetting_AllyWithSharedVisionControlAndSpending);
-    libNtve_gf_SetAlliance(9,1,libNtve_ge_AllianceSetting_AllyWithSharedVisionControlAndSpending);
+    libNtve_gf_SetAlliance(8,1,libNtve_ge_AllianceSetting_AllyWithSharedVisionAndControl);
+    libNtve_gf_SetAlliance(9,1,libNtve_ge_AllianceSetting_AllyWithSharedVisionAndControl);
     // The Purifier Probe builds Pylons, Gateways (become Warp Gates) and Photon Cannons only. No Nexus/Core needed.
     TechTreeUnitAllow(8,"Pylon",true);
     TechTreeUnitAllow(8,"Gateway",true);
