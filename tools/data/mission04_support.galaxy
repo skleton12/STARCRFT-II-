@@ -449,6 +449,25 @@ void gf_m4_Init () {
     gv_m4_sent9=UnitGroupEmpty();
     // Purifier Warp Gates train Purifier units (ally-only link swaps; no Cybernetics Core needed for the ally).
     CatalogLinkReplace(8,c_gameCatalogUnit,"Sentry","RM21_Energizer");
+    // Purifier Warp Gates store 3 warp-ins (user 2026-10-18); recharge uses the original cooldown times.
+    CatalogFieldValueSet(c_gameCatalogAbil,"WarpGateTrain","InfoArray[Train1].Charge.Link",8,"RM4_WarpGate");
+    CatalogFieldValueSet(c_gameCatalogAbil,"WarpGateTrain","InfoArray[Train1].Charge.CountMax",8,"3");
+    CatalogFieldValueSet(c_gameCatalogAbil,"WarpGateTrain","InfoArray[Train1].Charge.CountStart",8,"3");
+    CatalogFieldValueSet(c_gameCatalogAbil,"WarpGateTrain","InfoArray[Train1].Charge.CountUse",8,"1");
+    CatalogFieldValueSet(c_gameCatalogAbil,"WarpGateTrain","InfoArray[Train1].Charge.TimeUse",8,"23");
+    CatalogFieldValueSet(c_gameCatalogAbil,"WarpGateTrain","InfoArray[Train1].Cooldown.TimeUse",8,"0");
+    CatalogFieldValueSet(c_gameCatalogAbil,"WarpGateTrain","InfoArray[Train2].Charge.Link",8,"RM4_WarpGate");
+    CatalogFieldValueSet(c_gameCatalogAbil,"WarpGateTrain","InfoArray[Train2].Charge.CountMax",8,"3");
+    CatalogFieldValueSet(c_gameCatalogAbil,"WarpGateTrain","InfoArray[Train2].Charge.CountStart",8,"3");
+    CatalogFieldValueSet(c_gameCatalogAbil,"WarpGateTrain","InfoArray[Train2].Charge.CountUse",8,"1");
+    CatalogFieldValueSet(c_gameCatalogAbil,"WarpGateTrain","InfoArray[Train2].Charge.TimeUse",8,"32");
+    CatalogFieldValueSet(c_gameCatalogAbil,"WarpGateTrain","InfoArray[Train2].Cooldown.TimeUse",8,"0");
+    CatalogFieldValueSet(c_gameCatalogAbil,"WarpGateTrain","InfoArray[Train6].Charge.Link",8,"RM4_WarpGate");
+    CatalogFieldValueSet(c_gameCatalogAbil,"WarpGateTrain","InfoArray[Train6].Charge.CountMax",8,"3");
+    CatalogFieldValueSet(c_gameCatalogAbil,"WarpGateTrain","InfoArray[Train6].Charge.CountStart",8,"3");
+    CatalogFieldValueSet(c_gameCatalogAbil,"WarpGateTrain","InfoArray[Train6].Charge.CountUse",8,"1");
+    CatalogFieldValueSet(c_gameCatalogAbil,"WarpGateTrain","InfoArray[Train6].Charge.TimeUse",8,"32");
+    CatalogFieldValueSet(c_gameCatalogAbil,"WarpGateTrain","InfoArray[Train6].Cooldown.TimeUse",8,"0");
     CatalogFieldValueSet(c_gameCatalogAbil,"WarpGateTrain","InfoArray[Train2].Button.Requirements",8,"");
     CatalogFieldValueSet(c_gameCatalogAbil,"WarpGateTrain","InfoArray[Train6].Button.Requirements",8,"");
     TechTreeUnitAllow(8,"ZealotPurifier",true);
