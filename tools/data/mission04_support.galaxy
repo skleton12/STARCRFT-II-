@@ -188,6 +188,8 @@ void gf_m4_Hatch () {
     // Each Primal Warden spits an egg (co-op DehakaBarracksTrainEgg): zergling, zergling, roach, hydralisk (trial).
     posts=UnitGroup("DehakaBarracks",9,RegionEntireMap(),UnitFilter(0,0,0,(1 << (c_targetFilterUnderConstruction - 32))),0);
     n=UnitGroupCount(posts,c_unitCountAll);
+    // Eggs pay when they hatch (co-op). Do not lay more while 2+ eggs per Warden still wait for money (0.4.23, trial).
+    if (UnitGroupCount(UnitGroup("DehakaTrainEggZergling",9,RegionEntireMap(),UnitFilter(0,0,0,0),0),c_unitCountAlive)+UnitGroupCount(UnitGroup("DehakaTrainEggRoach",9,RegionEntireMap(),UnitFilter(0,0,0,0),0),c_unitCountAlive)+UnitGroupCount(UnitGroup("DehakaTrainEggHydralisk",9,RegionEntireMap(),UnitFilter(0,0,0,0),0),c_unitCountAlive)>=2*n) { return; }
     for (i=1;i<=n;i+=1) {
         post=UnitGroupUnit(posts,i);
         c=ModI(gv_m4_turn9,4)-1;
