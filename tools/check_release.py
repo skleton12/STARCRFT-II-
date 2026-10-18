@@ -91,6 +91,9 @@ def strings(path):
 def check_map(base, name):
     m = base / name
     print(name)
+    # 업적은 이 모드에서 꺼야 한다 (사용자 확정 2026-10-18)
+    if 'AchievementsDisable(1);' not in (m / 'mapscript.galaxy').read_text(encoding='utf-8', errors='replace'):
+        fail(f'{name} 업적 끄기(AchievementsDisable) 없음')
     ko = strings(m / 'kokr.sc2data/localizeddata/gamestrings.txt')
     shown = {k: v for k, v in ko.items()
              if k.split('/')[0] not in EDITOR_ONLY and not k.split('/')[1:2] == [''] and not (k.count('/') and k.split('/')[1].startswith('Editor'))}
