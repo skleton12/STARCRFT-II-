@@ -288,8 +288,8 @@ void gf_m4_Workers () {
 
 void gf_m4_Mercs () {
     // Raynor trains mercenaries only where the original unit is unlocked (nonlinear rule: no assumptions).
-    TechTreeUnitAllow(1,"HammerSecurity",TechTreeUnitIsAllowed(1,"Marauder"));
-    TechTreeUnitAllow(1,"DevilDog",TechTreeUnitIsAllowed(1,"Firebat"));
+    TechTreeUnitAllow(1,"HammerSecurity",TechTreeAbilityIsAllowed(1,AbilityCommand("BarracksTrain",3)));
+    TechTreeUnitAllow(1,"DevilDog",TechTreeAbilityIsAllowed(1,AbilityCommand("BarracksTrain",5)));
 }
 
 bool gt_m4_Tick_Func (bool testConds,bool runActions) {
