@@ -290,6 +290,8 @@ void gf_m4_Mercs () {
     // Raynor trains mercenaries only where the original unit is unlocked (nonlinear rule: no assumptions).
     TechTreeUnitAllow(1,"HammerSecurity",TechTreeAbilityIsAllowed(1,AbilityCommand("BarracksTrain",3)));
     TechTreeUnitAllow(1,"DevilDog",TechTreeAbilityIsAllowed(1,AbilityCommand("BarracksTrain",5)));
+    // Campaign tech limits must not hide the Hammer Security mission research (0.4.13).
+    TechTreeUpgradeAllow(1,"PunisherGrenades",true);
 }
 
 bool gt_m4_Tick_Func (bool testConds,bool runActions) {
@@ -364,6 +366,7 @@ bool gt_m4_Arrive_Func (bool testConds,bool runActions) {
 void gf_m4_Start () {
     if (gv_m4_started) { return; }
     gv_m4_started=true;
+    if (TechTreeUpgradeCount(1,"JackhammerConcussionGrenades",c_techCountCompleteOnly)>0) { TechTreeUpgradeAddLevel(1,"PunisherGrenades",MaxI(0,1-TechTreeUpgradeCount(1,"PunisherGrenades",c_techCountCompleteOnly))); }
     // Hyperion armory purchases count as the matching mission research (no re-buy, no double effect).
     if (TechTreeUpgradeCount(1,"MarineStimpack",c_techCountCompleteOnly)>0) { TechTreeUpgradeAddLevel(1,"RM3_Stim1",MaxI(0,1-TechTreeUpgradeCount(1,"RM3_Stim1",c_techCountCompleteOnly))); }
     if (TechTreeUpgradeCount(1,"CombatShield",c_techCountCompleteOnly)>0) { TechTreeAbilityAllow(1,AbilityCommand("RM3_TechResearch",3),false); }
