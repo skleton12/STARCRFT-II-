@@ -21,7 +21,7 @@ from pathlib import Path
 
 ROOT = Path(__file__).resolve().parent.parent
 S = ROOT / 'source'
-MAPS = ['TRaynor01.SC2Map', 'TRaynor02.SC2Map', 'TRaynor03.SC2Map']
+MAPS = ['TRaynor01.SC2Map', 'TRaynor02.SC2Map', 'TRaynor03.SC2Map', 'TTychus01.SC2Map']
 LOCALES = ['enus', 'dede', 'eses', 'esmx', 'frfr', 'itit', 'plpl', 'ptbr', 'ruru', 'zhcn', 'zhtw']
 DEPS = ['core.sc2mod', 'liberty.sc2mod', 'liberty.sc2campaign', 'libertystory.sc2campaign']
 ALL_SRC = DEPS + ['swarm.sc2mod', 'void.sc2mod', 'voidmulti.sc2mod', 'starcoop/starcoop.sc2mod',
@@ -31,8 +31,10 @@ HANGUL = re.compile('[가-힣]')
 EDITOR_ONLY = {'Actor', 'Model', 'Sound', 'Validator', 'Requirement', 'RequirementNode', 'Effect', 'Footprint',
                'Light', 'Mover', 'VoiceOver', 'Race'}
 # 원본 이식 때부터 남아 있던 항목 (안 쓰는 노바·데하카 영웅 연출, 착지 소리). 새로 생기면 실패.
-KNOWN_PARENTS = {'NovaDeathWarpOutParent', 'DehakaConsumeEffectBase'}
-KNOWN_EVENTS = {'Adept_Land', 'Drone_Land', 'Hydra_Land', 'Zealot_Land', 'Sentry_Land', 'Stalker_Land',
+KNOWN_PARENTS = {'NovaDeathWarpOutParent', 'DehakaConsumeEffectBase',
+                 'BelShir'}  # 4번 원본 맵의 물(CWater): 자날 물 데이터는 source에 풀려 있지 않다
+# WarpGateBuild: 차원 관문은 관문에서 변신하므로 건설 액터가 원래 없다 (원작 템플릿 이벤트, 발생 안 함)
+KNOWN_EVENTS = {'WarpGateBuild', 'Adept_Land', 'Drone_Land', 'Hydra_Land', 'Zealot_Land', 'Sentry_Land', 'Stalker_Land',
                 'DetectionConeRevealText', 'HeroNovaMP1_Respawn', 'HeroNovaMP2_Respawn',
                 'ShieldBatteryRechargeEx5@SoundEnd', 'ShieldBatteryRechargeEx5@SoundLoop',
                 'ShieldBatteryRechargeEx5@SoundStart', 'SiegeTank_Land', 'SiegeTankSiegeModeRange',
@@ -92,7 +94,7 @@ def check_map(base, name):
     ko = strings(m / 'kokr.sc2data/localizeddata/gamestrings.txt')
     shown = {k: v for k, v in ko.items()
              if k.split('/')[0] not in EDITOR_ONLY and not k.split('/')[1:2] == [''] and not (k.count('/') and k.split('/')[1].startswith('Editor'))}
-    no_ko = [k for k, v in shown.items() if v.strip() and not HANGUL.search(v) and re.search('[A-Za-z]', v)]
+    no_ko = [k for k, v in shown.items() if v.strip() and not HANGUL.search(v) and re.search('[A-Za-z]', re.sub(r'<[^>]*>', '', v))]
     no_en = [k for k, v in ko.items() if HANGUL.search(v) and '///' not in v]
     if no_ko: fail(f'{name} kokr 한글 없는 문자열 {len(no_ko)}개 {no_ko[:5]}')
     if no_en: fail(f'{name} kokr 영어 없는 한국어 줄 {len(no_en)}개 {no_en[:5]}')
