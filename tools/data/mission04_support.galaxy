@@ -364,6 +364,9 @@ bool gt_m4_Arrive_Func (bool testConds,bool runActions) {
 void gf_m4_Start () {
     if (gv_m4_started) { return; }
     gv_m4_started=true;
+    // Hyperion armory purchases count as the matching mission research (no re-buy, no double effect).
+    if (TechTreeUpgradeCount(1,"MarineStimpack",c_techCountCompleteOnly)>0) { TechTreeUpgradeAddLevel(1,"RM3_Stim1",MaxI(0,1-TechTreeUpgradeCount(1,"RM3_Stim1",c_techCountCompleteOnly))); }
+    if (TechTreeUpgradeCount(1,"CombatShield",c_techCountCompleteOnly)>0) { TechTreeAbilityAllow(1,AbilityCommand("RM3_TechResearch",3),false); }
     gf_m4_EnemyRules();
     TriggerExecute(gt_m4_arrive,false,false);
 }
