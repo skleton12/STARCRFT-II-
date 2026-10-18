@@ -91,6 +91,15 @@ def strings(path):
 def check_map(base, name):
     m = base / name
     print(name)
+    # 모드 버튼(RM3_/RM4_)은 단축키가 있어야 한다 (사용자 요청 2026-10-18)
+    hk = m / 'kokr.sc2data/localizeddata/gamehotkeys.txt'
+    have = hk.read_text(encoding='utf-8-sig') if hk.exists() else ''
+    bd = m / 'base.sc2data/gamedata/buttondata.xml'
+    if bd.exists():
+        for b in ET.parse(bd).getroot():
+            bid = b.get('id') or ''
+            if b.tag == 'CButton' and re.match(r'RM\d+_', bid) and f'Button/Hotkey/{bid}=' not in have:
+                fail(f'{name} 단축키 없음 {bid}')
     # 업적은 이 모드에서 꺼야 한다 (사용자 확정 2026-10-18)
     if 'AchievementsDisable(1);' not in (m / 'mapscript.galaxy').read_text(encoding='utf-8', errors='replace'):
         fail(f'{name} 업적 끄기(AchievementsDisable) 없음')
