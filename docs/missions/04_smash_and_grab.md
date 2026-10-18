@@ -2,7 +2,7 @@
 
 원본: 사용자 구글 드라이브의 풀어 놓은 `ttychus01.sc2map` 폴더 → `maps/original_wol/ttychus01/`.
 드라이브의 traynor03 mapinfo가 저장소 원본과 바이트까지 같아 원본으로 판단했다.
-`t3texturemasks`(6.4MB)는 드라이브 연결 도구로 받지 못해 사용자 업로드를 기다린다. 이 파일 없이는 배포하지 않는다.
+`t3texturemasks`(6.4MB)는 드라이브 연결 도구로 받지 못해 사용자가 직접 올렸다 (크기 일치).
 
 빌드: `python3 tools/build_v041.py <0.3.37 zip> maps/original_wol/ttychus01 <출력 zip>` (mpyq 필요).
 
@@ -21,4 +21,4 @@
 | 적 강화 7-1 | 탈다림 3~6: 피해 %, 지상 공격·방어 최소 1. 저그 2: 레이너 공세 병력 +50% | 시험값 |
 | 불곰 연구 | 충격탄→억제탄, 자기가속 탄약, 무력화탄 | 미구현 (다음 판) |
 
-검사: check_release 통과 (t3texturemasks 빠진 시험 빌드 기준). 게임·Galaxy 컴파일 미실행.
+검사: check_release 통과 (전체 파일). 게임·Galaxy 컴파일 미실행.
