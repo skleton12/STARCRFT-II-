@@ -399,7 +399,15 @@ void gf_m4_Init () {
     CatalogLinkReplace(8,c_gameCatalogUnit,"Stalker","AdeptFenix");
     // The player moves/builds with the ally workers (control + spending shared). Ally army types are Uncommandable.
     libNtve_gf_SetAlliance(8,1,libNtve_ge_AllianceSetting_AllyWithSharedVisionAndControl);
+    // One-way (user 2026-10-18): the player builds with ally workers on ally money; allies never spend Raynor's money or use his units.
+    PlayerSetAlliance(8,c_allianceIdSpend,1,true);
+    PlayerSetAlliance(1,c_allianceIdSpend,8,false);
+    PlayerSetAlliance(1,c_allianceIdControl,8,false);
     libNtve_gf_SetAlliance(9,1,libNtve_ge_AllianceSetting_AllyWithSharedVisionAndControl);
+    // One-way (user 2026-10-18): the player builds with ally workers on ally money; allies never spend Raynor's money or use his units.
+    PlayerSetAlliance(9,c_allianceIdSpend,1,true);
+    PlayerSetAlliance(1,c_allianceIdSpend,9,false);
+    PlayerSetAlliance(1,c_allianceIdControl,9,false);
     // The Purifier Probe builds Pylons, Gateways (become Warp Gates) and Photon Cannons only. No Nexus/Core needed.
     TechTreeUnitAllow(8,"Pylon",true);
     TechTreeUnitAllow(8,"Gateway",true);
