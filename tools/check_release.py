@@ -115,6 +115,37 @@ def check_map(base, name):
             fail(f'{name} {loc} 언어 파일 없음')
 
     dep = [S / x for x in DEPS] + [m]
+    # 같은 칸은 먼저 적힌(원작) 버튼이 보인다. 숨김 처리 안 된 원작 버튼과 칸이 겹친 모드 버튼은 가려진다 (0.4.38 파편탄)
+    def slots(el):
+        for lb in el.iter('LayoutButtons'):
+            g = lambda k: lb.get(k) or (lb.find(k).get('value') if lb.find(k) is not None else None)
+            yield g('Face'), g('AbilCmd'), g('Row'), g('Column')
+    suppressed, research = set(), set()
+    for f in [S / x / 'base.sc2data/gamedata/abildata.xml' for x in DEPS] + [m / 'base.sc2data/gamedata/abildata.xml']:
+        if f.exists():
+            for ab in ET.parse(f).getroot():
+                if ab.tag == 'CAbilResearch':
+                    research.add(ab.get('id'))
+                for ia in ab.findall('InfoArray'):
+                    bt = ia.find('Button')
+                    if bt is not None and bt.get('State') == 'Suppressed':
+                        suppressed.add(f'{ab.get("id")},{ia.get("index")}')
+    base_cards = {}
+    for x in DEPS:
+        f = S / x / 'base.sc2data/gamedata/unitdata.xml'
+        if f.exists():
+            for el in ET.parse(f).getroot():
+                if el.tag == 'CUnit' and el.get('id'):
+                    base_cards.setdefault(el.get('id'), []).extend(slots(el))
+    for el in ET.parse(m / 'base.sc2data/gamedata/unitdata.xml').getroot():
+        for face, cmd, row, col in slots(el):
+            if not (face or '').startswith('RM') or row is None:
+                continue
+            for bface, bcmd, brow, bcol in base_cards.get(el.get('id'), []):
+                # 연구 버튼끼리만 본다 (같은 명령·상태로 바뀌는 칸 공유는 의도된 것)
+                if ((brow, bcol) == (row, col) and bcmd and bcmd != cmd and bcmd not in suppressed
+                        and bcmd.split(',')[0] in research and (cmd or '').split(',')[0] in research):
+                    fail(f'{name} {el.get("id")} {face}({row},{col}): 원작 버튼 {bface}({bcmd})에 가려짐')
     eff = records(dep, 'modeldata.xml')
     mine = records([m], 'modeldata.xml')
     src = records([S / x for x in ALL_SRC], 'modeldata.xml')
