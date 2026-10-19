@@ -302,6 +302,9 @@ void gf_m4_Mercs () {
     TechTreeAbilityAllow(1,AbilityCommand("RM3_TechResearch",5),true);
     TechTreeAbilityAllow(1,AbilityCommand("RM3_TechResearch",6),true);
     TechTreeAbilityAllow(1,AbilityCommand("RM3_TechResearch",8),true);
+    // Armory items not bought are researched in the mission (user 2026-10-19): Kinetic Foam.
+    TechTreeAbilityAllow(1,AbilityCommand("RM3_TechResearch",9),true);
+    TechTreeUpgradeAllow(1,"MarauderLifeBoost",true);
     TechTreeAbilityAllow(1,AbilityCommand("BarracksTechLabResearch",0),false);
     TechTreeAbilityAllow(1,AbilityCommand("BarracksTechLabResearch",1),false);
     TechTreeAbilityAllow(1,AbilityCommand("BarracksTechLabResearch",2),false);
