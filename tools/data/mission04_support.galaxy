@@ -404,6 +404,10 @@ void gf_m4_Init () {
     trigger t;
     int p;
     int ally;
+    // Mission research starts unresearched. Run once on map init, never every tick.
+    libNtve_gf_SetUpgradeLevelForPlayer(1,"RM4_Suppression",0);
+    libNtve_gf_SetUpgradeLevelForPlayer(1,"MarauderMagrailMunitions",0);
+    libNtve_gf_SetUpgradeLevelForPlayer(1,"RM4_Shrapnel",0);
     gv_m4_eggUnit[0]="DehakaTrainEggZergling";
     gv_m4_eggUnit[1]="DehakaTrainEggRoach";
     gv_m4_eggUnit[2]="DehakaTrainEggHydralisk";
