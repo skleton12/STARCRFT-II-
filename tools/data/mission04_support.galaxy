@@ -330,6 +330,15 @@ void gf_m4_Mercs () {
     TechTreeAbilityAllow(1,AbilityCommand("RM3_BayResearch",16),true);
     TechTreeUpgradeAllow(1,"HailstormMissilePods",true);
     TechTreeUpgradeAllow(1,"RMA_DevilDogUnlocked",true);
+    // Co-op research page (0.4.41).
+    TechTreeAbilityAllow(1,AbilityCommand("RM3_TechResearch",14),true);
+    TechTreeUpgradeAllow(1,"RMC_StabilizerCoop",true);
+    TechTreeAbilityAllow(1,AbilityCommand("RM3_TechResearch",15),true);
+    TechTreeUpgradeAllow(1,"RMC_JuggernautCoop",true);
+    TechTreeAbilityAllow(1,AbilityCommand("RM3_BayResearch",17),true);
+    TechTreeUpgradeAllow(1,"RMC_TurretSpeed",true);
+    TechTreeAbilityAllow(1,AbilityCommand("RM3_BayResearch",18),true);
+    TechTreeUpgradeAllow(1,"HiSecAutoTracking",true);
     if (TechTreeUpgradeCount(1,"RMA_DevilDogUnlocked",c_techCountQueuedOrBetter)==0 && TechTreeAbilityIsAllowed(1,AbilityCommand("BarracksTrain",5))) {
         TechTreeUpgradeAddLevel(1,"RMA_DevilDogUnlocked",1);
     }

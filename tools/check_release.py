@@ -116,8 +116,8 @@ def check_map(base, name):
 
     dep = [S / x for x in DEPS] + [m]
     # 같은 칸은 먼저 적힌(원작) 버튼이 보인다. 숨김 처리 안 된 원작 버튼과 칸이 겹친 모드 버튼은 가려진다 (0.4.38 파편탄)
-    def slots(el):
-        for lb in el.iter('LayoutButtons'):
+    def slots(el):  # first page only (cards with a CardId are submenu pages)
+        for lb in [x for card in el.findall('CardLayouts') if not card.get('CardId') for x in card.iter('LayoutButtons')]:
             g = lambda k: lb.get(k) or (lb.find(k).get('value') if lb.find(k) is not None else None)
             yield g('Face'), g('AbilCmd'), g('Row'), g('Column')
     suppressed, research = set(), set()
