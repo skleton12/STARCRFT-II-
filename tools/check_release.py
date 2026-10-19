@@ -134,6 +134,10 @@ def check_map(base, name):
             p = el.get('parent')
             if p and p not in ids.get(Path(f).name, ()) and p not in KNOWN_PARENTS:
                 fail(f'{name} 부모 없음 {el.tag} {el.get("id")} → {p}')
+            # 실제 유닛 액터를 부모로 하면 'UnitBirth.<부모>'까지 물려받아 원래 유닛에 액터가 겹친다 (0.4.24 벙커)
+            if (el.tag == 'CActorUnit' and (el.get('id') or '').startswith('RM') and p
+                    and p in ids.get('unitdata.xml', ())):
+                fail(f'{name} 액터 {el.get("id")}: 실제 유닛 액터 {p}를 부모로 씀 (원래 {p}에 겹쳐 생김)')
 
     actors = ids.get('actordata.xml', set())
     models = set(eff)
