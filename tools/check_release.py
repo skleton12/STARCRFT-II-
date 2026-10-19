@@ -138,6 +138,13 @@ def check_map(base, name):
             if (el.tag == 'CActorUnit' and (el.get('id') or '').startswith('RM') and p
                     and p in ids.get('unitdata.xml', ())):
                 fail(f'{name} 액터 {el.get("id")}: 실제 유닛 액터 {p}를 부모로 씀 (원래 {p}에 겹쳐 생김)')
+    # 효과가 부르는 검증기가 정의되지 않으면 효과가 실행되지 않는다 (0.4.26 파편탄)
+    vals = ids.get('validatordata.xml', set())
+    for el in ET.parse(m / 'base.sc2data/gamedata/effectdata.xml').getroot():
+        for v in el.iter():
+            x = v.get('value') if v.tag == 'ValidatorArray' else v.get('Validator')
+            if x and (x.startswith('RM') or el.get('id', '').startswith('RM')) and x not in vals:
+                fail(f'{name} 효과 {el.get("id")}: 검증기 {x} 정의 없음')
 
     actors = ids.get('actordata.xml', set())
     models = set(eff)
