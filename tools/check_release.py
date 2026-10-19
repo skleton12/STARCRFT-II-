@@ -139,6 +139,14 @@ def check_map(base, name):
                     and p in ids.get('unitdata.xml', ())):
                 fail(f'{name} 액터 {el.get("id")}: 실제 유닛 액터 {p}를 부모로 씀 (원래 {p}에 겹쳐 생김)')
     # 효과가 부르는 검증기가 정의되지 않으면 효과가 실행되지 않는다 (0.4.26 파편탄)
+    # Positive paid-research checks must not inherit Find=false (0.4.33).
+    for v in ET.parse(m / 'base.sc2data/gamedata/validatordata.xml').getroot():
+        if v.get('id') in {'RM4_HaveSuppression', 'RM4_HaveShrapnel'}:
+            f, who = v.find('Find'), v.find('WhichPlayer')
+            if f is None or f.get('value') != '1':
+                fail(f'{name} 연구 검증기 {v.get("id")}: Find=1 없음 (미연구 조건으로 반전)')
+            if who is None or who.get('Value') != 'Caster':
+                fail(f'{name} 연구 검증기 {v.get("id")}: 공격자 Caster 검사 아님')
     vals = ids.get('validatordata.xml', set())
     for el in ET.parse(m / 'base.sc2data/gamedata/effectdata.xml').getroot():
         for v in el.iter():

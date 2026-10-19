@@ -30,6 +30,16 @@ with zipfile.ZipFile(sys.argv[1]) as z:
  req=reqs['RM4_SuppressionLearn'];use=req.find('NodeArray[@index="Use"]').get('Link')
  assert not evaluate(use,{'RM4_HammerUnlocked':1})
  assert evaluate(use,{'RM4_HammerUnlocked':1,'PunisherGrenades':1});cases+=2
+ validators={e.get('id'):e for e in E.fromstring(z.read(gd+'validatordata.xml'))}
+ for vid in ['RM4_HaveSuppression','RM4_HaveShrapnel']:
+  v=validators[vid]
+  assert v.find('Find') is not None and v.find('Find').get('value')=='1', (vid,'inverted requirement')
+  assert v.find('WhichPlayer').get('Value')=='Caster'
+  r=reqs[v.find('Value').get('value')]
+  link=r.find('NodeArray[@index="Use"]').get('Link')
+  upgrade=nodes[link].find('Count').get('Link')
+  assert not evaluate(link,{}) and evaluate(link,{upgrade:1}), (vid,'must only pass after completion')
+  cases+=2
  for name in z.namelist():
   if name.lower().endswith('.xml'):E.fromstring(z.read(name))
  print('PASS:',cases,'research visibility/prerequisite cases; all XML parsed; CRC',z.testzip())

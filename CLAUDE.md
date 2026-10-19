@@ -571,3 +571,10 @@ docs/research/coop_buildings.md 기준으로 3번 미션 원시저그를 실제 
 ## 2026-10-19: 0.4.32 협동전 불곰 연구 미연구 시작 보장
 
 사용자는 연구는 기술실에서 비용을 지불해 진행해야 하며 이미 적용된 상태면 안 된다고 지적했다. 0.4.31에는 세 협동전 업그레이드 자체를 AddLevel하는 코드는 없지만, 새 임무에서 미연구 상태를 명시적으로 보장하지 않았다. gf_m4_Init에서 RM4_Suppression, MarauderMagrailMunitions, RM4_Shrapnel을 한 번만 0으로 초기화한다. 틱/전투 시작/저장 불러오기에서 반복 초기화하지 않는다. 기존 히페리온 구매 처리와 충격탄 선행은 보존한다. 자기가속 탄약 CUpgrade의 표시 LeaderAlias를 MarineSuperStim에서 자기 자신으로 분리한다. 연구비·시간·효과·요구조건은 그대로다. 자동 적용 증상의 최종 원인은 아직 게임에서 확인하지 못했다. 배포 검사 및 14개 조건 검사, 1회 초기화/자동 완료 호출 부재/유료 연구 조건 확인 통과. 실제 게임 미실행.
+
+
+## 2026-10-19: 0.4.33 파편탄·억제탄 연구 조건 반전 수정
+
+사용자는 파편탄이 연구 전 적용되는 듯하며 자기가속은 미확인이라고 답했다. 실제 데이터에서 RM4_HaveShrapnel과 RM4_HaveSuppression의 CValidatorPlayerRequirement에 Find=1이 빠진 결함을 확인했다. 원작 Liberty의 PunisherGrenadesResearched는 Find=1을 명시하고, NoMarineShield/MissingMarineShieldUpgrade는 Find를 생략하여 미연구 상태를 검사한다. 따라서 앞선 0.4.32의 미연구 초기화만으로는 이 결함을 해결하지 못한다. 두 검증기에 Find=1과 WhichPlayer=Caster를 명시하여 공격자의 연구 완료 시에만 파편탄·억제탄 추가 효과가 나오도록 수정했다.
+
+전체 배포 검사에 같은 결함 검사를 추가했다. 요구조건 검사 18사례 통과, 0.4.32에 새 검사를 적용하면 반전 조건으로 실제 실패하는 회귀 재현도 확인했다. ZIP 차이는 metadata와 4번 validatordata.xml뿐이다. 다른 미션, 비용·시간·효과 수치·기술실 배치는 그대로. 실제 SC2 게임/컴파일은 미실행이다. 자기가속 자동 적용은 재현 확정하지 않는다. 상세 docs/testing/2026-10-19_v0433_reversed_research_validator.md.
