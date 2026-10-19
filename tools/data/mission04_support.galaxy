@@ -301,7 +301,6 @@ void gf_m4_Mercs () {
     }
     TechTreeAbilityAllow(1,AbilityCommand("RM3_TechResearch",5),true);
     TechTreeAbilityAllow(1,AbilityCommand("RM3_TechResearch",6),true);
-    TechTreeAbilityAllow(1,AbilityCommand("RM3_TechResearch",7),true);
     TechTreeAbilityAllow(1,AbilityCommand("RM3_TechResearch",8),true);
     TechTreeAbilityAllow(1,AbilityCommand("BarracksTechLabResearch",0),false);
     TechTreeAbilityAllow(1,AbilityCommand("BarracksTechLabResearch",1),false);
@@ -312,7 +311,6 @@ void gf_m4_Mercs () {
     // Campaign tech limits must not hide the mission research (0.4.13).
     TechTreeUpgradeAllow(1,"PunisherGrenades",true);
     TechTreeUpgradeAllow(1,"RM4_Suppression",true);
-    TechTreeUpgradeAllow(1,"MarauderMagrailMunitions",true);
     TechTreeUpgradeAllow(1,"RM4_Shrapnel",true);
 }
 
@@ -406,7 +404,6 @@ void gf_m4_Init () {
     int ally;
     // Mission research starts unresearched. Run once on map init, never every tick.
     libNtve_gf_SetUpgradeLevelForPlayer(1,"RM4_Suppression",0);
-    libNtve_gf_SetUpgradeLevelForPlayer(1,"MarauderMagrailMunitions",0);
     libNtve_gf_SetUpgradeLevelForPlayer(1,"RM4_Shrapnel",0);
     gv_m4_eggUnit[0]="DehakaTrainEggZergling";
     gv_m4_eggUnit[1]="DehakaTrainEggRoach";

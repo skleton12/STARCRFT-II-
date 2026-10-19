@@ -16,7 +16,12 @@ with zipfile.ZipFile(sys.argv[1]) as z:
   if e.tag=='CRequirementNot':return not operands[0]
   raise ValueError(e.tag)
  cases=0
- for idx in range(6,10):
+ assert 'Research8' not in commands, 'excluded Magrail research remains'
+ units=E.fromstring(z.read(gd+'unitdata.xml'))
+ hammer=next(e for e in units if e.get('id')=='HammerSecurity')
+ assert not any(e.get('Link')=='MarauderMagrailMunitions' for e in hammer.findall('AbilArray'))
+ assert not any(e.get('Face')=='RM4_Magrail' or e.get('AbilCmd','').startswith('MarauderMagrailMunitions,') for u in units for e in u.iter('LayoutButtons'))
+ for idx in (6,7,9):
   cmd=commands['Research'+str(idx)];up=cmd.get('Upgrade')
   req=reqs[cmd.find('Button').get('Requirements')]
   show=req.find('NodeArray[@index="Show"]').get('Link')

@@ -578,3 +578,8 @@ docs/research/coop_buildings.md 기준으로 3번 미션 원시저그를 실제 
 사용자는 파편탄이 연구 전 적용되는 듯하며 자기가속은 미확인이라고 답했다. 실제 데이터에서 RM4_HaveShrapnel과 RM4_HaveSuppression의 CValidatorPlayerRequirement에 Find=1이 빠진 결함을 확인했다. 원작 Liberty의 PunisherGrenadesResearched는 Find=1을 명시하고, NoMarineShield/MissingMarineShieldUpgrade는 Find를 생략하여 미연구 상태를 검사한다. 따라서 앞선 0.4.32의 미연구 초기화만으로는 이 결함을 해결하지 못한다. 두 검증기에 Find=1과 WhichPlayer=Caster를 명시하여 공격자의 연구 완료 시에만 파편탄·억제탄 추가 효과가 나오도록 수정했다.
 
 전체 배포 검사에 같은 결함 검사를 추가했다. 요구조건 검사 18사례 통과, 0.4.32에 새 검사를 적용하면 반전 조건으로 실제 실패하는 회귀 재현도 확인했다. ZIP 차이는 metadata와 4번 validatordata.xml뿐이다. 다른 미션, 비용·시간·효과 수치·기술실 배치는 그대로. 실제 SC2 게임/컴파일은 미실행이다. 자기가속 자동 적용은 재현 확정하지 않는다. 상세 docs/testing/2026-10-19_v0433_reversed_research_validator.md.
+
+
+## 2026-10-19: 사용자 확정 — 불곰 자기가속 탄약 제외 (0.4.34)
+
+사용자가 자기가속 탄약을 제외하도록 지시했다. 어부지리의 RM3_TechResearch Research8, RM4_Magrail 기술실 버튼, 망치 경호대의 MarauderMagrailMunitions 능력·버튼 연결, 관련 명령 허용/초기화 및 RM4_Magrail 표시/단축키를 제거했다. 충격탄→억제탄과 파편탄은 유지한다. 기존 코랄의 후예의 별도 RMK_MagrailMunitionsMengsk 체계는 이번 불곰 연구 제외 범위에 포함하지 않으며 그대로 보존한다. 참조가 끊긴 원본 이식 카탈로그·에셋 정의는 다른 연결 보호를 위해 유지한다. 1~3번 미션 바이트 보존, 배포 검사 및 15개 연구 조건 검사 통과. 실제 게임 미실행. 재현 tools/build_v0434.py.
