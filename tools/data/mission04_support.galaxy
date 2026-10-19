@@ -234,10 +234,10 @@ void gf_m4_Produce () {
     int k;
     for (k=0;k<gv_m4_fxN;k+=1) { ActorSend(gv_m4_fx[k],"Destroy"); }
     gv_m4_fxN=0;
-    // Income (trial, same as mission 3): 25 minerals / 8 gas per 2 s tick for each ally.
+    // Income (trial): 25 minerals / 8 gas per 2 s tick; Primal Zerg minerals 40 (0.4.25, user 2026-10-19).
     PlayerModifyPropertyInt(8,c_playerPropMinerals,c_playerPropOperAdd,25);
     PlayerModifyPropertyInt(8,c_playerPropVespene,c_playerPropOperAdd,8);
-    PlayerModifyPropertyInt(9,c_playerPropMinerals,c_playerPropOperAdd,25);
+    PlayerModifyPropertyInt(9,c_playerPropMinerals,c_playerPropOperAdd,40);
     PlayerModifyPropertyInt(9,c_playerPropVespene,c_playerPropOperAdd,8);
     gf_m4_Warp();
     gf_m4_Hatch();
