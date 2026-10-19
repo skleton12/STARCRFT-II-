@@ -302,6 +302,10 @@ bool gt_m4_Tick_Func (bool testConds,bool runActions) {
     int gates;
     if (!runActions || gv_gameOver) { return true; }
     gf_m4_Mercs();
+    // Marauder research shows once Barracks may train Hammer Security (0.4.30), not only while one is alive.
+    if (TechTreeUpgradeCount(1,"RM4_HammerUnlocked",c_techCountQueuedOrBetter)==0 && TechTreeAbilityIsAllowed(1,AbilityCommand("BarracksTrain",3))) {
+        TechTreeUpgradeAddLevel(1,"RM4_HammerUnlocked",1);
+    }
     gf_m4_Skin(8);
     gf_m4_Skin(9);
     if (!gv_m4_ready) { return true; }
@@ -456,6 +460,8 @@ void gf_m4_Init () {
     TechTreeUnitAllow(1,"RMK_MarineMengsk",true);
     TechTreeAbilityAllow(1,AbilityCommand("TerranBuild",12),true);
     TechTreeAbilityAllow(1,AbilityCommand("SummonMercenaries",0),true);
+    TechTreeUnitAllow(1,"MarauderMengsk",true);
+    TechTreeAbilityAllow(1,AbilityCommand("SummonMercenaries",3),true);
     gv_m4_sent8=UnitGroupEmpty();
     gv_m4_sent9=UnitGroupEmpty();
     // Purifier Warp Gates train Purifier units (ally-only link swaps; no Cybernetics Core needed for the ally).
