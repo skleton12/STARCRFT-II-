@@ -305,6 +305,34 @@ void gf_m4_Mercs () {
     // Armory items not bought are researched in the mission (user 2026-10-19): Kinetic Foam.
     TechTreeAbilityAllow(1,AbilityCommand("RM3_TechResearch",9),true);
     TechTreeUpgradeAllow(1,"MarauderLifeBoost",true);
+    TechTreeAbilityAllow(1,AbilityCommand("RM3_TechResearch",10),true);
+    TechTreeUpgradeAllow(1,"StabilizerMedPacks",true);
+    TechTreeAbilityAllow(1,AbilityCommand("RM3_TechResearch",11),true);
+    TechTreeUpgradeAllow(1,"AdvancedMedicTraining",true);
+    TechTreeAbilityAllow(1,AbilityCommand("RM3_TechResearch",12),true);
+    TechTreeUpgradeAllow(1,"BearclawNozzles",true);
+    TechTreeAbilityAllow(1,AbilityCommand("RM3_TechResearch",13),true);
+    TechTreeUpgradeAllow(1,"FirebatJuggernautPlating",true);
+    TechTreeAbilityAllow(1,AbilityCommand("RM3_BayResearch",9),true);
+    TechTreeUpgradeAllow(1,"NeoSteelFrame",true);
+    TechTreeAbilityAllow(1,AbilityCommand("RM3_BayResearch",10),true);
+    TechTreeUpgradeAllow(1,"ProjectileAccelerators",true);
+    TechTreeAbilityAllow(1,AbilityCommand("RM3_BayResearch",11),true);
+    TechTreeUpgradeAllow(1,"DualFusionWelders",true);
+    TechTreeAbilityAllow(1,AbilityCommand("RM3_BayResearch",12),true);
+    TechTreeUpgradeAllow(1,"AdvancedConstruction",true);
+    TechTreeAbilityAllow(1,AbilityCommand("RM3_BayResearch",13),true);
+    TechTreeUpgradeAllow(1,"FireSuppressionSystems",true);
+    TechTreeAbilityAllow(1,AbilityCommand("RM3_BayResearch",14),true);
+    TechTreeUpgradeAllow(1,"OrbitalRelay",true);
+    TechTreeAbilityAllow(1,AbilityCommand("RM3_BayResearch",15),true);
+    TechTreeUpgradeAllow(1,"ReinforcedSuperstructure",true);
+    TechTreeAbilityAllow(1,AbilityCommand("RM3_BayResearch",16),true);
+    TechTreeUpgradeAllow(1,"HailstormMissilePods",true);
+    TechTreeUpgradeAllow(1,"RMA_DevilDogUnlocked",true);
+    if (TechTreeUpgradeCount(1,"RMA_DevilDogUnlocked",c_techCountQueuedOrBetter)==0 && TechTreeAbilityIsAllowed(1,AbilityCommand("BarracksTrain",5))) {
+        TechTreeUpgradeAddLevel(1,"RMA_DevilDogUnlocked",1);
+    }
     TechTreeAbilityAllow(1,AbilityCommand("BarracksTechLabResearch",0),false);
     TechTreeAbilityAllow(1,AbilityCommand("BarracksTechLabResearch",1),false);
     TechTreeAbilityAllow(1,AbilityCommand("BarracksTechLabResearch",2),false);
