@@ -1,0 +1,498 @@
+// Common pack for missions after 3 (docs/missions/nonlinear_design.md). Mission 4 = TTychus01 (Smash and Grab).
+// Allies: 8 Purifiers, 9 Primal Zerg. Enemies: 2 Zerg, 3-6 Tal'darim. 7 is the Protoss relic (neutral).
+// Coordinates and timings are trial values (docs/missions/04_smash_and_grab.md).
+trigger gt_m4_tick;
+trigger gt_m4_arrive;
+bool gv_m4_started;
+bool gv_m4_ready;
+point gv_m4_ping;
+fixed gv_m4_pingUntil;
+point gv_m4_threat8;
+point gv_m4_threat9;
+bool gv_m4_has8;
+bool gv_m4_has9;
+point gv_m4_enemyBase;
+int gv_m4_threatTick;
+fixed gv_m4_nextMake8;
+int gv_m4_turn8;
+int gv_m4_turn9;
+fixed gv_m4_nextWorkers;
+actor[8] gv_m4_fx;
+int gv_m4_fxN;
+string[4] gv_m4_eggUnit;
+
+bool gf_m4_IsEnemy (int p) {
+    return (p>=2 && p<=6);
+}
+
+fixed gf_m4_UnitFood (string kind) {
+    // Data Food values: Primal Zergling 1, every other ally army unit 2.
+    if (kind=="DehakaZerglingLevel2") { return 1.0; }
+    return 2.0;
+}
+
+unitgroup gf_m4_Army (int p) {
+    unitgroup all;
+    unitgroup army;
+    unit u;
+    int i;
+    string t;
+    army=UnitGroupEmpty();
+    all=UnitGroup(null,p,RegionEntireMap(),UnitFilter(0,0,0,0),0);
+    i=UnitGroupCount(all,c_unitCountAll);
+    for (;i>0;i-=1) {
+        u=UnitGroupUnit(all,i);
+        t=UnitGetType(u);
+        if (UnitIsAlive(u) && (t=="ZealotPurifier" || t=="AdeptFenix" || t=="RM21_Energizer" || t=="DehakaZerglingLevel2" || t=="DehakaRavasaur" || t=="DehakaHydraliskLevel2" || t=="DehakaRoachLevel2")) { UnitGroupAdd(army,u); }
+    }
+    return army;
+}
+
+fixed gf_m4_Food (int p) {
+    unitgroup g;
+    int i;
+    fixed total;
+    g=gf_m4_Army(p);
+    total=0.0;
+    i=UnitGroupCount(g,c_unitCountAll);
+    for (;i>0;i-=1) { total+=gf_m4_UnitFood(UnitGetType(UnitGroupUnit(g,i))); }
+    return total;
+}
+
+unitgroup gf_m4_Enemies (point c,fixed r) {
+    unitgroup e;
+    int p;
+    e=UnitGroupEmpty();
+    for (p=2;p<=6;p+=1) {
+        UnitGroupAddUnitGroup(e,UnitGroup(null,p,RegionCircle(c,r),UnitFilter(0,0,0,(1 << (c_targetFilterDead - 32))),0));
+    }
+    return e;
+}
+
+bool gf_m4_EnemyBase (point from) {
+    unitgroup g;
+    unitgroup all;
+    unit u;
+    int p;
+    int i;
+    string t;
+    // Nearest live enemy structure (players 2-6), creep tumors excluded.
+    all=UnitGroupEmpty();
+    for (p=2;p<=6;p+=1) {
+        g=UnitGroup(null,p,RegionEntireMap(),UnitFilter((1 << c_targetFilterStructure),0,0,(1 << (c_targetFilterDead - 32)) | (1 << (c_targetFilterHidden - 32)) | (1 << (c_targetFilterInvulnerable - 32))),0);
+        i=UnitGroupCount(g,c_unitCountAll);
+        for (;i>0;i-=1) {
+            u=UnitGroupUnit(g,i);
+            t=UnitGetType(u);
+            // Food1000 = hidden AI supply dummies at map edges; SuperWarpGate = scripted warp-in gates in a corner (0.4.29).
+            if (t!="CreepTumor" && t!="CreepTumorBurrowed" && t!="CreepTumorQueen" && t!="Food1000" && t!="SuperWarpGate") { UnitGroupAdd(all,u); }
+        }
+    }
+    if (UnitGroupCount(all,c_unitCountAlive)==0) { return false; }
+    gv_m4_enemyBase=UnitGetPosition(UnitGroupClosestToPoint(all,from));
+    return true;
+}
+
+bool gv_m4_raid;
+bool gv_m4_hasBase;
+unitgroup gv_m4_sent8;
+unitgroup gv_m4_sent9;
+
+void gf_m4_FindThreat () {
+    unitgroup raynor;
+    // Threat inside Raynor's base: everyone defends. Otherwise gathered groups attack the nearest enemy structure.
+    raynor=gf_m4_Enemies(Point(78.0,21.0),20.0);
+    gv_m4_raid=(UnitGroupCount(raynor,c_unitCountAlive)>0);
+    if (gv_m4_raid) { gv_m4_threat8=UnitGetPosition(UnitGroupClosestToPoint(raynor,Point(78.0,21.0))); }
+    gv_m4_hasBase=gf_m4_EnemyBase(Point(78.0,21.0));
+}
+
+void gf_m4_Attack (int p) {
+    unitgroup g;
+    unitgroup ready;
+    unitgroup sent;
+    int i;
+    int need;
+    unit u;
+    point rally;
+    // Ping first (30 s); base threat: everyone defends; else gather at the rally and leave together (user 2026-10-18).
+    g=gf_m4_Army(p);
+    i=UnitGroupCount(g,c_unitCountAll);
+    if (p==8) { rally=Point(63.0,29.0); sent=gv_m4_sent8; need=10; } else { rally=Point(66.0,30.0); sent=gv_m4_sent9; need=8; }
+    if (GameGetMissionTime()<gv_m4_pingUntil) {
+        for (;i>0;i-=1) {
+            u=UnitGroupUnit(g,i);
+            if (UnitOrderCount(u)==0) { UnitIssueOrder(u,OrderTargetingPoint(AbilityCommand("attack",0),gv_m4_ping),c_orderQueueReplace); }
+        }
+        return;
+    }
+    if (gv_m4_raid) {
+        for (;i>0;i-=1) {
+            u=UnitGroupUnit(g,i);
+            if (UnitOrderCount(u)==0 || (gv_m4_threatTick==0 && DistanceBetweenPoints(UnitGetPosition(u),gv_m4_threat8)>6.0)) {
+                UnitIssueOrder(u,OrderTargetingPoint(AbilityCommand("attack",0),gv_m4_threat8),c_orderQueueReplace);
+            }
+        }
+        return;
+    }
+    ready=UnitGroupEmpty();
+    for (;i>0;i-=1) {
+        u=UnitGroupUnit(g,i);
+        if (UnitGroupHasUnit(sent,u)) {
+            if (gv_m4_hasBase && UnitOrderCount(u)==0) { UnitIssueOrder(u,OrderTargetingPoint(AbilityCommand("attack",0),gv_m4_enemyBase),c_orderQueueReplace); }
+            continue;
+        }
+        if (DistanceBetweenPoints(UnitGetPosition(u),rally)<=8.0) { UnitGroupAdd(ready,u); }
+        else if (UnitOrderCount(u)==0) { UnitIssueOrder(u,OrderTargetingPoint(AbilityCommand("attack",0),rally),c_orderQueueReplace); }
+    }
+    if (gv_m4_hasBase && UnitGroupCount(ready,c_unitCountAlive)>=need) {
+        i=UnitGroupCount(ready,c_unitCountAll);
+        for (;i>0;i-=1) {
+            u=UnitGroupUnit(ready,i);
+            UnitGroupAdd(sent,u);
+            UnitIssueOrder(u,OrderTargetingPoint(AbilityCommand("attack",0),gv_m4_enemyBase),c_orderQueueReplace);
+        }
+    }
+}
+
+bool gt_m4_Ping_Func (bool testConds,bool runActions) {
+    if (!runActions || EventPlayer()!=1 || gv_gameOver || !gv_m4_ready) { return true; }
+    gv_m4_ping=EventPingPoint();
+    gv_m4_pingUntil=GameGetMissionTime()+30.0;
+    UnitGroupIssueOrder(gf_m4_Army(8),OrderTargetingPoint(AbilityCommand("attack",0),gv_m4_ping),c_orderQueueReplace);
+    UnitGroupIssueOrder(gf_m4_Army(9),OrderTargetingPoint(AbilityCommand("attack",0),gv_m4_ping),c_orderQueueReplace);
+    return true;
+}
+
+void gf_m4_EnemyRules () {
+    int p;
+    int lv_buff;
+    // 7-1 by race (user 2026-10-17): Tal'darim (3-6) get the difficulty buff and level-1 ground upgrades
+    // without stacking on what the original already gave. Zerg (2) get more units instead (attack waves +50%).
+    lv_buff=libNtve_gf_DifficultyValueInt(0,5,15,35);
+    for (p=3;p<=6;p+=1) {
+        PlayerModifyPropertyInt(p,c_playerPropDamageDealtPercent,c_playerPropOperSetTo,100+lv_buff);
+        PlayerModifyPropertyInt(p,c_playerPropDamageTakenPercent,c_playerPropOperSetTo,10000/(100+lv_buff));
+        TechTreeUpgradeAddLevel(p,"ProtossGroundWeaponsLevel1",MaxI(0,1-TechTreeUpgradeCount(p,"ProtossGroundWeaponsLevel1",c_techCountCompleteOnly)));
+        TechTreeUpgradeAddLevel(p,"ProtossGroundArmorsLevel1",MaxI(0,1-TechTreeUpgradeCount(p,"ProtossGroundArmorsLevel1",c_techCountCompleteOnly)));
+    }
+}
+
+void gf_m4_Hatch () {
+    unitgroup posts;
+    unit post;
+    int i;
+    int n;
+    int c;
+    int m;
+    int g;
+    // Each Primal Warden spits an egg (co-op DehakaBarracksTrainEgg): zergling, zergling, roach, hydralisk (trial).
+    posts=UnitGroup("DehakaBarracks",9,RegionEntireMap(),UnitFilter(0,0,0,(1 << (c_targetFilterUnderConstruction - 32))),0);
+    n=UnitGroupCount(posts,c_unitCountAll);
+    // Eggs pay when they hatch (co-op). Do not lay more while 2+ eggs per Warden still wait for money (0.4.23, trial).
+    if (UnitGroupCount(UnitGroup("DehakaTrainEggZergling",9,RegionEntireMap(),UnitFilter(0,0,0,0),0),c_unitCountAlive)+UnitGroupCount(UnitGroup("DehakaTrainEggRoach",9,RegionEntireMap(),UnitFilter(0,0,0,0),0),c_unitCountAlive)+UnitGroupCount(UnitGroup("DehakaTrainEggHydralisk",9,RegionEntireMap(),UnitFilter(0,0,0,0),0),c_unitCountAlive)>=2*n) { return; }
+    for (i=1;i<=n;i+=1) {
+        post=UnitGroupUnit(posts,i);
+        c=ModI(gv_m4_turn9,4)-1;
+        if (c<0) { c=0; }
+        m=UnitTypeGetCost(gv_m4_eggUnit[c],c_unitCostMinerals);
+        g=UnitTypeGetCost(gv_m4_eggUnit[c],c_unitCostVespene);
+        if (gf_m4_Food(9)+2.0>100.0 || PlayerGetPropertyInt(9,c_playerPropMinerals)<m || PlayerGetPropertyInt(9,c_playerPropVespene)<g) { return; }
+        if (UnitIssueOrder(post,Order(AbilityCommand("DehakaBarracksTrainEgg",c)),c_orderQueueReplace)) { gv_m4_turn9+=1; }
+    }
+}
+
+void gf_m4_Warp () {
+    unitgroup gates;
+    unitgroup pylons;
+    unit gate;
+    int n;
+    int i;
+    int k;
+    int cmd;
+    int tries;
+    point at;
+    // Purifier Warp Gates warp in themselves (WarpGateTrain, native cooldown and cost, user 2026-10-18).
+    // Rotation (trial): Sentinel, Sentinel, Fenix Adept, Energizer while fewer than 2. Ally army supply cap 100.
+    gates=UnitGroup("WarpGate",8,RegionEntireMap(),UnitFilter(0,0,0,(1 << (c_targetFilterUnderConstruction - 32))),0);
+    pylons=UnitGroup("Pylon",8,RegionEntireMap(),UnitFilter(0,0,0,(1 << (c_targetFilterUnderConstruction - 32))),0);
+    if (UnitGroupCount(pylons,c_unitCountAlive)==0) { return; }
+    n=UnitGroupCount(gates,c_unitCountAll);
+    for (i=1;i<=n;i+=1) {
+        gate=UnitGroupUnit(gates,i);
+        if (!UnitIsAlive(gate) || gf_m4_Food(8)+2.0>100.0) { continue; }
+        k=ModI(gv_m4_turn8,4);
+        if (k==3 && UnitGroupCount(UnitGroup("RM21_Energizer",8,RegionEntireMap(),UnitFilter(0,0,0,0),0),c_unitCountAlive)>=2) { k=0; }
+        if (k==3) { cmd=5; } else if (k==2) { cmd=1; } else { cmd=0; }
+        for (tries=0;tries<4;tries+=1) {
+            at=PointWithOffsetPolar(UnitGetPosition(UnitGroupRandomUnit(pylons,c_unitCountAlive)),RandomFixed(2.0,5.0),RandomFixed(0.0,360.0));
+            if (UnitIssueOrder(gate,OrderTargetingPoint(AbilityCommand("WarpGateTrain",cmd),at),c_orderQueueReplace)) { gv_m4_turn8+=1; break; }
+        }
+    }
+}
+
+void gf_m4_Produce () {
+    int k;
+    for (k=0;k<gv_m4_fxN;k+=1) { ActorSend(gv_m4_fx[k],"Destroy"); }
+    gv_m4_fxN=0;
+    // Income (trial): 25 minerals / 8 gas per 2 s tick; Primal Zerg minerals 40 (0.4.25, user 2026-10-19).
+    PlayerModifyPropertyInt(8,c_playerPropMinerals,c_playerPropOperAdd,25);
+    PlayerModifyPropertyInt(8,c_playerPropVespene,c_playerPropOperAdd,8);
+    PlayerModifyPropertyInt(9,c_playerPropMinerals,c_playerPropOperAdd,40);
+    PlayerModifyPropertyInt(9,c_playerPropVespene,c_playerPropOperAdd,8);
+    gf_m4_Warp();
+    gf_m4_Hatch();
+}
+
+void gf_m4_Gates () {
+    unitgroup g;
+    int i;
+    // A finished Purifier Gateway turns into a Warp Gate at once (user 2026-10-18: build Warp Gates, max 3).
+    g=UnitGroup("Gateway",8,RegionEntireMap(),UnitFilter(0,0,0,(1 << (c_targetFilterUnderConstruction - 32))),0);
+    i=UnitGroupCount(g,c_unitCountAll);
+    for (;i>0;i-=1) { UnitIssueOrder(UnitGroupUnit(g,i),Order(AbilityCommand("UpgradeToWarpGate",0)),c_orderQueueReplace); }
+    // The player shares control for the Probe but must not use Purifier gates (scripts still order them).
+    g=UnitGroup("Gateway",8,RegionEntireMap(),UnitFilter(0,0,0,0),0);
+    UnitGroupAddUnitGroup(g,UnitGroup("WarpGate",8,RegionEntireMap(),UnitFilter(0,0,0,0),0));
+    i=UnitGroupCount(g,c_unitCountAll);
+    for (;i>0;i-=1) { libNtve_gf_MakeUnitUncommandable(UnitGroupUnit(g,i),true); }
+}
+
+void gf_m4_Skin (int p) {
+    unitgroup g;
+    unit u;
+    int i;
+    // Ally-only co-op look; the Tal'darim keep the normal Protoss models.
+    g=UnitGroup(null,p,RegionEntireMap(),UnitFilter(0,0,0,(1 << (c_targetFilterUnderConstruction - 32))),0);
+    i=UnitGroupCount(g,c_unitCountAll);
+    for (;i>0;i-=1) {
+        u=UnitGroupUnit(g,i);
+        if (!UnitHasBehavior2(u,"RM3_AllySkin")) { UnitBehaviorAdd(u,"RM3_AllySkin",u,1); }
+    }
+}
+
+void gf_m4_Workers () {
+    int have;
+    int i;
+    actor pod;
+    // Primal Drones are used up by morphing: keep at least 2 (free drop every 30 s, trial). Re-warp the Probe if it died.
+    if (GameGetMissionTime()<gv_m4_nextWorkers) { return; }
+    have=UnitGroupCount(UnitGroup("DehakaDrone",9,RegionEntireMap(),UnitFilter(0,0,0,0),0),c_unitCountAlive);
+    if (have<2) {
+        pod=libNtve_gf_CreateModelAtPoint("ZergDropPod",Point(67.0,27.0));
+        ActorSend(pod,"AnimPlay Drop Birth NonLooping");
+        for (i=have;i<2;i+=1) { UnitCreate(1,"DehakaDrone",0,9,Point(66.0+1.0*i,27.0),270.0); }
+        gv_m4_nextWorkers=GameGetMissionTime()+30.0;
+    }
+    if (UnitGroupCount(UnitGroup("Probe",8,RegionEntireMap(),UnitFilter(0,0,0,0),0),c_unitCountAlive)==0) {
+        UnitCreate(1,"Probe",0,8,Point(64.0,26.0),270.0);
+        gv_m4_nextWorkers=GameGetMissionTime()+30.0;
+    }
+}
+
+void gf_m4_Mercs () {
+    // Raynor trains mercenaries only where the original unit is unlocked (nonlinear rule: no assumptions).
+    TechTreeUnitAllow(1,"HammerSecurity",TechTreeAbilityIsAllowed(1,AbilityCommand("BarracksTrain",3)));
+    TechTreeUnitAllow(1,"DevilDog",TechTreeAbilityIsAllowed(1,AbilityCommand("BarracksTrain",5)));
+    // Campaign tech limits must not hide the Hammer Security mission research (0.4.13).
+    TechTreeUpgradeAllow(1,"PunisherGrenades",true);
+}
+
+bool gt_m4_Tick_Func (bool testConds,bool runActions) {
+    int gates;
+    if (!runActions || gv_gameOver) { return true; }
+    gf_m4_Mercs();
+    gf_m4_Skin(8);
+    gf_m4_Skin(9);
+    if (!gv_m4_ready) { return true; }
+    gf_m4_Gates();
+    gf_m4_Produce();
+    gf_m4_Workers();
+    // Post limits (user 2026-10-18): Warp Gates 3, Primal Wardens 3. Counted with queued/in-progress ones.
+    gates=TechTreeUnitCount(8,"Gateway",c_techCountQueuedOrBetter)+TechTreeUnitCount(8,"WarpGate",c_techCountQueuedOrBetter);
+    TechTreeAbilityAllow(8,AbilityCommand("ProtossBuild",3),gates<3);
+    TechTreeAbilityAllow(9,AbilityCommand("DehakaDroneMorph",0),TechTreeUnitCount(9,"DehakaBarracks",c_techCountQueuedOrBetter)<3);
+    gf_m4_FindThreat();
+    gf_m4_Attack(8);
+    gf_m4_Attack(9);
+    gv_m4_threatTick=ModI(gv_m4_threatTick+1,2);
+    return true;
+}
+
+bool gt_m4_TrainMerc_Func (bool testConds,bool runActions) {
+    unit u;
+    string t;
+    if (!runActions) { return true; }
+    // Safety net: an ordinary unit that still comes out for player 1 becomes the mercenary.
+    u=EventUnitProgressUnit();
+    if (u==null || UnitGetOwner(u)!=1) { return true; }
+    t=UnitGetType(u);
+    if (t=="Marine") { libNtve_gf_ReplaceUnit(u,"WarPig",libNtve_ge_ReplaceUnitOptions_OldUnitsRelative); }
+    else if (t=="Medic") { libNtve_gf_ReplaceUnit(u,"MercMedic",libNtve_ge_ReplaceUnitOptions_OldUnitsRelative); }
+    else if (t=="Marauder") { libNtve_gf_ReplaceUnit(u,"HammerSecurity",libNtve_ge_ReplaceUnitOptions_OldUnitsRelative); }
+    else if (t=="Firebat") { libNtve_gf_ReplaceUnit(u,"DevilDog",libNtve_ge_ReplaceUnitOptions_OldUnitsRelative); }
+    return true;
+}
+
+bool gt_m4_Arrive_Func (bool testConds,bool runActions) {
+    actor fx;
+    actor pod;
+    int i;
+    if (!runActions) { return true; }
+    // Ally workers land in Raynor's base; the player builds with them (mission 3 rule kept for 4+). Trial spots.
+    Wait(5.0,c_timeGame);
+    if (gv_gameOver) { return true; }
+    PlayerModifyPropertyInt(8,c_playerPropMinerals,c_playerPropOperSetTo,300);
+    PlayerModifyPropertyInt(8,c_playerPropVespene,c_playerPropOperSetTo,0);
+    PlayerModifyPropertyInt(9,c_playerPropMinerals,c_playerPropOperSetTo,500);
+    PlayerModifyPropertyInt(9,c_playerPropVespene,c_playerPropOperSetTo,0);
+    // Primal Zerg have no supply building; Primal Wardens use 2 supply each (co-op data). Grant 200.
+    PlayerModifyPropertyInt(9,c_playerPropSuppliesMade,c_playerPropOperSetTo,200);
+    PlayerModifyPropertyInt(9,c_playerPropSuppliesLimit,c_playerPropOperSetTo,200);
+    fx=libNtve_gf_CreateModelAtPoint("ProtossUnitBirth",Point(64.0,26.0));
+    ActorSend(fx,"AnimPlay Warp Birth NonLooping");
+    pod=libNtve_gf_CreateModelAtPoint("ZergDropPod",Point(67.0,27.0));
+    ActorSend(pod,"AnimPlay Drop Birth NonLooping");
+    Wait(3.0,c_timeGame);
+    ActorSend(fx,"Destroy");
+    ActorSend(pod,"Destroy");
+    if (gv_gameOver) { return true; }
+    UnitCreate(1,"Probe",0,8,Point(64.0,26.0),270.0);
+    for (i=0;i<4;i+=1) { UnitCreate(1,"DehakaDrone",0,9,Point(66.0+1.0*i,27.0),270.0); }
+    gv_m4_ready=true;
+    TriggerQueueEnter();
+    TransmissionSend(PlayerGroupAll(),TransmissionSourceFromModel("AdjutantPortrait"),PortraitGetGame(),"Talk",null,StringExternal("rm4/AdjName"),StringExternal("rm4/Adj1"),7.0,c_transmissionDurationSet,true);
+    TransmissionSend(PlayerGroupAll(),TransmissionSourceFromModel("AdjutantPortrait"),PortraitGetGame(),"Talk",null,StringExternal("rm4/AdjName"),StringExternal("rm4/Adj2"),7.0,c_transmissionDurationSet,true);
+    TriggerQueueExit();
+    return true;
+}
+
+void gf_m4_Start () {
+    if (gv_m4_started) { return; }
+    gv_m4_started=true;
+    if (TechTreeUpgradeCount(1,"JackhammerConcussionGrenades",c_techCountCompleteOnly)>0) { TechTreeUpgradeAddLevel(1,"PunisherGrenades",MaxI(0,1-TechTreeUpgradeCount(1,"PunisherGrenades",c_techCountCompleteOnly))); }
+    // Hyperion armory purchases count as the matching mission research (no re-buy, no double effect).
+    if (TechTreeUpgradeCount(1,"MarineStimpack",c_techCountCompleteOnly)>0) { TechTreeUpgradeAddLevel(1,"RM3_Stim1",MaxI(0,1-TechTreeUpgradeCount(1,"RM3_Stim1",c_techCountCompleteOnly))); }
+    if (TechTreeUpgradeCount(1,"CombatShield",c_techCountCompleteOnly)>0) { TechTreeAbilityAllow(1,AbilityCommand("RM3_TechResearch",3),false); }
+    gf_m4_EnemyRules();
+    TriggerExecute(gt_m4_arrive,false,false);
+}
+
+void gf_m4_Init () {
+    trigger t;
+    int p;
+    int ally;
+    gv_m4_eggUnit[0]="DehakaTrainEggZergling";
+    gv_m4_eggUnit[1]="DehakaTrainEggRoach";
+    gv_m4_eggUnit[2]="DehakaTrainEggHydralisk";
+    for (ally=8;ally<=9;ally+=1) {
+        for (p=1;p<=9;p+=1) {
+            if (p!=ally) {
+                if (gf_m4_IsEnemy(p)) { libNtve_gf_SetAlliance(ally,p,libNtve_ge_AllianceSetting_Enemy); libNtve_gf_SetAlliance(p,ally,libNtve_ge_AllianceSetting_Enemy); }
+                else if (p==1 || p>=8) { libNtve_gf_SetAlliance(ally,p,libNtve_ge_AllianceSetting_AllyWithSharedVision); libNtve_gf_SetAlliance(p,ally,libNtve_ge_AllianceSetting_AllyWithSharedVision); }
+                else { libNtve_gf_SetAlliance(ally,p,libNtve_ge_AllianceSetting_Neutral); libNtve_gf_SetAlliance(p,ally,libNtve_ge_AllianceSetting_Neutral); }
+            }
+        }
+        CatalogFieldValueSet(c_gameCatalogUnit,"Pylon","Food",ally,"100");
+    }
+    TechTreeUpgradeAddLevel(8,"Charge",1);
+    TechTreeUpgradeAddLevel(8,"ZealotResearchReconstruction",1);
+    TechTreeUpgradeAddLevel(8,"WarpGateResearch",1);
+    CatalogLinkReplace(8,c_gameCatalogUnit,"Zealot","ZealotPurifier");
+    CatalogLinkReplace(8,c_gameCatalogUnit,"Stalker","AdeptFenix");
+    // The player moves/builds with the ally workers (control + spending shared). Ally army types are Uncommandable.
+    libNtve_gf_SetAlliance(8,1,libNtve_ge_AllianceSetting_AllyWithSharedVisionAndControl);
+    // One-way (user 2026-10-18): the player builds with ally workers on ally money; allies never spend Raynor's money or use his units.
+    PlayerSetAlliance(8,c_allianceIdSpend,1,true);
+    PlayerSetAlliance(1,c_allianceIdSpend,8,false);
+    PlayerSetAlliance(1,c_allianceIdControl,8,false);
+    libNtve_gf_SetAlliance(9,1,libNtve_ge_AllianceSetting_AllyWithSharedVisionAndControl);
+    // One-way (user 2026-10-18): the player builds with ally workers on ally money; allies never spend Raynor's money or use his units.
+    PlayerSetAlliance(9,c_allianceIdSpend,1,true);
+    PlayerSetAlliance(1,c_allianceIdSpend,9,false);
+    PlayerSetAlliance(1,c_allianceIdControl,9,false);
+    // The Purifier Probe builds Pylons, Gateways (become Warp Gates) and Photon Cannons only. No Nexus/Core needed.
+    TechTreeUnitAllow(8,"Pylon",true);
+    TechTreeUnitAllow(8,"Gateway",true);
+    TechTreeUnitAllow(8,"WarpGate",true);
+    TechTreeUnitAllow(8,"PhotonCannon",true);
+    TechTreeUnitAllow(8,"Nexus",false);
+    TechTreeUnitAllow(8,"Assimilator",false);
+    TechTreeUnitAllow(8,"Forge",false);
+    TechTreeUnitAllow(8,"FleetBeacon",false);
+    TechTreeUnitAllow(8,"TwilightCouncil",false);
+    TechTreeUnitAllow(8,"Stargate",false);
+    TechTreeUnitAllow(8,"TemplarArchive",false);
+    TechTreeUnitAllow(8,"DarkShrine",false);
+    TechTreeUnitAllow(8,"RoboticsBay",false);
+    TechTreeUnitAllow(8,"RoboticsFacility",false);
+    TechTreeUnitAllow(8,"CyberneticsCore",false);
+    CatalogFieldValueSet(c_gameCatalogAbil,"ProtossBuild","InfoArray[Build4].Button.Requirements",8,"");
+    CatalogFieldValueSet(c_gameCatalogAbil,"ProtossBuild","InfoArray[Build4].Button.State",8,"Available");
+    CatalogFieldValueSet(c_gameCatalogAbil,"ProtossBuild","InfoArray[Build8].Button.Requirements",8,"");
+    CatalogFieldValueSet(c_gameCatalogAbil,"UpgradeToWarpGate","CmdButtonArray[Execute].Requirements",8,"");
+    t=TriggerCreate("gt_m4_TrainMerc_Func");
+    TriggerAddEventUnitTrainProgress(t,null,c_unitProgressStageComplete);
+    // Raynor's barracks train mercenaries (player 1 only data). No unit-wide link replace: it broke box selection.
+    CatalogFieldValueSet(c_gameCatalogAbil,"BarracksTrain","InfoArray[Train1].Unit[0]",1,"WarPig");
+    CatalogFieldValueSet(c_gameCatalogAbil,"BarracksTrain","InfoArray[Train4].Unit[0]",1,"HammerSecurity");
+    CatalogFieldValueSet(c_gameCatalogAbil,"BarracksTrain","InfoArray[Train5].Unit[0]",1,"MercMedic");
+    CatalogFieldValueSet(c_gameCatalogAbil,"BarracksTrain","InfoArray[Train6].Unit[0]",1,"DevilDog");
+    CatalogFieldValueSet(c_gameCatalogButton,"Marine","Icon",1,"Assets\\Textures\\BTN-Unit-Terran-MarineMercenary.dds");
+    CatalogFieldValueSet(c_gameCatalogButton,"Marine","Name",1,"Button/Name/RM_WarPig");
+    CatalogFieldValueSet(c_gameCatalogButton,"Marine","Tooltip",1,"Button/Tooltip/RM_WarPig");
+    CatalogFieldValueSet(c_gameCatalogButton,"Medic","Icon",1,"Assets\\Textures\\btn-unit-terran-medicelite.dds");
+    CatalogFieldValueSet(c_gameCatalogButton,"Medic","Name",1,"Button/Name/MercMedic");
+    CatalogFieldValueSet(c_gameCatalogButton,"Medic","Tooltip",1,"Button/Tooltip/RM_MercMedic");
+    CatalogFieldValueSet(c_gameCatalogButton,"Marauder","Icon",1,"Assets\\Textures\\btn-unit-terran-maraudermercenary.dds");
+    CatalogFieldValueSet(c_gameCatalogButton,"Marauder","Name",1,"Button/Name/RM_HammerSecurity");
+    CatalogFieldValueSet(c_gameCatalogButton,"Marauder","Tooltip",1,"Button/Tooltip/RM_HammerSecurity");
+    CatalogFieldValueSet(c_gameCatalogButton,"FlameMech","Icon",1,"Assets\\Textures\\btn-unit-terran-firebatmercenary.dds");
+    CatalogFieldValueSet(c_gameCatalogButton,"FlameMech","Name",1,"Button/Name/RM_DevilDog");
+    CatalogFieldValueSet(c_gameCatalogButton,"FlameMech","Tooltip",1,"Button/Tooltip/RM_DevilDog");
+    TechTreeUnitAllow(1,"WarPig",true);
+    TechTreeUnitAllow(1,"MercMedic",true);
+    TechTreeUnitAllow(1,"MercCompound",true);
+    TechTreeUnitAllow(1,"RMK_MarineMengsk",true);
+    TechTreeAbilityAllow(1,AbilityCommand("TerranBuild",12),true);
+    TechTreeAbilityAllow(1,AbilityCommand("SummonMercenaries",0),true);
+    gv_m4_sent8=UnitGroupEmpty();
+    gv_m4_sent9=UnitGroupEmpty();
+    // Purifier Warp Gates train Purifier units (ally-only link swaps; no Cybernetics Core needed for the ally).
+    CatalogLinkReplace(8,c_gameCatalogUnit,"Sentry","RM21_Energizer");
+    // Purifier Warp Gates store 3 warp-ins (user 2026-10-18); recharge uses the original cooldown times.
+    CatalogFieldValueSet(c_gameCatalogAbil,"WarpGateTrain","InfoArray[Train1].Charge.Link",8,"RM4_WarpGate");
+    CatalogFieldValueSet(c_gameCatalogAbil,"WarpGateTrain","InfoArray[Train1].Charge.CountMax",8,"3");
+    CatalogFieldValueSet(c_gameCatalogAbil,"WarpGateTrain","InfoArray[Train1].Charge.CountStart",8,"3");
+    CatalogFieldValueSet(c_gameCatalogAbil,"WarpGateTrain","InfoArray[Train1].Charge.CountUse",8,"1");
+    CatalogFieldValueSet(c_gameCatalogAbil,"WarpGateTrain","InfoArray[Train1].Charge.TimeUse",8,"23");
+    CatalogFieldValueSet(c_gameCatalogAbil,"WarpGateTrain","InfoArray[Train1].Cooldown.TimeUse",8,"0");
+    CatalogFieldValueSet(c_gameCatalogAbil,"WarpGateTrain","InfoArray[Train2].Charge.Link",8,"RM4_WarpGate");
+    CatalogFieldValueSet(c_gameCatalogAbil,"WarpGateTrain","InfoArray[Train2].Charge.CountMax",8,"3");
+    CatalogFieldValueSet(c_gameCatalogAbil,"WarpGateTrain","InfoArray[Train2].Charge.CountStart",8,"3");
+    CatalogFieldValueSet(c_gameCatalogAbil,"WarpGateTrain","InfoArray[Train2].Charge.CountUse",8,"1");
+    CatalogFieldValueSet(c_gameCatalogAbil,"WarpGateTrain","InfoArray[Train2].Charge.TimeUse",8,"32");
+    CatalogFieldValueSet(c_gameCatalogAbil,"WarpGateTrain","InfoArray[Train2].Cooldown.TimeUse",8,"0");
+    CatalogFieldValueSet(c_gameCatalogAbil,"WarpGateTrain","InfoArray[Train6].Charge.Link",8,"RM4_WarpGate");
+    CatalogFieldValueSet(c_gameCatalogAbil,"WarpGateTrain","InfoArray[Train6].Charge.CountMax",8,"3");
+    CatalogFieldValueSet(c_gameCatalogAbil,"WarpGateTrain","InfoArray[Train6].Charge.CountStart",8,"3");
+    CatalogFieldValueSet(c_gameCatalogAbil,"WarpGateTrain","InfoArray[Train6].Charge.CountUse",8,"1");
+    CatalogFieldValueSet(c_gameCatalogAbil,"WarpGateTrain","InfoArray[Train6].Charge.TimeUse",8,"32");
+    CatalogFieldValueSet(c_gameCatalogAbil,"WarpGateTrain","InfoArray[Train6].Cooldown.TimeUse",8,"0");
+    CatalogFieldValueSet(c_gameCatalogAbil,"WarpGateTrain","InfoArray[Train2].Button.Requirements",8,"");
+    CatalogFieldValueSet(c_gameCatalogAbil,"WarpGateTrain","InfoArray[Train6].Button.Requirements",8,"");
+    TechTreeUnitAllow(8,"ZealotPurifier",true);
+    TechTreeUnitAllow(8,"AdeptFenix",true);
+    TechTreeUnitAllow(8,"RM21_Energizer",true);
+    TechTreeUnitAllow(8,"Zealot",true);
+    TechTreeUnitAllow(8,"Stalker",true);
+    TechTreeUnitAllow(8,"Sentry",true);
+    gf_m4_Mercs();
+    PlayerSetColorIndex(8,2,true);
+    PlayerSetColorIndex(9,7,true);
+    gt_m4_arrive=TriggerCreate("gt_m4_Arrive_Func");
+    gt_m4_tick=TriggerCreate("gt_m4_Tick_Func");
+    TriggerAddEventTimePeriodic(gt_m4_tick,2.0,c_timeGame);
+    t=TriggerCreate("gt_m4_Ping_Func");
+    TriggerAddEventPing(t,1);
+}
