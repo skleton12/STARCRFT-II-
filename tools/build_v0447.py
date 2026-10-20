@@ -23,7 +23,7 @@ M4 = 'TTychus01.SC2Map/'
 GD = M4 + 'base.sc2data/gamedata/'
 KO = M4 + 'kokr.sc2data/localizeddata/gamestrings.txt'
 # (button face, research index, row, col)
-SHOW = [('RM4_Suppression', 7, 0, 2), ('RM4_Shrapnel', 9, 0, 3),
+SHOW = [('RM4_Suppression', 7, 0, 2), ('RM4_Shrapnel', 9, 1, 2),
         ('RMA_StabilizerMedPacks', 11, 1, 4), ('RMA_FirebatJuggernautPlating', 14, 2, 2)]
 TIPS = {
     'RM4_Concussive': '<c val="ffff8a">망치 경호대</c>의 공격에 맞은 적의 이동 속도가 잠시 느려집니다. /// '
