@@ -91,6 +91,13 @@ def strings(path):
 def check_map(base, name):
     m = base / name
     print(name)
+    # And/Or 피연산자는 늘어나는 배열이라 번호(index)를 붙이면 엔진이 무시해 조건이 거짓이 된다 (0.4.49, 연구 버튼 숨김).
+    # 블리자드 원본 And/Or 약 780개는 번호를 안 쓴다. Not/Eq 같은 고정 칸 노드는 번호가 맞다.
+    rn = m / 'base.sc2data/gamedata/requirementnodedata.xml'
+    if rn.exists():
+        for el in ET.parse(rn).getroot():
+            if el.tag in ('CRequirementAnd', 'CRequirementOr') and any(o.get('index') is not None for o in el.findall('OperandArray')):
+                fail(f'{name} {el.tag} {el.get("id")}: OperandArray에 index가 있음 (엔진이 무시 → 조건 거짓)')
     # 모드 버튼(RM3_/RM4_)은 단축키가 있어야 한다 (사용자 요청 2026-10-18)
     hk = m / 'kokr.sc2data/localizeddata/gamehotkeys.txt'
     have = hk.read_text(encoding='utf-8-sig') if hk.exists() else ''
