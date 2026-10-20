@@ -169,6 +169,26 @@ def check_map(base, name):
             if (el.tag == 'CActorUnit' and (el.get('id') or '').startswith('RM') and p
                     and p in ids.get('unitdata.xml', ())):
                 fail(f'{name} 액터 {el.get("id")}: 실제 유닛 액터 {p}를 부모로 씀 (원래 {p}에 겹쳐 생김)')
+    # 효과 묶음이 정의 안 된 효과를 부르면 그 부분이 조용히 빠진다 (0.4.43 이지스 근위대 파편)
+    # 무기 공격 줄기(무기 효과 → 투사체 명중 효과 → 묶음)만 본다. 이식에서 일부러 끊은 사령관 효과는 대상이 아니다.
+    effs = ids.get('effectdata.xml', set())
+    eroot = ET.parse(m / 'base.sc2data/gamedata/effectdata.xml').getroot()
+    chain = set()
+    wd = m / 'base.sc2data/gamedata/weapondata.xml'
+    if wd.exists():
+        for w in ET.parse(wd).getroot():
+            for x in w.iter('Effect'):
+                if x.get('value'): chain.add(x.get('value'))
+    for el in eroot:
+        if el.tag == 'CEffectLaunchMissile' and el.get('id') in chain:
+            for x in el.iter('ImpactEffect'):
+                if x.get('value'): chain.add(x.get('value'))
+    for el in eroot:
+        if el.tag == 'CEffectSet' and el.get('id') in chain:
+            for ea in el.findall('EffectArray'):
+                x = ea.get('value')
+                if x and x not in effs:
+                    fail(f'{name} 효과 묶음 {el.get("id")}: 효과 {x} 정의 없음')
     # 효과가 부르는 검증기가 정의되지 않으면 효과가 실행되지 않는다 (0.4.26 파편탄)
     # Positive paid-research checks must not inherit Find=false (0.4.33).
     for v in ET.parse(m / 'base.sc2data/gamedata/validatordata.xml').getroot():
