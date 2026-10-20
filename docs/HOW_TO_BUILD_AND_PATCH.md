@@ -78,6 +78,7 @@ python3 tools/port_units.py <풀어 놓은 맵 폴더> --liberty-base --skip-exi
 | 용병 효과가 안 들어감 | 원작 업그레이드가 일반 유닛 ID만 바꿈 (예: 전투 안정제 → `heal`) | 맵에서 용병 효과(`MercMedicHeal`)까지 넓힘 |
 | 공통 스크립트 파일이 빈 파일이 됨 | `open(p,'wb').write(f(open(p,'rb').read()))` — 쓰기 열기가 먼저 파일을 비움 | 먼저 읽고, 그다음 `with open(p,'wb')` 로 쓴다 |
 | 조건 없는 연구 버튼이 안 보임 (0.4.44, 원인 후보) | Show 요구조건을 피연산자 하나짜리 `CRequirementAnd` 로 감쌈. 보이던 레이저 조준은 곧바로 Not 노드 | Show 는 `…NotQueued` 노드를 직접 가리킨다. 게임 확인 전이라 후보 |
+| 연구 효과가 검증기 때문에 자꾸 어긋남 | 효과마다 "연구했나" 검증기를 붙임 (Find·스토리 층 덮어쓰기 사고) | Raynor Rogue 방식: 효과 반경 등 값을 0으로 두고 연구 업그레이드의 `EffectArray Reference="Effect,ID,AreaArray[0].Radius" Value="3"` 로 켠다. 연출만 액터 `ValidateEffect` 로 거른다 (0.4.46 파편) |
 | push 거절 | 다른 AI가 같은 브랜치에 먼저 올림 | fetch → 내용 확인 → 그 위에 다음 버전으로 다시 빌드. 강제 푸시 금지 |
 
 ## 7. 배포 전 체크리스트
