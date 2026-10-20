@@ -19,16 +19,42 @@ int gv_m4_turn9;
 fixed gv_m4_nextWorkers;
 actor[8] gv_m4_fx;
 int gv_m4_fxN;
-string[4] gv_m4_eggUnit;
+string[6] gv_m4_eggUnit;
+int gv_m4_warpExtra;
+int[9] gv_m4_warpSlot;
+int gv_m4_eggExtra;
+int[2] gv_m4_eggSlot;
 
 bool gf_m4_IsEnemy (int p) {
     return (p>=2 && p<=6);
 }
 
 fixed gf_m4_UnitFood (string kind) {
-    // Data Food values: Primal Zergling 1, every other ally army unit 2.
-    if (kind=="DehakaZerglingLevel2") { return 1.0; }
-    return 2.0;
+    // Supply from the unit data (0.4.42: new ally kinds use 2-8).
+    return UnitTypeGetProperty(kind,c_unitPropSuppliesUsed);
+}
+
+// Raynor unlock -> ally unlock (user table 2026-10-20). k = 0..8, see tools/build_v0442.py.
+bool gf_m4_Unl (int k) {
+    if (k==0) { return TechTreeAbilityIsAllowed(1,AbilityCommand("FactoryTrain",5)); }
+    if (k==1) { return TechTreeAbilityIsAllowed(1,AbilityCommand("FactoryTrain",7)); }
+    if (k==2) { return TechTreeAbilityIsAllowed(1,AbilityCommand("FactoryTrain",1)); }
+    if (k==3) { return TechTreeAbilityIsAllowed(1,AbilityCommand("FactoryTrain",6)); }
+    if (k==4) { return TechTreeAbilityIsAllowed(1,AbilityCommand("StarportTrain",4)); }
+    if (k==5) { return TechTreeAbilityIsAllowed(1,AbilityCommand("StarportTrain",1)) || TechTreeAbilityIsAllowed(1,AbilityCommand("StarportTrain",7)); }
+    if (k==6) { return TechTreeAbilityIsAllowed(1,AbilityCommand("StarportTrain",6)) || TechTreeAbilityIsAllowed(1,AbilityCommand("StarportTrain",2)); }
+    if (k==7) { return TechTreeAbilityIsAllowed(1,AbilityCommand("FactoryTrain",4)); }
+    if (k==8) { return TechTreeAbilityIsAllowed(1,AbilityCommand("StarportTrain",3)); }
+    return false;
+}
+
+bool gf_m4_IsArmyType (unit u) {
+    string t;
+    // Ally army = non-structure units that use supply, minus workers and eggs (interceptors, locusts, creepers use none).
+    t=UnitGetType(u);
+    if (t=="Probe" || t=="DehakaDrone" || StringContains(t,"DehakaTrainEgg",c_stringBegin,c_stringCase)) { return false; }
+    if (!UnitFilterMatch(u,UnitGetOwner(u),UnitFilter(0,0,(1 << c_targetFilterStructure),0))) { return false; }
+    return UnitTypeGetProperty(t,c_unitPropSuppliesUsed)>0.0;
 }
 
 unitgroup gf_m4_Army (int p) {
@@ -43,7 +69,7 @@ unitgroup gf_m4_Army (int p) {
     for (;i>0;i-=1) {
         u=UnitGroupUnit(all,i);
         t=UnitGetType(u);
-        if (UnitIsAlive(u) && (t=="ZealotPurifier" || t=="AdeptFenix" || t=="RM21_Energizer" || t=="DehakaZerglingLevel2" || t=="DehakaRavasaur" || t=="DehakaHydraliskLevel2" || t=="DehakaRoachLevel2")) { UnitGroupAdd(army,u); }
+        if (UnitIsAlive(u) && gf_m4_IsArmyType(u)) { UnitGroupAdd(army,u); }
     }
     return army;
 }
@@ -190,14 +216,16 @@ void gf_m4_Hatch () {
     posts=UnitGroup("DehakaBarracks",9,RegionEntireMap(),UnitFilter(0,0,0,(1 << (c_targetFilterUnderConstruction - 32))),0);
     n=UnitGroupCount(posts,c_unitCountAll);
     // Eggs pay when they hatch (co-op). Do not lay more while 2+ eggs per Warden still wait for money (0.4.23, trial).
-    if (UnitGroupCount(UnitGroup("DehakaTrainEggZergling",9,RegionEntireMap(),UnitFilter(0,0,0,0),0),c_unitCountAlive)+UnitGroupCount(UnitGroup("DehakaTrainEggRoach",9,RegionEntireMap(),UnitFilter(0,0,0,0),0),c_unitCountAlive)+UnitGroupCount(UnitGroup("DehakaTrainEggHydralisk",9,RegionEntireMap(),UnitFilter(0,0,0,0),0),c_unitCountAlive)>=2*n) { return; }
+    if (UnitGroupCount(UnitGroup("DehakaTrainEggZergling",9,RegionEntireMap(),UnitFilter(0,0,0,0),0),c_unitCountAlive)+UnitGroupCount(UnitGroup("DehakaTrainEggRoach",9,RegionEntireMap(),UnitFilter(0,0,0,0),0),c_unitCountAlive)+UnitGroupCount(UnitGroup("DehakaTrainEggHydralisk",9,RegionEntireMap(),UnitFilter(0,0,0,0),0),c_unitCountAlive)+UnitGroupCount(UnitGroup("DehakaTrainEggSwarmHost",9,RegionEntireMap(),UnitFilter(0,0,0,0),0),c_unitCountAlive)+UnitGroupCount(UnitGroup("DehakaTrainEggUltralisk",9,RegionEntireMap(),UnitFilter(0,0,0,0),0),c_unitCountAlive)>=2*n) { return; }
     for (i=1;i<=n;i+=1) {
         post=UnitGroupUnit(posts,i);
-        c=ModI(gv_m4_turn9,4)-1;
+        // Base order zergling, zergling, roach, hydralisk; unlocked host/ultralisk join the rotation (trial).
+        c=ModI(gv_m4_turn9,4+gv_m4_eggExtra)-1;
         if (c<0) { c=0; }
+        if (c>=3) { c=gv_m4_eggSlot[c-3]; }
         m=UnitTypeGetCost(gv_m4_eggUnit[c],c_unitCostMinerals);
         g=UnitTypeGetCost(gv_m4_eggUnit[c],c_unitCostVespene);
-        if (gf_m4_Food(9)+2.0>100.0 || PlayerGetPropertyInt(9,c_playerPropMinerals)<m || PlayerGetPropertyInt(9,c_playerPropVespene)<g) { return; }
+        if (gf_m4_Food(9)+6.0>100.0 || PlayerGetPropertyInt(9,c_playerPropMinerals)<m || PlayerGetPropertyInt(9,c_playerPropVespene)<g) { return; }
         if (UnitIssueOrder(post,Order(AbilityCommand("DehakaBarracksTrainEgg",c)),c_orderQueueReplace)) { gv_m4_turn9+=1; }
     }
 }
@@ -221,14 +249,85 @@ void gf_m4_Warp () {
     for (i=1;i<=n;i+=1) {
         gate=UnitGroupUnit(gates,i);
         if (!UnitIsAlive(gate) || gf_m4_Food(8)+2.0>100.0) { continue; }
-        k=ModI(gv_m4_turn8,4);
+        // Base: Sentinel, Sentinel, Fenix Adept, Energizer (<2). Unlocked Purifier units join the rotation (0.4.42, trial).
+        k=ModI(gv_m4_turn8,4+gv_m4_warpExtra);
         if (k==3 && UnitGroupCount(UnitGroup("RM21_Energizer",8,RegionEntireMap(),UnitFilter(0,0,0,0),0),c_unitCountAlive)>=2) { k=0; }
-        if (k==3) { cmd=5; } else if (k==2) { cmd=1; } else { cmd=0; }
+        if (k>=4) { cmd=gv_m4_warpSlot[k-4]; } else if (k==3) { cmd=5; } else if (k==2) { cmd=1; } else { cmd=0; }
         for (tries=0;tries<4;tries+=1) {
             at=PointWithOffsetPolar(UnitGetPosition(UnitGroupRandomUnit(pylons,c_unitCountAlive)),RandomFixed(2.0,5.0),RandomFixed(0.0,360.0));
             if (UnitIssueOrder(gate,OrderTargetingPoint(AbilityCommand("WarpGateTrain",cmd),at),c_orderQueueReplace)) { gv_m4_turn8+=1; break; }
         }
     }
+}
+
+void gf_m4_Unlocks () {
+    int k;
+    int p;
+    string[9] merge;
+    // Purifier warp slots WarpGateTrain 6..14 (Train7..15): player 8 only, when Raynor has the matching unlock.
+    for (k=0;k<=8;k+=1) {
+        for (p=2;p<=7;p+=1) { TechTreeAbilityAllow(p,AbilityCommand("WarpGateTrain",6+k),false); }
+        TechTreeAbilityAllow(1,AbilityCommand("WarpGateTrain",6+k),false);
+        TechTreeAbilityAllow(8,AbilityCommand("WarpGateTrain",6+k),gf_m4_Unl(k));
+    }
+    TechTreeUnitAllow(8,"StalkerPurifier",true);
+    TechTreeUnitAllow(8,"Immortal",true);
+    TechTreeUnitAllow(8,"ColossusPurifier",true);
+    TechTreeUnitAllow(8,"Disruptor",true);
+    TechTreeUnitAllow(8,"PhoenixPurifier",true);
+    TechTreeUnitAllow(8,"Scout",true);
+    TechTreeUnitAllow(8,"SentryFenix",true);
+    TechTreeUnitAllow(8,"TempestPurifier",true);
+    TechTreeUnitAllow(8,"Carrier",true);
+    // Primal Warden eggs: host (Train4) with Siege Tank, ultralisk (Train5) with Goliath.
+    TechTreeAbilityAllow(9,AbilityCommand("DehakaBarracksTrainEgg",3),gf_m4_Unl(2));
+    TechTreeAbilityAllow(9,AbilityCommand("DehakaBarracksTrainEgg",4),gf_m4_Unl(3));
+    for (k=0;k<=8;k+=1) { merge[k]=""; }
+    merge[0]="PrimalZerglingRavasaurMerge";
+    merge[1]="PrimalRoachLevel2Merge";
+    merge[4]="PrimalHydraliskToMutalisk";
+    merge[5]="PrimalRoachGuardianMerge";
+    merge[6]="PrimalHydraliskImpalerMerge";
+    merge[7]="PrimalUltraliskLevel2Merge";
+    merge[8]="PrimalSwarmHostMerge";
+    for (k=0;k<=8;k+=1) {
+        if (merge[k]!="") {
+            TechTreeAbilityAllow(9,AbilityCommand(merge[k],0),gf_m4_Unl(k));
+            TechTreeAbilityAllow(9,AbilityCommand(merge[k],1),gf_m4_Unl(k));
+        }
+    }
+}
+
+void gf_m4_MergeOne (string src, string abil) {
+    unitgroup g;
+    unit a;
+    unit b;
+    unit u;
+    int i;
+    // Primal combat (original merge ability): only idle units, keep at least 2 of the source kind (trial).
+    g=UnitGroup(src,9,RegionEntireMap(),UnitFilter(0,0,0,(1 << (c_targetFilterDead - 32))),0);
+    if (UnitGroupCount(g,c_unitCountAlive)<4) { return; }
+    a=null;
+    b=null;
+    i=UnitGroupCount(g,c_unitCountAll);
+    for (;i>0;i-=1) {
+        u=UnitGroupUnit(g,i);
+        if (UnitOrderCount(u)==0) {
+            if (a==null) { a=u; }
+            else if (b==null && DistanceBetweenPoints(UnitGetPosition(a),UnitGetPosition(u))<8.0) { b=u; }
+        }
+    }
+    if (a!=null && b!=null) { UnitIssueOrder(a,OrderTargetingUnit(AbilityCommand(abil,1),b),c_orderQueueReplace); }
+}
+
+void gf_m4_Merges () {
+    if (gf_m4_Unl(0)) { gf_m4_MergeOne("DehakaZerglingLevel2","PrimalZerglingRavasaurMerge"); }
+    if (gf_m4_Unl(1) && (!gf_m4_Unl(5) || ModI(gv_m4_turn9,2)==0)) { gf_m4_MergeOne("DehakaRoachLevel2","PrimalRoachLevel2Merge"); }
+    else if (gf_m4_Unl(5)) { gf_m4_MergeOne("DehakaRoachLevel2","PrimalRoachGuardianMerge"); }
+    if (gf_m4_Unl(4) && (!gf_m4_Unl(6) || ModI(gv_m4_turn9,2)==0)) { gf_m4_MergeOne("DehakaHydraliskLevel2","PrimalHydraliskToMutalisk"); }
+    else if (gf_m4_Unl(6)) { gf_m4_MergeOne("DehakaHydraliskLevel2","PrimalHydraliskImpalerMerge"); }
+    if (gf_m4_Unl(7)) { gf_m4_MergeOne("DehakaUltraliskLevel2","PrimalUltraliskLevel2Merge"); }
+    if (gf_m4_Unl(8)) { gf_m4_MergeOne("DehakaSwarmHost","PrimalSwarmHostMerge"); }
 }
 
 void gf_m4_Produce () {
@@ -240,8 +339,17 @@ void gf_m4_Produce () {
     PlayerModifyPropertyInt(8,c_playerPropVespene,c_playerPropOperAdd,8);
     PlayerModifyPropertyInt(9,c_playerPropMinerals,c_playerPropOperAdd,40);
     PlayerModifyPropertyInt(9,c_playerPropVespene,c_playerPropOperAdd,8);
+    // Unlocked extras for this tick's rotation.
+    gv_m4_warpExtra=0;
+    for (k=0;k<=8;k+=1) {
+        if (gf_m4_Unl(k)) { gv_m4_warpSlot[gv_m4_warpExtra]=6+k; gv_m4_warpExtra+=1; }
+    }
+    gv_m4_eggExtra=0;
+    if (gf_m4_Unl(2)) { gv_m4_eggSlot[gv_m4_eggExtra]=3; gv_m4_eggExtra+=1; }
+    if (gf_m4_Unl(3)) { gv_m4_eggSlot[gv_m4_eggExtra]=4; gv_m4_eggExtra+=1; }
     gf_m4_Warp();
     gf_m4_Hatch();
+    gf_m4_Merges();
 }
 
 void gf_m4_Gates () {
@@ -268,6 +376,7 @@ void gf_m4_Skin (int p) {
     for (;i>0;i-=1) {
         u=UnitGroupUnit(g,i);
         if (!UnitHasBehavior2(u,"RM3_AllySkin")) { UnitBehaviorAdd(u,"RM3_AllySkin",u,1); }
+        if (gf_m4_IsArmyType(u)) { libNtve_gf_MakeUnitUncommandable(u,true); }  // new ally kinds (0.4.42)
     }
 }
 
@@ -366,6 +475,7 @@ bool gt_m4_Tick_Func (bool testConds,bool runActions) {
     gf_m4_Skin(9);
     if (!gv_m4_ready) { return true; }
     gf_m4_Gates();
+    gf_m4_Unlocks();
     gf_m4_Produce();
     gf_m4_Workers();
     // Post limits (user 2026-10-18): Warp Gates 3, Primal Wardens 3. Counted with queued/in-progress ones.
@@ -448,6 +558,8 @@ void gf_m4_Init () {
     gv_m4_eggUnit[0]="DehakaTrainEggZergling";
     gv_m4_eggUnit[1]="DehakaTrainEggRoach";
     gv_m4_eggUnit[2]="DehakaTrainEggHydralisk";
+    gv_m4_eggUnit[3]="DehakaTrainEggSwarmHost";
+    gv_m4_eggUnit[4]="DehakaTrainEggUltralisk";
     for (ally=8;ally<=9;ally+=1) {
         for (p=1;p<=9;p+=1) {
             if (p!=ally) {
