@@ -1,0 +1,5744 @@
+{
+  "date": "2026-10-20",
+  "source_commit": "6dd323aae4209a01f110719a00b4e8f7a88389bc",
+  "notes": [
+    "Unit records are layer fragments, not merged gameplay stats.",
+    "FenixCommander/KaraxCommander and commander unlocks can change shared IDs.",
+    "Definition existence alone does not prove commander production; use the accompanying guide."
+  ],
+  "units": [
+    {
+      "group": "fenix_regular",
+      "unit_id": "ZealotPurifier",
+      "records": [
+        {
+          "layer": "void.sc2campaign",
+          "parent": "Zealot",
+          "abilities": [
+            "ZealotPurifierReviveDeath"
+          ],
+          "weapons": [],
+          "buttons": [],
+          "name_key": "Unit/Name/ZealotPurifier"
+        },
+        {
+          "layer": "starcoop/starcoop.sc2mod",
+          "parent": null,
+          "abilities": [
+            "FenixKaldalisZealotMorph"
+          ],
+          "weapons": [],
+          "buttons": [],
+          "name_key": null
+        }
+      ]
+    },
+    {
+      "group": "fenix_regular",
+      "unit_id": "AdeptFenix",
+      "records": [
+        {
+          "layer": "starcoop/starcoop.sc2mod",
+          "parent": null,
+          "abilities": [
+            "stop",
+            "attack",
+            "move",
+            "Warpable",
+            "ProgressRally",
+            "FenixTalisAdeptMorph",
+            "FenixAdeptShadeCooldown"
+          ],
+          "weapons": [
+            "Adept"
+          ],
+          "buttons": [
+            {
+              "Face": "Move",
+              "Type": "AbilCmd",
+              "AbilCmd": "move,Move",
+              "Row": "0",
+              "Column": "0"
+            },
+            {
+              "Face": "Stop",
+              "Type": "AbilCmd",
+              "AbilCmd": "stop,Stop",
+              "Row": "0",
+              "Column": "1"
+            },
+            {
+              "Face": "MoveHoldPosition",
+              "Type": "AbilCmd",
+              "AbilCmd": "move,HoldPos",
+              "Row": "0",
+              "Column": "2"
+            },
+            {
+              "Face": "Attack",
+              "Type": "AbilCmd",
+              "AbilCmd": "attack,Execute",
+              "Row": "0",
+              "Column": "4"
+            },
+            {
+              "Face": "MovePatrol",
+              "Type": "AbilCmd",
+              "AbilCmd": "move,Patrol",
+              "Row": "0",
+              "Column": "3"
+            },
+            {
+              "Face": "Rally",
+              "Type": "AbilCmd",
+              "AbilCmd": "ProgressRally,Rally1",
+              "Row": "2",
+              "Column": "4"
+            },
+            {
+              "Face": "Cancel",
+              "Type": "AbilCmd",
+              "AbilCmd": "AdeptPhaseShiftCancel,Execute",
+              "Row": "2",
+              "Column": "4"
+            }
+          ],
+          "name_key": null
+        }
+      ]
+    },
+    {
+      "group": "fenix_regular",
+      "unit_id": "SentryFenix",
+      "records": [
+        {
+          "layer": "starcoop/starcoop.sc2mod",
+          "parent": null,
+          "abilities": [
+            "attack",
+            "stop",
+            "move",
+            "Warpable",
+            "ProgressRally",
+            "FenixSentryGuardianZone",
+            "SentryFenixPhasingMode"
+          ],
+          "weapons": [
+            "EnergizerWeapon"
+          ],
+          "buttons": [
+            {
+              "Face": "Move",
+              "Type": "AbilCmd",
+              "AbilCmd": "move,Move",
+              "Row": "0",
+              "Column": "0"
+            },
+            {
+              "Face": "Stop",
+              "Type": "AbilCmd",
+              "AbilCmd": "stop,Stop",
+              "Row": "0",
+              "Column": "1"
+            },
+            {
+              "Face": "MoveHoldPosition",
+              "Type": "AbilCmd",
+              "AbilCmd": "move,HoldPos",
+              "Row": "0",
+              "Column": "2"
+            },
+            {
+              "Face": "MovePatrol",
+              "Type": "AbilCmd",
+              "AbilCmd": "move,Patrol",
+              "Row": "0",
+              "Column": "3"
+            },
+            {
+              "Face": "Attack",
+              "Type": "AbilCmd",
+              "AbilCmd": "attack,Execute",
+              "Row": "0",
+              "Column": "4"
+            },
+            {
+              "Face": "Rally",
+              "Type": "AbilCmd",
+              "AbilCmd": "ProgressRally,Rally1",
+              "Row": "2",
+              "Column": "4"
+            },
+            {
+              "Face": "FenixSentryGuardianZone",
+              "Type": "AbilCmd",
+              "AbilCmd": "FenixSentryGuardianZone,Execute",
+              "Row": "2",
+              "Column": "0"
+            },
+            {
+              "Face": "FenixSentryPhasingMode",
+              "Type": "AbilCmd",
+              "AbilCmd": "SentryFenixPhasingMode,Execute",
+              "Row": "2",
+              "Column": "2"
+            }
+          ],
+          "name_key": null
+        }
+      ]
+    },
+    {
+      "group": "fenix_regular",
+      "unit_id": "Immortal",
+      "records": [
+        {
+          "layer": "liberty.sc2mod",
+          "parent": null,
+          "abilities": [
+            "stop",
+            "attack",
+            "move",
+            "Warpable"
+          ],
+          "weapons": [
+            "PhaseDisruptors"
+          ],
+          "buttons": [
+            {
+              "Face": "Move",
+              "Type": "AbilCmd",
+              "AbilCmd": "move,Move",
+              "Row": "0",
+              "Column": "0"
+            },
+            {
+              "Face": "Stop",
+              "Type": "AbilCmd",
+              "AbilCmd": "stop,Stop",
+              "Row": "0",
+              "Column": "1"
+            },
+            {
+              "Face": "MoveHoldPosition",
+              "Type": "AbilCmd",
+              "AbilCmd": "move,HoldPos",
+              "Row": "0",
+              "Column": "2"
+            },
+            {
+              "Face": "Attack",
+              "Type": "AbilCmd",
+              "AbilCmd": "attack,Execute",
+              "Row": "0",
+              "Column": "4"
+            },
+            {
+              "Face": "MovePatrol",
+              "Type": "AbilCmd",
+              "AbilCmd": "move,Patrol",
+              "Row": "0",
+              "Column": "3"
+            }
+          ],
+          "name_key": null
+        },
+        {
+          "layer": "void.sc2campaign",
+          "parent": null,
+          "abilities": [
+            "ImmortalBarrierBase"
+          ],
+          "weapons": [],
+          "buttons": [
+            {
+              "index": "5",
+              "Face": "ImmortalBarrierBase",
+              "Type": "AbilCmd",
+              "AbilCmd": "ImmortalBarrierBase,Execute"
+            }
+          ],
+          "name_key": null
+        },
+        {
+          "layer": "starcoop/starcoop.sc2mod",
+          "parent": null,
+          "abilities": [
+            "FenixTaldarinImmortalMorph"
+          ],
+          "weapons": [
+            "PhaseDisruptorsLookAt"
+          ],
+          "buttons": [],
+          "name_key": null
+        }
+      ]
+    },
+    {
+      "group": "fenix_regular",
+      "unit_id": "ColossusPurifier",
+      "records": [
+        {
+          "layer": "void.sc2campaign",
+          "parent": "Colossus",
+          "abilities": [],
+          "weapons": [
+            "ColossusPurifierThermalLances"
+          ],
+          "buttons": [],
+          "name_key": "Unit/Name/ColossusPurifier"
+        },
+        {
+          "layer": "starcoop/starcoop.sc2mod",
+          "parent": null,
+          "abilities": [
+            "FenixWarbringerColossusMorph"
+          ],
+          "weapons": [
+            "ThermalLances"
+          ],
+          "buttons": [],
+          "name_key": null
+        }
+      ]
+    },
+    {
+      "group": "fenix_regular",
+      "unit_id": "Disruptor",
+      "records": [
+        {
+          "layer": "starcoop/starcoop.sc2mod",
+          "parent": null,
+          "abilities": [
+            "FenixPurificationNova",
+            "attack"
+          ],
+          "weapons": [
+            "DisruptorPsiBlast"
+          ],
+          "buttons": [
+            {
+              "index": "7",
+              "Face": "FenixPurificationNova",
+              "AbilCmd": "FenixPurificationNova,Execute"
+            },
+            {
+              "Face": "PurificationNovaTargeted",
+              "Type": "AbilCmd",
+              "AbilCmd": "PurificationNovaTargeted,Execute",
+              "Row": "2",
+              "Column": "0"
+            }
+          ],
+          "name_key": null
+        }
+      ]
+    },
+    {
+      "group": "fenix_regular",
+      "unit_id": "Scout",
+      "records": [
+        {
+          "layer": "liberty.sc2campaign",
+          "parent": null,
+          "abilities": [
+            "stop",
+            "attack",
+            "move",
+            "Warpable"
+          ],
+          "weapons": [
+            "ScoutGround",
+            "ScoutAir"
+          ],
+          "buttons": [
+            {
+              "Face": "Move",
+              "Type": "AbilCmd",
+              "AbilCmd": "move,Move",
+              "Row": "0",
+              "Column": "0"
+            },
+            {
+              "Face": "Stop",
+              "Type": "AbilCmd",
+              "AbilCmd": "stop,Stop",
+              "Row": "0",
+              "Column": "1"
+            },
+            {
+              "Face": "MoveHoldPosition",
+              "Type": "AbilCmd",
+              "AbilCmd": "move,HoldPos",
+              "Row": "0",
+              "Column": "2"
+            },
+            {
+              "Face": "Attack",
+              "Type": "AbilCmd",
+              "AbilCmd": "attack,Execute",
+              "Row": "0",
+              "Column": "4"
+            },
+            {
+              "Face": "MovePatrol",
+              "Type": "AbilCmd",
+              "AbilCmd": "move,Patrol",
+              "Row": "0",
+              "Column": "3"
+            }
+          ],
+          "name_key": null
+        },
+        {
+          "layer": "void.sc2campaign",
+          "parent": null,
+          "abilities": [],
+          "weapons": [],
+          "buttons": [],
+          "name_key": null
+        },
+        {
+          "layer": "starcoop/starcoop.sc2mod",
+          "parent": null,
+          "abilities": [
+            "FenixMojoScoutMorph"
+          ],
+          "weapons": [
+            "ScoutAir",
+            "ScoutGround"
+          ],
+          "buttons": [],
+          "name_key": null
+        }
+      ]
+    },
+    {
+      "group": "fenix_regular",
+      "unit_id": "Carrier",
+      "records": [
+        {
+          "layer": "liberty.sc2mod",
+          "parent": null,
+          "abilities": [
+            "stop",
+            "attack",
+            "move",
+            "CarrierHangar",
+            "HangarQueue5",
+            "Warpable"
+          ],
+          "weapons": [
+            "InterceptorLaunch"
+          ],
+          "buttons": [
+            {
+              "Face": "Move",
+              "Type": "AbilCmd",
+              "AbilCmd": "move,Move",
+              "Row": "0",
+              "Column": "0"
+            },
+            {
+              "Face": "Stop",
+              "Type": "AbilCmd",
+              "AbilCmd": "stop,Stop",
+              "Row": "0",
+              "Column": "1"
+            },
+            {
+              "Face": "MoveHoldPosition",
+              "Type": "AbilCmd",
+              "AbilCmd": "move,HoldPos",
+              "Row": "0",
+              "Column": "2"
+            },
+            {
+              "Face": "Attack",
+              "Type": "AbilCmd",
+              "AbilCmd": "attack,Execute",
+              "Row": "0",
+              "Column": "4"
+            },
+            {
+              "Face": "MovePatrol",
+              "Type": "AbilCmd",
+              "AbilCmd": "move,Patrol",
+              "Row": "0",
+              "Column": "3"
+            },
+            {
+              "Face": "Interceptor",
+              "Type": "AbilCmd",
+              "AbilCmd": "CarrierHangar,Ammo1",
+              "Row": "2",
+              "Column": "0"
+            },
+            {
+              "Face": "Cancel",
+              "Type": "AbilCmd",
+              "AbilCmd": "HangarQueue5,CancelLast",
+              "Row": "2",
+              "Column": "4"
+            }
+          ],
+          "name_key": null
+        },
+        {
+          "layer": "void.sc2campaign",
+          "parent": null,
+          "abilities": [
+            "ProgressRally"
+          ],
+          "weapons": [],
+          "buttons": [
+            {
+              "index": "7",
+              "Face": "Rally",
+              "Type": "AbilCmd",
+              "AbilCmd": "ProgressRally,Rally1",
+              "Requirements": "",
+              "Column": "4"
+            }
+          ],
+          "name_key": null
+        },
+        {
+          "layer": "starcoop/starcoop.sc2mod",
+          "parent": null,
+          "abilities": [
+            "FenixClolarionCarrierMorph"
+          ],
+          "weapons": [],
+          "buttons": [],
+          "name_key": null
+        }
+      ]
+    },
+    {
+      "group": "fenix_regular",
+      "unit_id": "Observer",
+      "records": [
+        {
+          "layer": "liberty.sc2mod",
+          "parent": null,
+          "abilities": [
+            "stop",
+            "move",
+            "Warpable"
+          ],
+          "weapons": [],
+          "buttons": [
+            {
+              "Face": "Move",
+              "Type": "AbilCmd",
+              "AbilCmd": "move,Move",
+              "Row": "0",
+              "Column": "0"
+            },
+            {
+              "Face": "Stop",
+              "Type": "AbilCmd",
+              "AbilCmd": "stop,Stop",
+              "Row": "0",
+              "Column": "1"
+            },
+            {
+              "Face": "MoveHoldPosition",
+              "Type": "AbilCmd",
+              "AbilCmd": "move,HoldPos",
+              "Row": "0",
+              "Column": "2"
+            },
+            {
+              "Face": "MovePatrol",
+              "Type": "AbilCmd",
+              "AbilCmd": "move,Patrol",
+              "Row": "0",
+              "Column": "3"
+            },
+            {
+              "Face": "Attack",
+              "Type": "AbilCmd",
+              "AbilCmd": "attack,Execute",
+              "Row": "0",
+              "Column": "4"
+            },
+            {
+              "Face": "AcquireMove",
+              "Type": "AbilCmd",
+              "AbilCmd": "move,AcquireMove",
+              "Row": "0",
+              "Column": "4"
+            }
+          ],
+          "name_key": null
+        },
+        {
+          "layer": "void.sc2campaign",
+          "parent": null,
+          "abilities": [],
+          "weapons": [],
+          "buttons": [],
+          "name_key": null
+        },
+        {
+          "layer": "starcoop/starcoop.sc2mod",
+          "parent": null,
+          "abilities": [
+            "attack",
+            "Warpable",
+            "ObserverMorphtoObserverSiege"
+          ],
+          "weapons": [],
+          "buttons": [
+            {
+              "Face": "MorphtoObserverSiege",
+              "Type": "AbilCmd",
+              "AbilCmd": "ObserverMorphtoObserverSiege,Execute",
+              "Row": "2",
+              "Column": "2"
+            }
+          ],
+          "name_key": null
+        }
+      ]
+    },
+    {
+      "group": "fenix_regular",
+      "unit_id": "Probe",
+      "records": [
+        {
+          "layer": "liberty.sc2mod",
+          "parent": null,
+          "abilities": [
+            "stop",
+            "attack",
+            "move",
+            "ProtossBuild",
+            "ProbeHarvest"
+          ],
+          "weapons": [
+            "ParticleBeam"
+          ],
+          "buttons": [
+            {
+              "Face": "Move",
+              "Type": "AbilCmd",
+              "AbilCmd": "move,Move",
+              "Row": "0",
+              "Column": "0"
+            },
+            {
+              "Face": "Stop",
+              "Type": "AbilCmd",
+              "AbilCmd": "stop,Stop",
+              "Row": "0",
+              "Column": "1"
+            },
+            {
+              "Face": "MoveHoldPosition",
+              "Type": "AbilCmd",
+              "AbilCmd": "move,HoldPos",
+              "Row": "0",
+              "Column": "2"
+            },
+            {
+              "Face": "AttackWorker",
+              "Type": "AbilCmd",
+              "AbilCmd": "attack,Execute",
+              "Row": "0",
+              "Column": "4"
+            },
+            {
+              "Face": "MovePatrol",
+              "Type": "AbilCmd",
+              "AbilCmd": "move,Patrol",
+              "Row": "0",
+              "Column": "3"
+            },
+            {
+              "Face": "GatherProt",
+              "Type": "AbilCmd",
+              "AbilCmd": "ProbeHarvest,Gather",
+              "Row": "1",
+              "Column": "0"
+            },
+            {
+              "Face": "ReturnCargo",
+              "Type": "AbilCmd",
+              "AbilCmd": "ProbeHarvest,Return",
+              "Row": "1",
+              "Column": "1"
+            },
+            {
+              "Face": "Nexus",
+              "Type": "AbilCmd",
+              "AbilCmd": "ProtossBuild,Build1",
+              "Row": "0",
+              "Column": "0"
+            },
+            {
+              "Face": "Assimilator",
+              "Type": "AbilCmd",
+              "AbilCmd": "ProtossBuild,Build3",
+              "Row": "0",
+              "Column": "1"
+            },
+            {
+              "Face": "Pylon",
+              "Type": "AbilCmd",
+              "AbilCmd": "ProtossBuild,Build2",
+              "Row": "0",
+              "Column": "2"
+            },
+            {
+              "Face": "Gateway",
+              "Type": "AbilCmd",
+              "AbilCmd": "ProtossBuild,Build4",
+              "Row": "1",
+              "Column": "0"
+            },
+            {
+              "Face": "Forge",
+              "Type": "AbilCmd",
+              "AbilCmd": "ProtossBuild,Build5",
+              "Row": "1",
+              "Column": "1"
+            },
+            {
+              "Face": "CyberneticsCore",
+              "Type": "AbilCmd",
+              "AbilCmd": "ProtossBuild,Build15",
+              "Row": "2",
+              "Column": "0"
+            },
+            {
+              "Face": "PhotonCannon",
+              "Type": "AbilCmd",
+              "AbilCmd": "ProtossBuild,Build8",
+              "Row": "2",
+              "Column": "1"
+            },
+            {
+              "Face": "Stargate",
+              "Type": "AbilCmd",
+              "AbilCmd": "ProtossBuild,Build10",
+              "Row": "0",
+              "Column": "1"
+            },
+            {
+              "Face": "TemplarArchive",
+              "Type": "AbilCmd",
+              "AbilCmd": "ProtossBuild,Build11",
+              "Row": "1",
+              "Column": "0"
+            },
+            {
+              "Face": "RoboticsFacility",
+              "Type": "AbilCmd",
+              "AbilCmd": "ProtossBuild,Build14",
+              "Row": "0",
+              "Column": "2"
+            },
+            {
+              "Face": "FleetBeacon",
+              "Type": "AbilCmd",
+              "AbilCmd": "ProtossBuild,Build6",
+              "Row": "1",
+              "Column": "1"
+            },
+            {
+              "Face": "DarkShrine",
+              "Type": "AbilCmd",
+              "AbilCmd": "ProtossBuild,Build12",
+              "Row": "2",
+              "Column": "0"
+            },
+            {
+              "Face": "TwilightCouncil",
+              "Type": "AbilCmd",
+              "AbilCmd": "ProtossBuild,Build7",
+              "Row": "0",
+              "Column": "0"
+            },
+            {
+              "Face": "RoboticsBay",
+              "Type": "AbilCmd",
+              "AbilCmd": "ProtossBuild,Build13",
+              "Row": "1",
+              "Column": "2"
+            }
+          ],
+          "name_key": null
+        },
+        {
+          "layer": "void.sc2campaign",
+          "parent": null,
+          "abilities": [
+            "Warpable",
+            "ProgressRally"
+          ],
+          "weapons": [],
+          "buttons": [
+            {
+              "Face": "AutomatedAssimilator",
+              "Type": "AbilCmd",
+              "AbilCmd": "ProtossBuild,Build24",
+              "Row": "0",
+              "Column": "1"
+            },
+            {
+              "Face": "WarpInWarpGate",
+              "Type": "AbilCmd",
+              "AbilCmd": "ProtossBuild,Build26",
+              "Row": "1",
+              "Column": "0"
+            },
+            {
+              "Face": "KhaydarinMonolith",
+              "Type": "AbilCmd",
+              "AbilCmd": "ProtossBuild,Build25",
+              "Row": "2",
+              "Column": "2"
+            },
+            {
+              "Face": "ShieldBattery",
+              "Type": "AbilCmd",
+              "AbilCmd": "ProtossBuild,Build22",
+              "Row": "1",
+              "Column": "2"
+            },
+            {
+              "index": "1",
+              "Face": "TemplarArchive",
+              "Type": "AbilCmd",
+              "AbilCmd": "ProtossBuild,Build11",
+              "Row": "0",
+              "Column": "0"
+            },
+            {
+              "index": "5",
+              "Face": "DarkShrine",
+              "Type": "AbilCmd",
+              "AbilCmd": "ProtossBuild,Build12",
+              "Row": "1",
+              "Column": "0"
+            },
+            {
+              "index": "6",
+              "Face": "RoboticsBay",
+              "Type": "AbilCmd",
+              "AbilCmd": "ProtossBuild,Build13",
+              "Row": "1",
+              "Column": "2"
+            },
+            {
+              "index": "7",
+              "Face": "WarpInStarWarpGate",
+              "Type": "AbilCmd",
+              "AbilCmd": "ProtossBuild,Build27",
+              "Row": "0",
+              "Column": "1"
+            },
+            {
+              "Face": "WarpInRoboticsWarpFacility",
+              "Type": "AbilCmd",
+              "AbilCmd": "ProtossBuild,Build28",
+              "Row": "0",
+              "Column": "2"
+            }
+          ],
+          "name_key": null
+        },
+        {
+          "layer": "starcoop/starcoop.sc2mod",
+          "parent": null,
+          "abilities": [
+            "MapObjectInteract",
+            "MutatorRemoveWorkerSleep",
+            "SprayProtoss",
+            "ZeratulBuild"
+          ],
+          "weapons": [],
+          "buttons": [
+            {
+              "Face": "MapObjectInteract",
+              "Type": "AbilCmd",
+              "AbilCmd": "MapObjectInteract,Execute",
+              "Row": "0",
+              "Column": "0"
+            },
+            {
+              "Face": "MutatorWorkerSleep",
+              "Type": "AbilCmd",
+              "AbilCmd": "MutatorRemoveWorkerSleep,Execute",
+              "Row": "2",
+              "Column": "3"
+            },
+            {
+              "Face": "Spray",
+              "Type": "AbilCmd",
+              "AbilCmd": "SprayProtoss,Execute",
+              "Row": "2",
+              "Column": "3"
+            },
+            {
+              "index": "3",
+              "Face": "WarpInWarpGate",
+              "AbilCmd": "ProtossBuild,Build30"
+            },
+            {
+              "index": "11",
+              "Face": "Gateway",
+              "AbilCmd": "ProtossBuild,Build4",
+              "Column": "0"
+            },
+            {
+              "Face": "Gateway",
+              "Type": "AbilCmd",
+              "AbilCmd": "ProtossBuild,Build26",
+              "Row": "1",
+              "Column": "0"
+            },
+            {
+              "Face": "ZeratulGateway",
+              "Type": "AbilCmd",
+              "AbilCmd": "ZeratulBuild,Build2",
+              "Row": "1",
+              "Column": "0"
+            },
+            {
+              "Face": "ZeratulCyberneticsCore",
+              "Type": "AbilCmd",
+              "AbilCmd": "ZeratulBuild,Build3",
+              "Row": "2",
+              "Column": "0"
+            },
+            {
+              "Face": "ZeratulPhotonCannon",
+              "Type": "AbilCmd",
+              "AbilCmd": "ZeratulBuild,Build4",
+              "Row": "2",
+              "Column": "1"
+            },
+            {
+              "Face": "ShieldBattery",
+              "Type": "AbilCmd",
+              "AbilCmd": "ProtossBuild,Build22",
+              "Row": "1",
+              "Column": "2"
+            },
+            {
+              "index": "0",
+              "Face": "WarpInStarWarpGate",
+              "AbilCmd": "ProtossBuild,Build19"
+            },
+            {
+              "index": "2",
+              "Face": "WarpInRoboticsWarpFacility",
+              "AbilCmd": "ProtossBuild,Build18"
+            },
+            {
+              "index": "8",
+              "Face": "Stargate",
+              "AbilCmd": "ProtossBuild,Build10",
+              "Column": "1"
+            },
+            {
+              "Face": "RoboticsFacility",
+              "Type": "AbilCmd",
+              "AbilCmd": "ProtossBuild,Build14",
+              "Row": "0",
+              "Column": "2"
+            },
+            {
+              "Face": "ZeratulRoboticsFacility",
+              "Type": "AbilCmd",
+              "AbilCmd": "ZeratulBuild,Build7",
+              "Row": "0",
+              "Column": "2"
+            },
+            {
+              "Face": "ZeratulDarkShrine",
+              "Type": "AbilCmd",
+              "AbilCmd": "ZeratulBuild,Build5",
+              "Row": "2",
+              "Column": "0"
+            },
+            {
+              "Face": "ZeratulRoboticsBay",
+              "Type": "AbilCmd",
+              "AbilCmd": "ZeratulBuild,Build6",
+              "Row": "1",
+              "Column": "2"
+            },
+            {
+              "Face": "TwilightCouncil",
+              "Type": "AbilCmd",
+              "AbilCmd": "ProtossBuild,Build7",
+              "Row": "0",
+              "Column": "0"
+            }
+          ],
+          "name_key": null
+        }
+      ]
+    },
+    {
+      "group": "fenix_hero",
+      "unit_id": "FenixCoop",
+      "records": [
+        {
+          "layer": "starcoop/starcoop.sc2mod",
+          "parent": null,
+          "abilities": [
+            "stop",
+            "attack",
+            "move",
+            "ProgressRally",
+            "Warpable",
+            "FenixSoAWhirlwind",
+            "FenixThunderousChargeCoop",
+            "VoidShieldCapacitor"
+          ],
+          "weapons": [
+            "FenixSOAWeapon",
+            "FenixChampionWhirlwind"
+          ],
+          "buttons": [
+            {
+              "Face": "Move",
+              "Type": "AbilCmd",
+              "AbilCmd": "move,Move",
+              "Row": "0",
+              "Column": "0"
+            },
+            {
+              "Face": "Stop",
+              "Type": "AbilCmd",
+              "AbilCmd": "stop,Stop",
+              "Row": "0",
+              "Column": "1"
+            },
+            {
+              "Face": "MoveHoldPosition",
+              "Type": "AbilCmd",
+              "AbilCmd": "move,HoldPos",
+              "Row": "0",
+              "Column": "2"
+            },
+            {
+              "Face": "Attack",
+              "Type": "AbilCmd",
+              "AbilCmd": "attack,Execute",
+              "Row": "0",
+              "Column": "4"
+            },
+            {
+              "Face": "MovePatrol",
+              "Type": "AbilCmd",
+              "AbilCmd": "move,Patrol",
+              "Row": "0",
+              "Column": "3"
+            },
+            {
+              "Face": "Rally",
+              "Type": "AbilCmd",
+              "AbilCmd": "ProgressRally,Rally1",
+              "Row": "2",
+              "Column": "4"
+            },
+            {
+              "Face": "FenixThunderousChargeCoop",
+              "Type": "AbilCmd",
+              "AbilCmd": "FenixThunderousChargeCoop,Execute",
+              "Row": "2",
+              "Column": "0"
+            },
+            {
+              "Face": "FenixWhirlwind",
+              "Type": "AbilCmd",
+              "AbilCmd": "FenixSoAWhirlwind,Execute",
+              "Row": "2",
+              "Column": "2"
+            },
+            {
+              "Face": "VoidShieldCapacitor",
+              "Type": "AbilCmd",
+              "AbilCmd": "VoidShieldCapacitor,Execute",
+              "Row": "2",
+              "Column": "3"
+            }
+          ],
+          "name_key": null
+        }
+      ]
+    },
+    {
+      "group": "fenix_hero",
+      "unit_id": "FenixDragoon",
+      "records": [
+        {
+          "layer": "starcoop/starcoop.sc2mod",
+          "parent": null,
+          "abilities": [
+            "stop",
+            "attack",
+            "move",
+            "ProgressRally",
+            "ChargedBuster",
+            "FenixDragoonArsenalOvercharge",
+            "FenixDragoonAirBomb"
+          ],
+          "weapons": [
+            "FenixDragoon"
+          ],
+          "buttons": [
+            {
+              "Face": "Move",
+              "Type": "AbilCmd",
+              "AbilCmd": "move,Move",
+              "Row": "0",
+              "Column": "0"
+            },
+            {
+              "Face": "Stop",
+              "Type": "AbilCmd",
+              "AbilCmd": "stop,Stop",
+              "Row": "0",
+              "Column": "1"
+            },
+            {
+              "Face": "MoveHoldPosition",
+              "Type": "AbilCmd",
+              "AbilCmd": "move,HoldPos",
+              "Row": "0",
+              "Column": "2"
+            },
+            {
+              "Face": "Attack",
+              "Type": "AbilCmd",
+              "AbilCmd": "attack,Execute",
+              "Row": "0",
+              "Column": "4"
+            },
+            {
+              "Face": "MovePatrol",
+              "Type": "AbilCmd",
+              "AbilCmd": "move,Patrol",
+              "Row": "0",
+              "Column": "3"
+            },
+            {
+              "Face": "Rally",
+              "Type": "AbilCmd",
+              "AbilCmd": "ProgressRally,Rally1",
+              "Row": "2",
+              "Column": "4"
+            },
+            {
+              "Face": "FenixDragoonChargedBuster",
+              "Type": "AbilCmd",
+              "AbilCmd": "ChargedBuster,Execute",
+              "Row": "2",
+              "Column": "0"
+            },
+            {
+              "Face": "FenixDragoonAirBomb",
+              "Type": "AbilCmd",
+              "AbilCmd": "FenixDragoonAirBomb,Execute",
+              "Row": "2",
+              "Column": "2"
+            }
+          ],
+          "name_key": null
+        }
+      ]
+    },
+    {
+      "group": "fenix_hero",
+      "unit_id": "FenixArbiter",
+      "records": [
+        {
+          "layer": "starcoop/starcoop.sc2mod",
+          "parent": null,
+          "abilities": [
+            "stop",
+            "attack",
+            "move",
+            "Warpable",
+            "FenixArbiterStasisField",
+            "FenixArbiterCloakingField",
+            "ArbiterMPRecall"
+          ],
+          "weapons": [
+            "FenixArbiterWeapon"
+          ],
+          "buttons": [
+            {
+              "Face": "Move",
+              "Type": "AbilCmd",
+              "AbilCmd": "move,Move",
+              "Row": "0",
+              "Column": "0"
+            },
+            {
+              "Face": "Stop",
+              "Type": "AbilCmd",
+              "AbilCmd": "stop,Stop",
+              "Row": "0",
+              "Column": "1"
+            },
+            {
+              "Face": "MoveHoldPosition",
+              "Type": "AbilCmd",
+              "AbilCmd": "move,HoldPos",
+              "Row": "0",
+              "Column": "2"
+            },
+            {
+              "Face": "Attack",
+              "Type": "AbilCmd",
+              "AbilCmd": "attack,Execute",
+              "Row": "0",
+              "Column": "4"
+            },
+            {
+              "Face": "MovePatrol",
+              "Type": "AbilCmd",
+              "AbilCmd": "move,Patrol",
+              "Row": "0",
+              "Column": "3"
+            },
+            {
+              "Face": "FenixArbiterStasisField",
+              "Type": "AbilCmd",
+              "AbilCmd": "FenixArbiterStasisField,Execute",
+              "Row": "2",
+              "Column": "0"
+            },
+            {
+              "Face": "FenixArbiterCloakField",
+              "Type": "AbilCmd",
+              "AbilCmd": "FenixArbiterCloakingField,On",
+              "Row": "2",
+              "Column": "2"
+            },
+            {
+              "Face": "FenixArbiterCloakFieldOff",
+              "Type": "AbilCmd",
+              "AbilCmd": "FenixArbiterCloakingField,Off",
+              "Row": "2",
+              "Column": "2"
+            },
+            {
+              "Face": "ArbiterMPRecall",
+              "Type": "AbilCmd",
+              "AbilCmd": "ArbiterMPRecall,Execute",
+              "Row": "2",
+              "Column": "3"
+            }
+          ],
+          "name_key": null
+        }
+      ]
+    },
+    {
+      "group": "fenix_hero",
+      "unit_id": "FenixKaldalisZealot",
+      "records": [
+        {
+          "layer": "starcoop/starcoop.sc2mod",
+          "parent": null,
+          "abilities": [
+            "stop",
+            "attack",
+            "move",
+            "Warpable",
+            "ProgressRally",
+            "FenixKaldalisZealotCharge"
+          ],
+          "weapons": [
+            "FenixKaldalisZealotPsiBlades"
+          ],
+          "buttons": [
+            {
+              "Face": "Move",
+              "Type": "AbilCmd",
+              "AbilCmd": "move,Move",
+              "Row": "0",
+              "Column": "0"
+            },
+            {
+              "Face": "Stop",
+              "Type": "AbilCmd",
+              "AbilCmd": "stop,Stop",
+              "Row": "0",
+              "Column": "1"
+            },
+            {
+              "Face": "MoveHoldPosition",
+              "Type": "AbilCmd",
+              "AbilCmd": "move,HoldPos",
+              "Row": "0",
+              "Column": "2"
+            },
+            {
+              "Face": "Attack",
+              "Type": "AbilCmd",
+              "AbilCmd": "attack,Execute",
+              "Row": "0",
+              "Column": "4"
+            },
+            {
+              "Face": "MovePatrol",
+              "Type": "AbilCmd",
+              "AbilCmd": "move,Patrol",
+              "Row": "0",
+              "Column": "3"
+            },
+            {
+              "Face": "Rally",
+              "Type": "AbilCmd",
+              "AbilCmd": "ProgressRally,Rally1",
+              "Row": "2",
+              "Column": "4"
+            },
+            {
+              "Face": "FenixKaldalisZealotCharge",
+              "Type": "AbilCmd",
+              "AbilCmd": "FenixKaldalisZealotCharge,Execute",
+              "Row": "2",
+              "Column": "0"
+            }
+          ],
+          "name_key": null
+        }
+      ]
+    },
+    {
+      "group": "fenix_hero",
+      "unit_id": "FenixTalisAdept",
+      "records": [
+        {
+          "layer": "starcoop/starcoop.sc2mod",
+          "parent": null,
+          "abilities": [
+            "stop",
+            "attack",
+            "move",
+            "Warpable",
+            "ProgressRally",
+            "FenixTalisShadeCooldown",
+            "FenixTalisAdeptBounceShot"
+          ],
+          "weapons": [
+            "FenixTalisAdept"
+          ],
+          "buttons": [
+            {
+              "Face": "Move",
+              "Type": "AbilCmd",
+              "AbilCmd": "move,Move",
+              "Row": "0",
+              "Column": "0"
+            },
+            {
+              "Face": "Stop",
+              "Type": "AbilCmd",
+              "AbilCmd": "stop,Stop",
+              "Row": "0",
+              "Column": "1"
+            },
+            {
+              "Face": "MoveHoldPosition",
+              "Type": "AbilCmd",
+              "AbilCmd": "move,HoldPos",
+              "Row": "0",
+              "Column": "2"
+            },
+            {
+              "Face": "Attack",
+              "Type": "AbilCmd",
+              "AbilCmd": "attack,Execute",
+              "Row": "0",
+              "Column": "4"
+            },
+            {
+              "Face": "MovePatrol",
+              "Type": "AbilCmd",
+              "AbilCmd": "move,Patrol",
+              "Row": "0",
+              "Column": "3"
+            },
+            {
+              "Face": "Rally",
+              "Type": "AbilCmd",
+              "AbilCmd": "ProgressRally,Rally1",
+              "Row": "2",
+              "Column": "4"
+            },
+            {
+              "Face": "FenixTalisAdeptBounceShot",
+              "Type": "AbilCmd",
+              "AbilCmd": "FenixTalisAdeptBounceShot,Execute",
+              "Row": "2",
+              "Column": "1"
+            }
+          ],
+          "name_key": null
+        }
+      ]
+    },
+    {
+      "group": "fenix_hero",
+      "unit_id": "FenixTaldarinImmortal",
+      "records": [
+        {
+          "layer": "starcoop/starcoop.sc2mod",
+          "parent": null,
+          "abilities": [
+            "stop",
+            "attack",
+            "move",
+            "Warpable",
+            "ImmortalOverload"
+          ],
+          "weapons": [
+            "FenixTaldarinImmortalPhaseDisruptors"
+          ],
+          "buttons": [
+            {
+              "Face": "Move",
+              "Type": "AbilCmd",
+              "AbilCmd": "move,Move",
+              "Row": "0",
+              "Column": "0"
+            },
+            {
+              "Face": "Stop",
+              "Type": "AbilCmd",
+              "AbilCmd": "stop,Stop",
+              "Row": "0",
+              "Column": "1"
+            },
+            {
+              "Face": "MoveHoldPosition",
+              "Type": "AbilCmd",
+              "AbilCmd": "move,HoldPos",
+              "Row": "0",
+              "Column": "2"
+            },
+            {
+              "Face": "Attack",
+              "Type": "AbilCmd",
+              "AbilCmd": "attack,Execute",
+              "Row": "0",
+              "Column": "4"
+            },
+            {
+              "Face": "MovePatrol",
+              "Type": "AbilCmd",
+              "AbilCmd": "move,Patrol",
+              "Row": "0",
+              "Column": "3"
+            },
+            {
+              "Face": "ImmortalOverload",
+              "Type": "AbilCmd",
+              "AbilCmd": "ImmortalOverload,Execute",
+              "Row": "2",
+              "Column": "0"
+            }
+          ],
+          "name_key": null
+        }
+      ]
+    },
+    {
+      "group": "fenix_hero",
+      "unit_id": "FenixWarbringerColossus",
+      "records": [
+        {
+          "layer": "starcoop/starcoop.sc2mod",
+          "parent": null,
+          "abilities": [
+            "stop",
+            "attack",
+            "move",
+            "Warpable",
+            "ProgressRally",
+            "FenixWarbringerColossusPowerShot"
+          ],
+          "weapons": [
+            "FenixWarbringerColossusThermalLance"
+          ],
+          "buttons": [
+            {
+              "Face": "Move",
+              "Type": "AbilCmd",
+              "AbilCmd": "move,Move",
+              "Row": "0",
+              "Column": "0"
+            },
+            {
+              "Face": "Stop",
+              "Type": "AbilCmd",
+              "AbilCmd": "stop,Stop",
+              "Row": "0",
+              "Column": "1"
+            },
+            {
+              "Face": "MoveHoldPosition",
+              "Type": "AbilCmd",
+              "AbilCmd": "move,HoldPos",
+              "Row": "0",
+              "Column": "2"
+            },
+            {
+              "Face": "Attack",
+              "Type": "AbilCmd",
+              "AbilCmd": "attack,Execute",
+              "Row": "0",
+              "Column": "4"
+            },
+            {
+              "Face": "MovePatrol",
+              "Type": "AbilCmd",
+              "AbilCmd": "move,Patrol",
+              "Row": "0",
+              "Column": "3"
+            },
+            {
+              "Face": "FenixWarbringerColossusPowerShot",
+              "Type": "AbilCmd",
+              "AbilCmd": "FenixWarbringerColossusPowerShot,Execute",
+              "Row": "2",
+              "Column": "0"
+            },
+            {
+              "Face": "Rally",
+              "Type": "AbilCmd",
+              "AbilCmd": "ProgressRally,Rally1",
+              "Row": "2",
+              "Column": "4"
+            }
+          ],
+          "name_key": null
+        }
+      ]
+    },
+    {
+      "group": "fenix_hero",
+      "unit_id": "FenixMojoScout",
+      "records": [
+        {
+          "layer": "starcoop/starcoop.sc2mod",
+          "parent": null,
+          "abilities": [
+            "stop",
+            "attack",
+            "move",
+            "Warpable",
+            "FenixMojoMissiles"
+          ],
+          "weapons": [
+            "FenixMojoScoutAir",
+            "FenixMojoScoutGround"
+          ],
+          "buttons": [
+            {
+              "Face": "Move",
+              "Type": "AbilCmd",
+              "AbilCmd": "move,Move",
+              "Row": "0",
+              "Column": "0"
+            },
+            {
+              "Face": "Stop",
+              "Type": "AbilCmd",
+              "AbilCmd": "stop,Stop",
+              "Row": "0",
+              "Column": "1"
+            },
+            {
+              "Face": "MoveHoldPosition",
+              "Type": "AbilCmd",
+              "AbilCmd": "move,HoldPos",
+              "Row": "0",
+              "Column": "2"
+            },
+            {
+              "Face": "Attack",
+              "Type": "AbilCmd",
+              "AbilCmd": "attack,Execute",
+              "Row": "0",
+              "Column": "4"
+            },
+            {
+              "Face": "MovePatrol",
+              "Type": "AbilCmd",
+              "AbilCmd": "move,Patrol",
+              "Row": "0",
+              "Column": "3"
+            },
+            {
+              "Face": "FenixMojoMissiles",
+              "Type": "AbilCmd",
+              "AbilCmd": "FenixMojoMissiles,Execute",
+              "Row": "2",
+              "Column": "0"
+            }
+          ],
+          "name_key": null
+        }
+      ]
+    },
+    {
+      "group": "fenix_hero",
+      "unit_id": "FenixClolarionCarrier",
+      "records": [
+        {
+          "layer": "starcoop/starcoop.sc2mod",
+          "parent": null,
+          "abilities": [
+            "stop",
+            "attack",
+            "move",
+            "FenixClolarionCarrierBomberHangar",
+            "FenixClolarionCarrierHangar",
+            "FenixClolarionHangarQueue5",
+            "Warpable",
+            "FenixClolarionCarrierBomberDummy"
+          ],
+          "weapons": [
+            "FenixClolarionPrismaticBeam"
+          ],
+          "buttons": [
+            {
+              "Face": "Move",
+              "Type": "AbilCmd",
+              "AbilCmd": "move,Move",
+              "Row": "0",
+              "Column": "0"
+            },
+            {
+              "Face": "Stop",
+              "Type": "AbilCmd",
+              "AbilCmd": "stop,Stop",
+              "Row": "0",
+              "Column": "1"
+            },
+            {
+              "Face": "MoveHoldPosition",
+              "Type": "AbilCmd",
+              "AbilCmd": "move,HoldPos",
+              "Row": "0",
+              "Column": "2"
+            },
+            {
+              "Face": "Attack",
+              "Type": "AbilCmd",
+              "AbilCmd": "attack,Execute",
+              "Row": "0",
+              "Column": "4"
+            },
+            {
+              "Face": "MovePatrol",
+              "Type": "AbilCmd",
+              "AbilCmd": "move,Patrol",
+              "Row": "0",
+              "Column": "3"
+            },
+            {
+              "Face": "FenixClolarionInterceptor",
+              "Type": "AbilCmd",
+              "AbilCmd": "FenixClolarionCarrierHangar,Ammo1",
+              "Row": "2",
+              "Column": "0"
+            },
+            {
+              "Face": "FenixClolarionBomberDummy",
+              "Type": "AbilCmd",
+              "AbilCmd": "FenixClolarionCarrierBomberDummy,Ammo1",
+              "Row": "2",
+              "Column": "1"
+            },
+            {
+              "Face": "FenixClolarionBomber",
+              "Type": "AbilCmd",
+              "AbilCmd": "FenixClolarionCarrierBomberHangar,Ammo1",
+              "Row": "2",
+              "Column": "1"
+            },
+            {
+              "Face": "Cancel",
+              "Type": "AbilCmd",
+              "AbilCmd": "FenixClolarionHangarQueue5,CancelLast",
+              "Row": "2",
+              "Column": "4"
+            }
+          ],
+          "name_key": null
+        }
+      ]
+    },
+    {
+      "group": "karax_regular",
+      "unit_id": "ZealotPurifier",
+      "records": [
+        {
+          "layer": "void.sc2campaign",
+          "parent": "Zealot",
+          "abilities": [
+            "ZealotPurifierReviveDeath"
+          ],
+          "weapons": [],
+          "buttons": [],
+          "name_key": "Unit/Name/ZealotPurifier"
+        },
+        {
+          "layer": "starcoop/starcoop.sc2mod",
+          "parent": null,
+          "abilities": [
+            "FenixKaldalisZealotMorph"
+          ],
+          "weapons": [],
+          "buttons": [],
+          "name_key": null
+        }
+      ]
+    },
+    {
+      "group": "karax_regular",
+      "unit_id": "SentryPurifier",
+      "records": [
+        {
+          "layer": "void.sc2campaign",
+          "parent": "SentryCampaignBase",
+          "abilities": [
+            "VoidSentryChronoBeam",
+            "VoidSentryPhasingMode"
+          ],
+          "weapons": [
+            "EnergizerWeapon"
+          ],
+          "buttons": [
+            {
+              "Face": "VoidSentryChronoBeam",
+              "Type": "AbilCmd",
+              "AbilCmd": "VoidSentryChronoBeam,Execute",
+              "Row": "2",
+              "Column": "0"
+            },
+            {
+              "Face": "VoidSentryPhasingMode",
+              "Type": "AbilCmd",
+              "AbilCmd": "VoidSentryPhasingMode,Execute",
+              "Row": "2",
+              "Column": "1"
+            }
+          ],
+          "name_key": null
+        },
+        {
+          "layer": "starcoop/starcoop.sc2mod",
+          "parent": null,
+          "abilities": [
+            "EnergizerReclamation"
+          ],
+          "weapons": [],
+          "buttons": [
+            {
+              "Face": "EnergizerReclamation",
+              "Type": "AbilCmd",
+              "AbilCmd": "EnergizerReclamation,Execute",
+              "Row": "2",
+              "Column": "1"
+            }
+          ],
+          "name_key": null
+        }
+      ]
+    },
+    {
+      "group": "karax_regular",
+      "unit_id": "Immortal",
+      "records": [
+        {
+          "layer": "liberty.sc2mod",
+          "parent": null,
+          "abilities": [
+            "stop",
+            "attack",
+            "move",
+            "Warpable"
+          ],
+          "weapons": [
+            "PhaseDisruptors"
+          ],
+          "buttons": [
+            {
+              "Face": "Move",
+              "Type": "AbilCmd",
+              "AbilCmd": "move,Move",
+              "Row": "0",
+              "Column": "0"
+            },
+            {
+              "Face": "Stop",
+              "Type": "AbilCmd",
+              "AbilCmd": "stop,Stop",
+              "Row": "0",
+              "Column": "1"
+            },
+            {
+              "Face": "MoveHoldPosition",
+              "Type": "AbilCmd",
+              "AbilCmd": "move,HoldPos",
+              "Row": "0",
+              "Column": "2"
+            },
+            {
+              "Face": "Attack",
+              "Type": "AbilCmd",
+              "AbilCmd": "attack,Execute",
+              "Row": "0",
+              "Column": "4"
+            },
+            {
+              "Face": "MovePatrol",
+              "Type": "AbilCmd",
+              "AbilCmd": "move,Patrol",
+              "Row": "0",
+              "Column": "3"
+            }
+          ],
+          "name_key": null
+        },
+        {
+          "layer": "void.sc2campaign",
+          "parent": null,
+          "abilities": [
+            "ImmortalBarrierBase"
+          ],
+          "weapons": [],
+          "buttons": [
+            {
+              "index": "5",
+              "Face": "ImmortalBarrierBase",
+              "Type": "AbilCmd",
+              "AbilCmd": "ImmortalBarrierBase,Execute"
+            }
+          ],
+          "name_key": null
+        },
+        {
+          "layer": "starcoop/starcoop.sc2mod",
+          "parent": null,
+          "abilities": [
+            "FenixTaldarinImmortalMorph"
+          ],
+          "weapons": [
+            "PhaseDisruptorsLookAt"
+          ],
+          "buttons": [],
+          "name_key": null
+        }
+      ]
+    },
+    {
+      "group": "karax_regular",
+      "unit_id": "ColossusPurifier",
+      "records": [
+        {
+          "layer": "void.sc2campaign",
+          "parent": "Colossus",
+          "abilities": [],
+          "weapons": [
+            "ColossusPurifierThermalLances"
+          ],
+          "buttons": [],
+          "name_key": "Unit/Name/ColossusPurifier"
+        },
+        {
+          "layer": "starcoop/starcoop.sc2mod",
+          "parent": null,
+          "abilities": [
+            "FenixWarbringerColossusMorph"
+          ],
+          "weapons": [
+            "ThermalLances"
+          ],
+          "buttons": [],
+          "name_key": null
+        }
+      ]
+    },
+    {
+      "group": "karax_regular",
+      "unit_id": "PhoenixPurifier",
+      "records": [
+        {
+          "layer": "void.sc2campaign",
+          "parent": null,
+          "abilities": [
+            "stop",
+            "attack",
+            "move",
+            "GravitonBeam",
+            "GravitonBeamVoidCampaign",
+            "Warpable",
+            "ProgressRally"
+          ],
+          "weapons": [
+            "IonCannons"
+          ],
+          "buttons": [
+            {
+              "Face": "Move",
+              "Type": "AbilCmd",
+              "AbilCmd": "move,Move",
+              "Row": "0",
+              "Column": "0"
+            },
+            {
+              "Face": "Stop",
+              "Type": "AbilCmd",
+              "AbilCmd": "stop,Stop",
+              "Row": "0",
+              "Column": "1"
+            },
+            {
+              "Face": "MoveHoldPosition",
+              "Type": "AbilCmd",
+              "AbilCmd": "move,HoldPos",
+              "Row": "0",
+              "Column": "2"
+            },
+            {
+              "Face": "Attack",
+              "Type": "AbilCmd",
+              "AbilCmd": "attack,Execute",
+              "Row": "0",
+              "Column": "4"
+            },
+            {
+              "Face": "MovePatrol",
+              "Type": "AbilCmd",
+              "AbilCmd": "move,Patrol",
+              "Row": "0",
+              "Column": "3"
+            },
+            {
+              "Face": "Cancel",
+              "Type": "AbilCmd",
+              "AbilCmd": "GravitonBeam,Cancel",
+              "Row": "2",
+              "Column": "4"
+            },
+            {
+              "Face": "Rally",
+              "Type": "AbilCmd",
+              "AbilCmd": "ProgressRally,Rally1",
+              "Row": "2",
+              "Column": "4"
+            },
+            {
+              "Face": "GravitonBeamVoidCampaign",
+              "Type": "AbilCmd",
+              "AbilCmd": "GravitonBeamVoidCampaign,Execute",
+              "Row": "2",
+              "Column": "0"
+            },
+            {
+              "Face": "GravitonBeam",
+              "Type": "AbilCmd",
+              "AbilCmd": "GravitonBeam,Execute",
+              "Row": "2",
+              "Column": "0"
+            }
+          ],
+          "name_key": null
+        },
+        {
+          "layer": "starcoop/starcoop.sc2mod",
+          "parent": null,
+          "abilities": [
+            "MirageGravitonBeamVoidCampaign"
+          ],
+          "weapons": [
+            "ArtanisIonCannons"
+          ],
+          "buttons": [
+            {
+              "index": "7",
+              "Face": "GravitonBeam",
+              "AbilCmd": "MirageGravitonBeamVoidCampaign,Execute"
+            },
+            {
+              "index": "8",
+              "Face": "GravitonBeamVoidCampaign",
+              "AbilCmd": "GravitonBeamVoidCampaign,Execute"
+            }
+          ],
+          "name_key": null
+        }
+      ]
+    },
+    {
+      "group": "karax_regular",
+      "unit_id": "Carrier",
+      "records": [
+        {
+          "layer": "liberty.sc2mod",
+          "parent": null,
+          "abilities": [
+            "stop",
+            "attack",
+            "move",
+            "CarrierHangar",
+            "HangarQueue5",
+            "Warpable"
+          ],
+          "weapons": [
+            "InterceptorLaunch"
+          ],
+          "buttons": [
+            {
+              "Face": "Move",
+              "Type": "AbilCmd",
+              "AbilCmd": "move,Move",
+              "Row": "0",
+              "Column": "0"
+            },
+            {
+              "Face": "Stop",
+              "Type": "AbilCmd",
+              "AbilCmd": "stop,Stop",
+              "Row": "0",
+              "Column": "1"
+            },
+            {
+              "Face": "MoveHoldPosition",
+              "Type": "AbilCmd",
+              "AbilCmd": "move,HoldPos",
+              "Row": "0",
+              "Column": "2"
+            },
+            {
+              "Face": "Attack",
+              "Type": "AbilCmd",
+              "AbilCmd": "attack,Execute",
+              "Row": "0",
+              "Column": "4"
+            },
+            {
+              "Face": "MovePatrol",
+              "Type": "AbilCmd",
+              "AbilCmd": "move,Patrol",
+              "Row": "0",
+              "Column": "3"
+            },
+            {
+              "Face": "Interceptor",
+              "Type": "AbilCmd",
+              "AbilCmd": "CarrierHangar,Ammo1",
+              "Row": "2",
+              "Column": "0"
+            },
+            {
+              "Face": "Cancel",
+              "Type": "AbilCmd",
+              "AbilCmd": "HangarQueue5,CancelLast",
+              "Row": "2",
+              "Column": "4"
+            }
+          ],
+          "name_key": null
+        },
+        {
+          "layer": "void.sc2campaign",
+          "parent": null,
+          "abilities": [
+            "ProgressRally"
+          ],
+          "weapons": [],
+          "buttons": [
+            {
+              "index": "7",
+              "Face": "Rally",
+              "Type": "AbilCmd",
+              "AbilCmd": "ProgressRally,Rally1",
+              "Requirements": "",
+              "Column": "4"
+            }
+          ],
+          "name_key": null
+        },
+        {
+          "layer": "starcoop/starcoop.sc2mod",
+          "parent": null,
+          "abilities": [
+            "FenixClolarionCarrierMorph"
+          ],
+          "weapons": [],
+          "buttons": [],
+          "name_key": null
+        }
+      ]
+    },
+    {
+      "group": "karax_regular",
+      "unit_id": "Observer",
+      "records": [
+        {
+          "layer": "liberty.sc2mod",
+          "parent": null,
+          "abilities": [
+            "stop",
+            "move",
+            "Warpable"
+          ],
+          "weapons": [],
+          "buttons": [
+            {
+              "Face": "Move",
+              "Type": "AbilCmd",
+              "AbilCmd": "move,Move",
+              "Row": "0",
+              "Column": "0"
+            },
+            {
+              "Face": "Stop",
+              "Type": "AbilCmd",
+              "AbilCmd": "stop,Stop",
+              "Row": "0",
+              "Column": "1"
+            },
+            {
+              "Face": "MoveHoldPosition",
+              "Type": "AbilCmd",
+              "AbilCmd": "move,HoldPos",
+              "Row": "0",
+              "Column": "2"
+            },
+            {
+              "Face": "MovePatrol",
+              "Type": "AbilCmd",
+              "AbilCmd": "move,Patrol",
+              "Row": "0",
+              "Column": "3"
+            },
+            {
+              "Face": "Attack",
+              "Type": "AbilCmd",
+              "AbilCmd": "attack,Execute",
+              "Row": "0",
+              "Column": "4"
+            },
+            {
+              "Face": "AcquireMove",
+              "Type": "AbilCmd",
+              "AbilCmd": "move,AcquireMove",
+              "Row": "0",
+              "Column": "4"
+            }
+          ],
+          "name_key": null
+        },
+        {
+          "layer": "void.sc2campaign",
+          "parent": null,
+          "abilities": [],
+          "weapons": [],
+          "buttons": [],
+          "name_key": null
+        },
+        {
+          "layer": "starcoop/starcoop.sc2mod",
+          "parent": null,
+          "abilities": [
+            "attack",
+            "Warpable",
+            "ObserverMorphtoObserverSiege"
+          ],
+          "weapons": [],
+          "buttons": [
+            {
+              "Face": "MorphtoObserverSiege",
+              "Type": "AbilCmd",
+              "AbilCmd": "ObserverMorphtoObserverSiege,Execute",
+              "Row": "2",
+              "Column": "2"
+            }
+          ],
+          "name_key": null
+        }
+      ]
+    },
+    {
+      "group": "karax_regular",
+      "unit_id": "Probe",
+      "records": [
+        {
+          "layer": "liberty.sc2mod",
+          "parent": null,
+          "abilities": [
+            "stop",
+            "attack",
+            "move",
+            "ProtossBuild",
+            "ProbeHarvest"
+          ],
+          "weapons": [
+            "ParticleBeam"
+          ],
+          "buttons": [
+            {
+              "Face": "Move",
+              "Type": "AbilCmd",
+              "AbilCmd": "move,Move",
+              "Row": "0",
+              "Column": "0"
+            },
+            {
+              "Face": "Stop",
+              "Type": "AbilCmd",
+              "AbilCmd": "stop,Stop",
+              "Row": "0",
+              "Column": "1"
+            },
+            {
+              "Face": "MoveHoldPosition",
+              "Type": "AbilCmd",
+              "AbilCmd": "move,HoldPos",
+              "Row": "0",
+              "Column": "2"
+            },
+            {
+              "Face": "AttackWorker",
+              "Type": "AbilCmd",
+              "AbilCmd": "attack,Execute",
+              "Row": "0",
+              "Column": "4"
+            },
+            {
+              "Face": "MovePatrol",
+              "Type": "AbilCmd",
+              "AbilCmd": "move,Patrol",
+              "Row": "0",
+              "Column": "3"
+            },
+            {
+              "Face": "GatherProt",
+              "Type": "AbilCmd",
+              "AbilCmd": "ProbeHarvest,Gather",
+              "Row": "1",
+              "Column": "0"
+            },
+            {
+              "Face": "ReturnCargo",
+              "Type": "AbilCmd",
+              "AbilCmd": "ProbeHarvest,Return",
+              "Row": "1",
+              "Column": "1"
+            },
+            {
+              "Face": "Nexus",
+              "Type": "AbilCmd",
+              "AbilCmd": "ProtossBuild,Build1",
+              "Row": "0",
+              "Column": "0"
+            },
+            {
+              "Face": "Assimilator",
+              "Type": "AbilCmd",
+              "AbilCmd": "ProtossBuild,Build3",
+              "Row": "0",
+              "Column": "1"
+            },
+            {
+              "Face": "Pylon",
+              "Type": "AbilCmd",
+              "AbilCmd": "ProtossBuild,Build2",
+              "Row": "0",
+              "Column": "2"
+            },
+            {
+              "Face": "Gateway",
+              "Type": "AbilCmd",
+              "AbilCmd": "ProtossBuild,Build4",
+              "Row": "1",
+              "Column": "0"
+            },
+            {
+              "Face": "Forge",
+              "Type": "AbilCmd",
+              "AbilCmd": "ProtossBuild,Build5",
+              "Row": "1",
+              "Column": "1"
+            },
+            {
+              "Face": "CyberneticsCore",
+              "Type": "AbilCmd",
+              "AbilCmd": "ProtossBuild,Build15",
+              "Row": "2",
+              "Column": "0"
+            },
+            {
+              "Face": "PhotonCannon",
+              "Type": "AbilCmd",
+              "AbilCmd": "ProtossBuild,Build8",
+              "Row": "2",
+              "Column": "1"
+            },
+            {
+              "Face": "Stargate",
+              "Type": "AbilCmd",
+              "AbilCmd": "ProtossBuild,Build10",
+              "Row": "0",
+              "Column": "1"
+            },
+            {
+              "Face": "TemplarArchive",
+              "Type": "AbilCmd",
+              "AbilCmd": "ProtossBuild,Build11",
+              "Row": "1",
+              "Column": "0"
+            },
+            {
+              "Face": "RoboticsFacility",
+              "Type": "AbilCmd",
+              "AbilCmd": "ProtossBuild,Build14",
+              "Row": "0",
+              "Column": "2"
+            },
+            {
+              "Face": "FleetBeacon",
+              "Type": "AbilCmd",
+              "AbilCmd": "ProtossBuild,Build6",
+              "Row": "1",
+              "Column": "1"
+            },
+            {
+              "Face": "DarkShrine",
+              "Type": "AbilCmd",
+              "AbilCmd": "ProtossBuild,Build12",
+              "Row": "2",
+              "Column": "0"
+            },
+            {
+              "Face": "TwilightCouncil",
+              "Type": "AbilCmd",
+              "AbilCmd": "ProtossBuild,Build7",
+              "Row": "0",
+              "Column": "0"
+            },
+            {
+              "Face": "RoboticsBay",
+              "Type": "AbilCmd",
+              "AbilCmd": "ProtossBuild,Build13",
+              "Row": "1",
+              "Column": "2"
+            }
+          ],
+          "name_key": null
+        },
+        {
+          "layer": "void.sc2campaign",
+          "parent": null,
+          "abilities": [
+            "Warpable",
+            "ProgressRally"
+          ],
+          "weapons": [],
+          "buttons": [
+            {
+              "Face": "AutomatedAssimilator",
+              "Type": "AbilCmd",
+              "AbilCmd": "ProtossBuild,Build24",
+              "Row": "0",
+              "Column": "1"
+            },
+            {
+              "Face": "WarpInWarpGate",
+              "Type": "AbilCmd",
+              "AbilCmd": "ProtossBuild,Build26",
+              "Row": "1",
+              "Column": "0"
+            },
+            {
+              "Face": "KhaydarinMonolith",
+              "Type": "AbilCmd",
+              "AbilCmd": "ProtossBuild,Build25",
+              "Row": "2",
+              "Column": "2"
+            },
+            {
+              "Face": "ShieldBattery",
+              "Type": "AbilCmd",
+              "AbilCmd": "ProtossBuild,Build22",
+              "Row": "1",
+              "Column": "2"
+            },
+            {
+              "index": "1",
+              "Face": "TemplarArchive",
+              "Type": "AbilCmd",
+              "AbilCmd": "ProtossBuild,Build11",
+              "Row": "0",
+              "Column": "0"
+            },
+            {
+              "index": "5",
+              "Face": "DarkShrine",
+              "Type": "AbilCmd",
+              "AbilCmd": "ProtossBuild,Build12",
+              "Row": "1",
+              "Column": "0"
+            },
+            {
+              "index": "6",
+              "Face": "RoboticsBay",
+              "Type": "AbilCmd",
+              "AbilCmd": "ProtossBuild,Build13",
+              "Row": "1",
+              "Column": "2"
+            },
+            {
+              "index": "7",
+              "Face": "WarpInStarWarpGate",
+              "Type": "AbilCmd",
+              "AbilCmd": "ProtossBuild,Build27",
+              "Row": "0",
+              "Column": "1"
+            },
+            {
+              "Face": "WarpInRoboticsWarpFacility",
+              "Type": "AbilCmd",
+              "AbilCmd": "ProtossBuild,Build28",
+              "Row": "0",
+              "Column": "2"
+            }
+          ],
+          "name_key": null
+        },
+        {
+          "layer": "starcoop/starcoop.sc2mod",
+          "parent": null,
+          "abilities": [
+            "MapObjectInteract",
+            "MutatorRemoveWorkerSleep",
+            "SprayProtoss",
+            "ZeratulBuild"
+          ],
+          "weapons": [],
+          "buttons": [
+            {
+              "Face": "MapObjectInteract",
+              "Type": "AbilCmd",
+              "AbilCmd": "MapObjectInteract,Execute",
+              "Row": "0",
+              "Column": "0"
+            },
+            {
+              "Face": "MutatorWorkerSleep",
+              "Type": "AbilCmd",
+              "AbilCmd": "MutatorRemoveWorkerSleep,Execute",
+              "Row": "2",
+              "Column": "3"
+            },
+            {
+              "Face": "Spray",
+              "Type": "AbilCmd",
+              "AbilCmd": "SprayProtoss,Execute",
+              "Row": "2",
+              "Column": "3"
+            },
+            {
+              "index": "3",
+              "Face": "WarpInWarpGate",
+              "AbilCmd": "ProtossBuild,Build30"
+            },
+            {
+              "index": "11",
+              "Face": "Gateway",
+              "AbilCmd": "ProtossBuild,Build4",
+              "Column": "0"
+            },
+            {
+              "Face": "Gateway",
+              "Type": "AbilCmd",
+              "AbilCmd": "ProtossBuild,Build26",
+              "Row": "1",
+              "Column": "0"
+            },
+            {
+              "Face": "ZeratulGateway",
+              "Type": "AbilCmd",
+              "AbilCmd": "ZeratulBuild,Build2",
+              "Row": "1",
+              "Column": "0"
+            },
+            {
+              "Face": "ZeratulCyberneticsCore",
+              "Type": "AbilCmd",
+              "AbilCmd": "ZeratulBuild,Build3",
+              "Row": "2",
+              "Column": "0"
+            },
+            {
+              "Face": "ZeratulPhotonCannon",
+              "Type": "AbilCmd",
+              "AbilCmd": "ZeratulBuild,Build4",
+              "Row": "2",
+              "Column": "1"
+            },
+            {
+              "Face": "ShieldBattery",
+              "Type": "AbilCmd",
+              "AbilCmd": "ProtossBuild,Build22",
+              "Row": "1",
+              "Column": "2"
+            },
+            {
+              "index": "0",
+              "Face": "WarpInStarWarpGate",
+              "AbilCmd": "ProtossBuild,Build19"
+            },
+            {
+              "index": "2",
+              "Face": "WarpInRoboticsWarpFacility",
+              "AbilCmd": "ProtossBuild,Build18"
+            },
+            {
+              "index": "8",
+              "Face": "Stargate",
+              "AbilCmd": "ProtossBuild,Build10",
+              "Column": "1"
+            },
+            {
+              "Face": "RoboticsFacility",
+              "Type": "AbilCmd",
+              "AbilCmd": "ProtossBuild,Build14",
+              "Row": "0",
+              "Column": "2"
+            },
+            {
+              "Face": "ZeratulRoboticsFacility",
+              "Type": "AbilCmd",
+              "AbilCmd": "ZeratulBuild,Build7",
+              "Row": "0",
+              "Column": "2"
+            },
+            {
+              "Face": "ZeratulDarkShrine",
+              "Type": "AbilCmd",
+              "AbilCmd": "ZeratulBuild,Build5",
+              "Row": "2",
+              "Column": "0"
+            },
+            {
+              "Face": "ZeratulRoboticsBay",
+              "Type": "AbilCmd",
+              "AbilCmd": "ZeratulBuild,Build6",
+              "Row": "1",
+              "Column": "2"
+            },
+            {
+              "Face": "TwilightCouncil",
+              "Type": "AbilCmd",
+              "AbilCmd": "ProtossBuild,Build7",
+              "Row": "0",
+              "Column": "0"
+            }
+          ],
+          "name_key": null
+        }
+      ]
+    },
+    {
+      "group": "lotv_purifier",
+      "unit_id": "ZealotPurifier",
+      "records": [
+        {
+          "layer": "void.sc2campaign",
+          "parent": "Zealot",
+          "abilities": [
+            "ZealotPurifierReviveDeath"
+          ],
+          "weapons": [],
+          "buttons": [],
+          "name_key": "Unit/Name/ZealotPurifier"
+        },
+        {
+          "layer": "starcoop/starcoop.sc2mod",
+          "parent": null,
+          "abilities": [
+            "FenixKaldalisZealotMorph"
+          ],
+          "weapons": [],
+          "buttons": [],
+          "name_key": null
+        }
+      ]
+    },
+    {
+      "group": "lotv_purifier",
+      "unit_id": "StalkerPurifier",
+      "records": [
+        {
+          "layer": "void.sc2campaign",
+          "parent": "Stalker",
+          "abilities": [
+            "BlinkMultiple"
+          ],
+          "weapons": [],
+          "buttons": [
+            {
+              "index": "6",
+              "Face": "StalkerBlinkMultiple",
+              "AbilCmd": "BlinkMultiple,Execute"
+            }
+          ],
+          "name_key": "Unit/Name/StalkerPurifier"
+        },
+        {
+          "layer": "starcoop/starcoop.sc2mod",
+          "parent": null,
+          "abilities": [],
+          "weapons": [],
+          "buttons": [],
+          "name_key": null
+        }
+      ]
+    },
+    {
+      "group": "lotv_purifier",
+      "unit_id": "SentryPurifier",
+      "records": [
+        {
+          "layer": "void.sc2campaign",
+          "parent": "SentryCampaignBase",
+          "abilities": [
+            "VoidSentryChronoBeam",
+            "VoidSentryPhasingMode"
+          ],
+          "weapons": [
+            "EnergizerWeapon"
+          ],
+          "buttons": [
+            {
+              "Face": "VoidSentryChronoBeam",
+              "Type": "AbilCmd",
+              "AbilCmd": "VoidSentryChronoBeam,Execute",
+              "Row": "2",
+              "Column": "0"
+            },
+            {
+              "Face": "VoidSentryPhasingMode",
+              "Type": "AbilCmd",
+              "AbilCmd": "VoidSentryPhasingMode,Execute",
+              "Row": "2",
+              "Column": "1"
+            }
+          ],
+          "name_key": null
+        },
+        {
+          "layer": "starcoop/starcoop.sc2mod",
+          "parent": null,
+          "abilities": [
+            "EnergizerReclamation"
+          ],
+          "weapons": [],
+          "buttons": [
+            {
+              "Face": "EnergizerReclamation",
+              "Type": "AbilCmd",
+              "AbilCmd": "EnergizerReclamation,Execute",
+              "Row": "2",
+              "Column": "1"
+            }
+          ],
+          "name_key": null
+        }
+      ]
+    },
+    {
+      "group": "lotv_purifier",
+      "unit_id": "ColossusPurifier",
+      "records": [
+        {
+          "layer": "void.sc2campaign",
+          "parent": "Colossus",
+          "abilities": [],
+          "weapons": [
+            "ColossusPurifierThermalLances"
+          ],
+          "buttons": [],
+          "name_key": "Unit/Name/ColossusPurifier"
+        },
+        {
+          "layer": "starcoop/starcoop.sc2mod",
+          "parent": null,
+          "abilities": [
+            "FenixWarbringerColossusMorph"
+          ],
+          "weapons": [
+            "ThermalLances"
+          ],
+          "buttons": [],
+          "name_key": null
+        }
+      ]
+    },
+    {
+      "group": "lotv_purifier",
+      "unit_id": "PhoenixPurifier",
+      "records": [
+        {
+          "layer": "void.sc2campaign",
+          "parent": null,
+          "abilities": [
+            "stop",
+            "attack",
+            "move",
+            "GravitonBeam",
+            "GravitonBeamVoidCampaign",
+            "Warpable",
+            "ProgressRally"
+          ],
+          "weapons": [
+            "IonCannons"
+          ],
+          "buttons": [
+            {
+              "Face": "Move",
+              "Type": "AbilCmd",
+              "AbilCmd": "move,Move",
+              "Row": "0",
+              "Column": "0"
+            },
+            {
+              "Face": "Stop",
+              "Type": "AbilCmd",
+              "AbilCmd": "stop,Stop",
+              "Row": "0",
+              "Column": "1"
+            },
+            {
+              "Face": "MoveHoldPosition",
+              "Type": "AbilCmd",
+              "AbilCmd": "move,HoldPos",
+              "Row": "0",
+              "Column": "2"
+            },
+            {
+              "Face": "Attack",
+              "Type": "AbilCmd",
+              "AbilCmd": "attack,Execute",
+              "Row": "0",
+              "Column": "4"
+            },
+            {
+              "Face": "MovePatrol",
+              "Type": "AbilCmd",
+              "AbilCmd": "move,Patrol",
+              "Row": "0",
+              "Column": "3"
+            },
+            {
+              "Face": "Cancel",
+              "Type": "AbilCmd",
+              "AbilCmd": "GravitonBeam,Cancel",
+              "Row": "2",
+              "Column": "4"
+            },
+            {
+              "Face": "Rally",
+              "Type": "AbilCmd",
+              "AbilCmd": "ProgressRally,Rally1",
+              "Row": "2",
+              "Column": "4"
+            },
+            {
+              "Face": "GravitonBeamVoidCampaign",
+              "Type": "AbilCmd",
+              "AbilCmd": "GravitonBeamVoidCampaign,Execute",
+              "Row": "2",
+              "Column": "0"
+            },
+            {
+              "Face": "GravitonBeam",
+              "Type": "AbilCmd",
+              "AbilCmd": "GravitonBeam,Execute",
+              "Row": "2",
+              "Column": "0"
+            }
+          ],
+          "name_key": null
+        },
+        {
+          "layer": "starcoop/starcoop.sc2mod",
+          "parent": null,
+          "abilities": [
+            "MirageGravitonBeamVoidCampaign"
+          ],
+          "weapons": [
+            "ArtanisIonCannons"
+          ],
+          "buttons": [
+            {
+              "index": "7",
+              "Face": "GravitonBeam",
+              "AbilCmd": "MirageGravitonBeamVoidCampaign,Execute"
+            },
+            {
+              "index": "8",
+              "Face": "GravitonBeamVoidCampaign",
+              "AbilCmd": "GravitonBeamVoidCampaign,Execute"
+            }
+          ],
+          "name_key": null
+        }
+      ]
+    },
+    {
+      "group": "lotv_purifier",
+      "unit_id": "TempestPurifier",
+      "records": [
+        {
+          "layer": "void.sc2campaign",
+          "parent": null,
+          "abilities": [
+            "stop",
+            "attack",
+            "move",
+            "Warpable",
+            "ProgressRally",
+            "LightningBomb"
+          ],
+          "weapons": [
+            "TempestPurifierGround",
+            "TempestPurifier"
+          ],
+          "buttons": [
+            {
+              "Face": "Move",
+              "Type": "AbilCmd",
+              "AbilCmd": "move,Move",
+              "Row": "0",
+              "Column": "0"
+            },
+            {
+              "Face": "Stop",
+              "Type": "AbilCmd",
+              "AbilCmd": "stop,Stop",
+              "Row": "0",
+              "Column": "1"
+            },
+            {
+              "Face": "MoveHoldPosition",
+              "Type": "AbilCmd",
+              "AbilCmd": "move,HoldPos",
+              "Row": "0",
+              "Column": "2"
+            },
+            {
+              "Face": "Attack",
+              "Type": "AbilCmd",
+              "AbilCmd": "attack,Execute",
+              "Row": "0",
+              "Column": "4"
+            },
+            {
+              "Face": "MovePatrol",
+              "Type": "AbilCmd",
+              "AbilCmd": "move,Patrol",
+              "Row": "0",
+              "Column": "3"
+            },
+            {
+              "Face": "LightningBomb",
+              "Type": "AbilCmd",
+              "AbilCmd": "LightningBomb,Execute",
+              "Row": "2",
+              "Column": "0"
+            },
+            {
+              "Face": "Rally",
+              "Type": "AbilCmd",
+              "AbilCmd": "ProgressRally,Rally1",
+              "Row": "2",
+              "Column": "4"
+            }
+          ],
+          "name_key": null
+        },
+        {
+          "layer": "starcoop/starcoop.sc2mod",
+          "parent": null,
+          "abilities": [],
+          "weapons": [],
+          "buttons": [],
+          "name_key": null
+        }
+      ]
+    },
+    {
+      "group": "lotv_purifier",
+      "unit_id": "FenixChampion",
+      "records": [
+        {
+          "layer": "void.sc2campaign",
+          "parent": null,
+          "abilities": [
+            "stop",
+            "attack",
+            "move",
+            "ProgressRally",
+            "Warpable",
+            "ThunderousCharge",
+            "FenixWhirlwind",
+            "VoidShieldCapacitor"
+          ],
+          "weapons": [
+            "FenixWeapon",
+            "FenixChampionWhirlwind"
+          ],
+          "buttons": [
+            {
+              "Face": "Move",
+              "Type": "AbilCmd",
+              "AbilCmd": "move,Move",
+              "Row": "0",
+              "Column": "0"
+            },
+            {
+              "Face": "Stop",
+              "Type": "AbilCmd",
+              "AbilCmd": "stop,Stop",
+              "Row": "0",
+              "Column": "1"
+            },
+            {
+              "Face": "MoveHoldPosition",
+              "Type": "AbilCmd",
+              "AbilCmd": "move,HoldPos",
+              "Row": "0",
+              "Column": "2"
+            },
+            {
+              "Face": "Attack",
+              "Type": "AbilCmd",
+              "AbilCmd": "attack,Execute",
+              "Row": "0",
+              "Column": "4"
+            },
+            {
+              "Face": "MovePatrol",
+              "Type": "AbilCmd",
+              "AbilCmd": "move,Patrol",
+              "Row": "0",
+              "Column": "3"
+            },
+            {
+              "Face": "FenixSOACharge",
+              "Type": "AbilCmd",
+              "AbilCmd": "ThunderousCharge,Execute",
+              "Row": "2",
+              "Column": "0"
+            },
+            {
+              "Face": "Rally",
+              "Type": "AbilCmd",
+              "AbilCmd": "ProgressRally,Rally1",
+              "Row": "2",
+              "Column": "4"
+            },
+            {
+              "Face": "VoidShieldCapacitor",
+              "Type": "AbilCmd",
+              "AbilCmd": "VoidShieldCapacitor,Execute",
+              "Row": "2",
+              "Column": "2"
+            },
+            {
+              "Face": "FenixWhirlwind",
+              "Type": "AbilCmd",
+              "AbilCmd": "FenixWhirlwind,Execute",
+              "Row": "2",
+              "Column": "1"
+            }
+          ],
+          "name_key": null
+        },
+        {
+          "layer": "starcoop/starcoop.sc2mod",
+          "parent": null,
+          "abilities": [],
+          "weapons": [],
+          "buttons": [],
+          "name_key": null
+        }
+      ]
+    },
+    {
+      "group": "dehaka_regular",
+      "unit_id": "DehakaZerglingLevel2",
+      "records": [
+        {
+          "layer": "starcoop/starcoop.sc2mod",
+          "parent": null,
+          "abilities": [
+            "attack",
+            "move",
+            "stop",
+            "PrimalCarryCarcass",
+            "BurrowDehakaZerglingLevel2Down",
+            "PrimalZerglingLevel2Mergeable",
+            "PrimalZerglingRavasaurMerge"
+          ],
+          "weapons": [
+            "DehakaZerglingLevel2"
+          ],
+          "buttons": [
+            {
+              "Face": "Move",
+              "Type": "AbilCmd",
+              "AbilCmd": "move,Move",
+              "Row": "0",
+              "Column": "0"
+            },
+            {
+              "Face": "Stop",
+              "Type": "AbilCmd",
+              "AbilCmd": "stop,Stop",
+              "Row": "0",
+              "Column": "1"
+            },
+            {
+              "Face": "MoveHoldPosition",
+              "Type": "AbilCmd",
+              "AbilCmd": "move,HoldPos",
+              "Row": "0",
+              "Column": "2"
+            },
+            {
+              "Face": "MovePatrol",
+              "Type": "AbilCmd",
+              "AbilCmd": "move,Patrol",
+              "Row": "0",
+              "Column": "3"
+            },
+            {
+              "Face": "Attack",
+              "Type": "AbilCmd",
+              "AbilCmd": "attack,Execute",
+              "Row": "0",
+              "Column": "4"
+            },
+            {
+              "Face": "BurrowDown",
+              "Type": "AbilCmd",
+              "AbilCmd": "BurrowDehakaZerglingLevel2Down,Execute",
+              "Row": "2",
+              "Column": "4"
+            },
+            {
+              "Face": "DehakaRavasaurMerge",
+              "Type": "AbilCmd",
+              "AbilCmd": "PrimalZerglingRavasaurMerge,SelectedUnits",
+              "Row": "2",
+              "Column": "3"
+            }
+          ],
+          "name_key": null
+        }
+      ]
+    },
+    {
+      "group": "dehaka_regular",
+      "unit_id": "DehakaRoachLevel2",
+      "records": [
+        {
+          "layer": "starcoop/starcoop.sc2mod",
+          "parent": null,
+          "abilities": [
+            "stop",
+            "attack",
+            "move",
+            "BurrowDehakaRoachLevel2Down",
+            "PrimalRoachLevel2Mergeable",
+            "PrimalRoachLevel2Merge",
+            "PrimalRoachGuardianMerge"
+          ],
+          "weapons": [
+            "DehakaRoachLevel2Melee",
+            "DehakaRoachLevel2"
+          ],
+          "buttons": [
+            {
+              "Face": "Move",
+              "Type": "AbilCmd",
+              "AbilCmd": "move,Move",
+              "Row": "0",
+              "Column": "0"
+            },
+            {
+              "Face": "Stop",
+              "Type": "AbilCmd",
+              "AbilCmd": "stop,Stop",
+              "Row": "0",
+              "Column": "1"
+            },
+            {
+              "Face": "MoveHoldPosition",
+              "Type": "AbilCmd",
+              "AbilCmd": "move,HoldPos",
+              "Row": "0",
+              "Column": "2"
+            },
+            {
+              "Face": "Attack",
+              "Type": "AbilCmd",
+              "AbilCmd": "attack,Execute",
+              "Row": "0",
+              "Column": "4"
+            },
+            {
+              "Face": "MovePatrol",
+              "Type": "AbilCmd",
+              "AbilCmd": "move,Patrol",
+              "Row": "0",
+              "Column": "3"
+            },
+            {
+              "Face": "BurrowDown",
+              "Type": "AbilCmd",
+              "AbilCmd": "BurrowDehakaRoachLevel2Down,Execute",
+              "Row": "2",
+              "Column": "4"
+            },
+            {
+              "Face": "DehakaRoachLevel2Merge",
+              "Type": "AbilCmd",
+              "AbilCmd": "PrimalRoachLevel2Merge,SelectedUnits",
+              "Row": "2",
+              "Column": "2"
+            },
+            {
+              "Face": "DehakaRoachGuardianMerge",
+              "Type": "AbilCmd",
+              "AbilCmd": "PrimalRoachGuardianMerge,SelectedUnits",
+              "Row": "2",
+              "Column": "3"
+            }
+          ],
+          "name_key": null
+        }
+      ]
+    },
+    {
+      "group": "dehaka_regular",
+      "unit_id": "DehakaHydraliskLevel2",
+      "records": [
+        {
+          "layer": "starcoop/starcoop.sc2mod",
+          "parent": null,
+          "abilities": [
+            "move",
+            "attack",
+            "stop",
+            "BurrowDehakaHydraliskLevel2Down",
+            "PrimalHydraliskToMutalisk",
+            "PrimalHydraliskImpalerMerge"
+          ],
+          "weapons": [
+            "DehakaHydraliskLevel2Melee",
+            "DehakaHydraliskLevel2NeedleSpines"
+          ],
+          "buttons": [
+            {
+              "Face": "Move",
+              "Type": "AbilCmd",
+              "AbilCmd": "move,Move",
+              "Row": "0",
+              "Column": "0"
+            },
+            {
+              "Face": "Stop",
+              "Type": "AbilCmd",
+              "AbilCmd": "stop,Stop",
+              "Row": "0",
+              "Column": "1"
+            },
+            {
+              "Face": "MoveHoldPosition",
+              "Type": "AbilCmd",
+              "AbilCmd": "move,HoldPos",
+              "Row": "0",
+              "Column": "2"
+            },
+            {
+              "Face": "MovePatrol",
+              "Type": "AbilCmd",
+              "AbilCmd": "move,Patrol",
+              "Row": "0",
+              "Column": "3"
+            },
+            {
+              "Face": "Attack",
+              "Type": "AbilCmd",
+              "AbilCmd": "attack,Execute",
+              "Row": "0",
+              "Column": "4"
+            },
+            {
+              "Face": "BurrowDown",
+              "Type": "AbilCmd",
+              "AbilCmd": "BurrowDehakaHydraliskLevel2Down,Execute",
+              "Row": "2",
+              "Column": "4"
+            },
+            {
+              "Face": "DehakaHydraliskToMutalisk",
+              "Type": "AbilCmd",
+              "AbilCmd": "PrimalHydraliskToMutalisk,SelectedUnits",
+              "Row": "2",
+              "Column": "2"
+            },
+            {
+              "Face": "DehakaHydraliskImpalerMerge",
+              "Type": "AbilCmd",
+              "AbilCmd": "PrimalHydraliskImpalerMerge,SelectedUnits",
+              "Row": "2",
+              "Column": "3"
+            }
+          ],
+          "name_key": null
+        }
+      ]
+    },
+    {
+      "group": "dehaka_regular",
+      "unit_id": "DehakaSwarmHost",
+      "records": [
+        {
+          "layer": "starcoop/starcoop.sc2mod",
+          "parent": null,
+          "abilities": [
+            "stop",
+            "move",
+            "DehakaMorphToSwarmHostBurrowed",
+            "DehakaSpawnLocustsTargeted",
+            "PrimalSwarmHostMerge",
+            "attack"
+          ],
+          "weapons": [
+            "SwarmHostFakeWeapon"
+          ],
+          "buttons": [
+            {
+              "Face": "Move",
+              "Type": "AbilCmd",
+              "AbilCmd": "move,Move",
+              "Row": "0",
+              "Column": "0"
+            },
+            {
+              "Face": "Stop",
+              "Type": "AbilCmd",
+              "AbilCmd": "stop,Stop",
+              "Row": "0",
+              "Column": "1"
+            },
+            {
+              "Face": "MoveHoldPosition",
+              "Type": "AbilCmd",
+              "AbilCmd": "move,HoldPos",
+              "Row": "0",
+              "Column": "2"
+            },
+            {
+              "Face": "Attack",
+              "Type": "AbilCmd",
+              "AbilCmd": "attack,Execute",
+              "Row": "0",
+              "Column": "4"
+            },
+            {
+              "Face": "AcquireMove",
+              "Type": "AbilCmd",
+              "AbilCmd": "move,AcquireMove",
+              "Row": "0",
+              "Column": "4"
+            },
+            {
+              "Face": "MovePatrol",
+              "Type": "AbilCmd",
+              "AbilCmd": "move,Patrol",
+              "Row": "0",
+              "Column": "3"
+            },
+            {
+              "Face": "SwarmHostBurrowDown",
+              "Type": "AbilCmd",
+              "AbilCmd": "DehakaMorphToSwarmHostBurrowed,Execute",
+              "Row": "2",
+              "Column": "4"
+            },
+            {
+              "Face": "DehakaSpawnLocusts",
+              "Type": "AbilCmd",
+              "AbilCmd": "DehakaSpawnLocustsTargeted,Execute",
+              "Row": "2",
+              "Column": "0"
+            },
+            {
+              "Face": "DehakaSwarmHostMerge",
+              "Type": "AbilCmd",
+              "AbilCmd": "PrimalSwarmHostMerge,SelectedUnits",
+              "Row": "2",
+              "Column": "3"
+            }
+          ],
+          "name_key": null
+        }
+      ]
+    },
+    {
+      "group": "dehaka_regular",
+      "unit_id": "DehakaUltraliskLevel2",
+      "records": [
+        {
+          "layer": "starcoop/starcoop.sc2mod",
+          "parent": null,
+          "abilities": [
+            "stop",
+            "attack",
+            "move",
+            "BurrowDehakaUltraliskLevel2Down",
+            "PrimalUltraliskMergeable",
+            "PrimalUltraliskLevel2Merge",
+            "DehakaUltraliskCrashingCharge"
+          ],
+          "weapons": [
+            "DehakaKaiserBladesLevel2"
+          ],
+          "buttons": [
+            {
+              "Face": "Move",
+              "Type": "AbilCmd",
+              "AbilCmd": "move,Move",
+              "Row": "0",
+              "Column": "0"
+            },
+            {
+              "Face": "Stop",
+              "Type": "AbilCmd",
+              "AbilCmd": "stop,Stop",
+              "Row": "0",
+              "Column": "1"
+            },
+            {
+              "Face": "MoveHoldPosition",
+              "Type": "AbilCmd",
+              "AbilCmd": "move,HoldPos",
+              "Row": "0",
+              "Column": "2"
+            },
+            {
+              "Face": "MovePatrol",
+              "Type": "AbilCmd",
+              "AbilCmd": "move,Patrol",
+              "Row": "0",
+              "Column": "3"
+            },
+            {
+              "Face": "Attack",
+              "Type": "AbilCmd",
+              "AbilCmd": "attack,Execute",
+              "Row": "0",
+              "Column": "4"
+            },
+            {
+              "Face": "BurrowDown",
+              "Type": "AbilCmd",
+              "AbilCmd": "BurrowDehakaUltraliskLevel2Down,Execute",
+              "Row": "2",
+              "Column": "4"
+            },
+            {
+              "Face": "DehakaUltraliskCrashingCharge",
+              "Type": "AbilCmd",
+              "AbilCmd": "DehakaUltraliskCrashingCharge,Execute",
+              "Row": "2",
+              "Column": "0"
+            },
+            {
+              "Face": "DehakaUltraliskLevel2Merge",
+              "Type": "AbilCmd",
+              "AbilCmd": "PrimalUltraliskLevel2Merge,SelectedUnits",
+              "Row": "2",
+              "Column": "3"
+            }
+          ],
+          "name_key": null
+        }
+      ]
+    },
+    {
+      "group": "dehaka_regular",
+      "unit_id": "DehakaRavasaur",
+      "records": [
+        {
+          "layer": "starcoop/starcoop.sc2mod",
+          "parent": null,
+          "abilities": [
+            "move",
+            "attack",
+            "stop",
+            "BurrowDehakaRavasaurDown",
+            "PrimalZerglingLevel2Mergeable",
+            "ProgressRally"
+          ],
+          "weapons": [
+            "DehakaRavasaur"
+          ],
+          "buttons": [
+            {
+              "Face": "Move",
+              "Type": "AbilCmd",
+              "AbilCmd": "move,Move",
+              "Row": "0",
+              "Column": "0"
+            },
+            {
+              "Face": "Stop",
+              "Type": "AbilCmd",
+              "AbilCmd": "stop,Stop",
+              "Row": "0",
+              "Column": "1"
+            },
+            {
+              "Face": "MoveHoldPosition",
+              "Type": "AbilCmd",
+              "AbilCmd": "move,HoldPos",
+              "Row": "0",
+              "Column": "2"
+            },
+            {
+              "Face": "MovePatrol",
+              "Type": "AbilCmd",
+              "AbilCmd": "move,Patrol",
+              "Row": "0",
+              "Column": "3"
+            },
+            {
+              "Face": "Attack",
+              "Type": "AbilCmd",
+              "AbilCmd": "attack,Execute",
+              "Row": "0",
+              "Column": "4"
+            },
+            {
+              "Face": "BurrowDown",
+              "Type": "AbilCmd",
+              "AbilCmd": "BurrowDehakaRavasaurDown,Execute",
+              "Row": "2",
+              "Column": "4"
+            },
+            {
+              "Face": "SetRallyPoint2",
+              "Type": "AbilCmd",
+              "AbilCmd": "ProgressRally,Rally1",
+              "Row": "1",
+              "Column": "4"
+            }
+          ],
+          "name_key": null
+        }
+      ]
+    },
+    {
+      "group": "dehaka_regular",
+      "unit_id": "DehakaRoachLevel3",
+      "records": [
+        {
+          "layer": "starcoop/starcoop.sc2mod",
+          "parent": null,
+          "abilities": [
+            "stop",
+            "attack",
+            "move",
+            "BurrowDehakaRoachLevel3Down",
+            "PrimalRoachLevel2Mergeable",
+            "ProgressRally"
+          ],
+          "weapons": [
+            "DehakaRoachLevel3Cone"
+          ],
+          "buttons": [
+            {
+              "Face": "Move",
+              "Type": "AbilCmd",
+              "AbilCmd": "move,Move",
+              "Row": "0",
+              "Column": "0"
+            },
+            {
+              "Face": "Stop",
+              "Type": "AbilCmd",
+              "AbilCmd": "stop,Stop",
+              "Row": "0",
+              "Column": "1"
+            },
+            {
+              "Face": "MoveHoldPosition",
+              "Type": "AbilCmd",
+              "AbilCmd": "move,HoldPos",
+              "Row": "0",
+              "Column": "2"
+            },
+            {
+              "Face": "Attack",
+              "Type": "AbilCmd",
+              "AbilCmd": "attack,Execute",
+              "Row": "0",
+              "Column": "4"
+            },
+            {
+              "Face": "MovePatrol",
+              "Type": "AbilCmd",
+              "AbilCmd": "move,Patrol",
+              "Row": "0",
+              "Column": "3"
+            },
+            {
+              "Face": "BurrowDown",
+              "Type": "AbilCmd",
+              "AbilCmd": "BurrowDehakaRoachLevel3Down,Execute",
+              "Row": "2",
+              "Column": "4"
+            },
+            {
+              "Face": "SetRallyPoint2",
+              "Type": "AbilCmd",
+              "AbilCmd": "ProgressRally,Rally1",
+              "Row": "1",
+              "Column": "4"
+            }
+          ],
+          "name_key": null
+        }
+      ]
+    },
+    {
+      "group": "dehaka_regular",
+      "unit_id": "ImpalerDehaka",
+      "records": [
+        {
+          "layer": "starcoop/starcoop.sc2mod",
+          "parent": null,
+          "abilities": [
+            "stop",
+            "move",
+            "BurrowImpalerDehakaDown",
+            "PrimalHydraliskLevel2Mergeable",
+            "ProgressRally"
+          ],
+          "weapons": [],
+          "buttons": [
+            {
+              "Face": "Move",
+              "Type": "AbilCmd",
+              "AbilCmd": "move,Move",
+              "Row": "0",
+              "Column": "0"
+            },
+            {
+              "Face": "Stop",
+              "Type": "AbilCmd",
+              "AbilCmd": "stop,Stop",
+              "Row": "0",
+              "Column": "1"
+            },
+            {
+              "Face": "MoveHoldPosition",
+              "Type": "AbilCmd",
+              "AbilCmd": "move,HoldPos",
+              "Row": "0",
+              "Column": "2"
+            },
+            {
+              "Face": "AcquireMove",
+              "Type": "AbilCmd",
+              "AbilCmd": "move,AcquireMove",
+              "Row": "0",
+              "Column": "4"
+            },
+            {
+              "Face": "MovePatrol",
+              "Type": "AbilCmd",
+              "AbilCmd": "move,Patrol",
+              "Row": "0",
+              "Column": "3"
+            },
+            {
+              "Face": "ImpalerBurrowDown",
+              "Type": "AbilCmd",
+              "AbilCmd": "BurrowImpalerDehakaDown,Execute",
+              "Row": "2",
+              "Column": "4"
+            },
+            {
+              "Face": "SetRallyPoint2",
+              "Type": "AbilCmd",
+              "AbilCmd": "ProgressRally,Rally1",
+              "Row": "1",
+              "Column": "4"
+            }
+          ],
+          "name_key": null
+        }
+      ]
+    },
+    {
+      "group": "dehaka_regular",
+      "unit_id": "DehakaMutaliskLevel3",
+      "records": [
+        {
+          "layer": "starcoop/starcoop.sc2mod",
+          "parent": null,
+          "abilities": [
+            "stop",
+            "attack",
+            "move",
+            "PrimalMutaliskLevel2Mergeable",
+            "DehakaMutaliskRevive"
+          ],
+          "weapons": [
+            "DehakaMutaliskAirGlaiveWurm",
+            "DehakaMutaliskLevel3GlaiveWurm"
+          ],
+          "buttons": [
+            {
+              "Face": "Move",
+              "Type": "AbilCmd",
+              "AbilCmd": "move,Move",
+              "Row": "0",
+              "Column": "0"
+            },
+            {
+              "Face": "Stop",
+              "Type": "AbilCmd",
+              "AbilCmd": "stop,Stop",
+              "Row": "0",
+              "Column": "1"
+            },
+            {
+              "Face": "MoveHoldPosition",
+              "Type": "AbilCmd",
+              "AbilCmd": "move,HoldPos",
+              "Row": "0",
+              "Column": "2"
+            },
+            {
+              "Face": "Attack",
+              "Type": "AbilCmd",
+              "AbilCmd": "attack,Execute",
+              "Row": "0",
+              "Column": "4"
+            },
+            {
+              "Face": "MovePatrol",
+              "Type": "AbilCmd",
+              "AbilCmd": "move,Patrol",
+              "Row": "0",
+              "Column": "3"
+            }
+          ],
+          "name_key": null
+        }
+      ]
+    },
+    {
+      "group": "dehaka_regular",
+      "unit_id": "DehakaGuardian",
+      "records": [
+        {
+          "layer": "starcoop/starcoop.sc2mod",
+          "parent": null,
+          "abilities": [
+            "attack",
+            "stop",
+            "move",
+            "PrimalRoachLevel3GuardianMergeable",
+            "DehakaGuardianMineCharge"
+          ],
+          "weapons": [
+            "DehakaAcidSpores"
+          ],
+          "buttons": [
+            {
+              "Face": "Move",
+              "Type": "AbilCmd",
+              "AbilCmd": "move,Move",
+              "Row": "0",
+              "Column": "0"
+            },
+            {
+              "Face": "Stop",
+              "Type": "AbilCmd",
+              "AbilCmd": "stop,Stop",
+              "Row": "0",
+              "Column": "1"
+            },
+            {
+              "Face": "MoveHoldPosition",
+              "Type": "AbilCmd",
+              "AbilCmd": "move,HoldPos",
+              "Row": "0",
+              "Column": "2"
+            },
+            {
+              "Face": "MovePatrol",
+              "Type": "AbilCmd",
+              "AbilCmd": "move,Patrol",
+              "Row": "0",
+              "Column": "3"
+            },
+            {
+              "Face": "Attack",
+              "Type": "AbilCmd",
+              "AbilCmd": "attack,Execute",
+              "Row": "0",
+              "Column": "4"
+            },
+            {
+              "Face": "DehakaGuardianMineCharge",
+              "Type": "AbilCmd",
+              "AbilCmd": "DehakaGuardianMineCharge,Execute",
+              "Row": "2",
+              "Column": "0"
+            }
+          ],
+          "name_key": null
+        }
+      ]
+    },
+    {
+      "group": "dehaka_regular",
+      "unit_id": "DehakaPrimalSwarmHost",
+      "records": [
+        {
+          "layer": "starcoop/starcoop.sc2mod",
+          "parent": null,
+          "abilities": [
+            "stop",
+            "move",
+            "DehakaMorphToPrimalSwarmHostBurrowed",
+            "DehakaSpawnCreeperTargeted",
+            "PrimalSwarmHostMergeable",
+            "attack",
+            "ProgressRally"
+          ],
+          "weapons": [
+            "DehakaPrimalSwarmHostFakeWeapon"
+          ],
+          "buttons": [
+            {
+              "Face": "Move",
+              "Type": "AbilCmd",
+              "AbilCmd": "move,Move",
+              "Row": "0",
+              "Column": "0"
+            },
+            {
+              "Face": "Stop",
+              "Type": "AbilCmd",
+              "AbilCmd": "stop,Stop",
+              "Row": "0",
+              "Column": "1"
+            },
+            {
+              "Face": "MoveHoldPosition",
+              "Type": "AbilCmd",
+              "AbilCmd": "move,HoldPos",
+              "Row": "0",
+              "Column": "2"
+            },
+            {
+              "Face": "Attack",
+              "Type": "AbilCmd",
+              "AbilCmd": "attack,Execute",
+              "Row": "0",
+              "Column": "4"
+            },
+            {
+              "Face": "AcquireMove",
+              "Type": "AbilCmd",
+              "AbilCmd": "move,AcquireMove",
+              "Row": "0",
+              "Column": "4"
+            },
+            {
+              "Face": "MovePatrol",
+              "Type": "AbilCmd",
+              "AbilCmd": "move,Patrol",
+              "Row": "0",
+              "Column": "3"
+            },
+            {
+              "Face": "SwarmHostBurrowDown",
+              "Type": "AbilCmd",
+              "AbilCmd": "DehakaMorphToPrimalSwarmHostBurrowed,Execute",
+              "Row": "2",
+              "Column": "4"
+            },
+            {
+              "Face": "DehakaSpawnLocustsBomb",
+              "Type": "AbilCmd",
+              "AbilCmd": "DehakaSpawnCreeperTargeted,Execute",
+              "Row": "2",
+              "Column": "0"
+            },
+            {
+              "Face": "SetRallyPoint2",
+              "Type": "AbilCmd",
+              "AbilCmd": "ProgressRally,Rally1",
+              "Row": "1",
+              "Column": "4"
+            }
+          ],
+          "name_key": null
+        }
+      ]
+    },
+    {
+      "group": "dehaka_regular",
+      "unit_id": "DehakaUltraliskLevel3",
+      "records": [
+        {
+          "layer": "starcoop/starcoop.sc2mod",
+          "parent": null,
+          "abilities": [
+            "stop",
+            "attack",
+            "move",
+            "BurrowDehakaUltraliskLevel3Down",
+            "PrimalUltraliskLevel2Mergeable",
+            "DehakaTyrannozorFanOfKnives",
+            "ProgressRally"
+          ],
+          "weapons": [
+            "DehakaKaiserBladesLevel3",
+            "DehakaUltraliskMissileLaunchers"
+          ],
+          "buttons": [
+            {
+              "Face": "Move",
+              "Type": "AbilCmd",
+              "AbilCmd": "move,Move",
+              "Row": "0",
+              "Column": "0"
+            },
+            {
+              "Face": "Stop",
+              "Type": "AbilCmd",
+              "AbilCmd": "stop,Stop",
+              "Row": "0",
+              "Column": "1"
+            },
+            {
+              "Face": "MoveHoldPosition",
+              "Type": "AbilCmd",
+              "AbilCmd": "move,HoldPos",
+              "Row": "0",
+              "Column": "2"
+            },
+            {
+              "Face": "MovePatrol",
+              "Type": "AbilCmd",
+              "AbilCmd": "move,Patrol",
+              "Row": "0",
+              "Column": "3"
+            },
+            {
+              "Face": "Attack",
+              "Type": "AbilCmd",
+              "AbilCmd": "attack,Execute",
+              "Row": "0",
+              "Column": "4"
+            },
+            {
+              "Face": "SetRallyPoint2",
+              "Type": "AbilCmd",
+              "AbilCmd": "ProgressRally,Rally1",
+              "Row": "1",
+              "Column": "4"
+            },
+            {
+              "Face": "BurrowDown",
+              "Type": "AbilCmd",
+              "AbilCmd": "BurrowDehakaUltraliskLevel3Down,Execute",
+              "Row": "2",
+              "Column": "4"
+            },
+            {
+              "Face": "DehakaTyrannozorFanOfKnives",
+              "Type": "AbilCmd",
+              "AbilCmd": "DehakaTyrannozorFanOfKnives,Execute",
+              "Row": "2",
+              "Column": "0"
+            }
+          ],
+          "name_key": null
+        }
+      ]
+    },
+    {
+      "group": "dehaka_support",
+      "unit_id": "DehakaDrone",
+      "records": [
+        {
+          "layer": "starcoop/starcoop.sc2mod",
+          "parent": null,
+          "abilities": [
+            "stop",
+            "attack",
+            "move",
+            "DehakaDroneMorph",
+            "DroneHarvest",
+            "BurrowDehakaDroneDown",
+            "DroneCarcassHarvest",
+            "MapObjectInteract",
+            "MutatorRemoveWorkerSleep",
+            "SprayZerg"
+          ],
+          "weapons": [
+            "DehakaDroneSpines"
+          ],
+          "buttons": [
+            {
+              "Face": "Move",
+              "Type": "AbilCmd",
+              "AbilCmd": "move,Move",
+              "Row": "0",
+              "Column": "0"
+            },
+            {
+              "Face": "MapObjectInteract",
+              "Type": "AbilCmd",
+              "AbilCmd": "MapObjectInteract,Execute",
+              "Row": "0",
+              "Column": "0"
+            },
+            {
+              "Face": "Stop",
+              "Type": "AbilCmd",
+              "AbilCmd": "stop,Stop",
+              "Row": "0",
+              "Column": "1"
+            },
+            {
+              "Face": "MoveHoldPosition",
+              "Type": "AbilCmd",
+              "AbilCmd": "move,HoldPos",
+              "Row": "0",
+              "Column": "2"
+            },
+            {
+              "Face": "AttackWorker",
+              "Type": "AbilCmd",
+              "AbilCmd": "attack,Execute",
+              "Row": "0",
+              "Column": "4"
+            },
+            {
+              "Face": "MovePatrol",
+              "Type": "AbilCmd",
+              "AbilCmd": "move,Patrol",
+              "Row": "0",
+              "Column": "3"
+            },
+            {
+              "Face": "ReturnCargo",
+              "Type": "AbilCmd",
+              "AbilCmd": "DroneHarvest,Return",
+              "Row": "1",
+              "Column": "1"
+            },
+            {
+              "Face": "BurrowDown",
+              "Type": "AbilCmd",
+              "AbilCmd": "BurrowDehakaDroneDown,Execute",
+              "Row": "2",
+              "Column": "4"
+            },
+            {
+              "Face": "Cancel",
+              "Type": "AbilCmd",
+              "AbilCmd": "DroneCarcassHarvest,Cancel",
+              "Row": "2",
+              "Column": "4"
+            },
+            {
+              "Face": "GatherZerg",
+              "Type": "AbilCmd",
+              "AbilCmd": "DroneHarvest,Gather",
+              "Row": "1",
+              "Column": "0"
+            },
+            {
+              "Face": "MutatorWorkerSleep",
+              "Type": "AbilCmd",
+              "AbilCmd": "MutatorRemoveWorkerSleep,Execute",
+              "Row": "2",
+              "Column": "3"
+            },
+            {
+              "Face": "Spray",
+              "Type": "AbilCmd",
+              "AbilCmd": "SprayZerg,Execute",
+              "Row": "2",
+              "Column": "3"
+            },
+            {
+              "Face": "DehakaHatchery",
+              "Type": "AbilCmd",
+              "AbilCmd": "DehakaDroneMorph,Build1",
+              "Row": "0",
+              "Column": "0"
+            },
+            {
+              "Face": "DehakaBarracks",
+              "Type": "AbilCmd",
+              "AbilCmd": "DehakaDroneMorph,Build2",
+              "Row": "0",
+              "Column": "1"
+            },
+            {
+              "Face": "DehakaGlevigStructure",
+              "Type": "AbilCmd",
+              "AbilCmd": "DehakaDroneMorph,Build3",
+              "Row": "1",
+              "Column": "0"
+            },
+            {
+              "Face": "DehakaMurvarStructure",
+              "Type": "AbilCmd",
+              "AbilCmd": "DehakaDroneMorph,Build4",
+              "Row": "1",
+              "Column": "1"
+            },
+            {
+              "Face": "DehakaDakrunStructure",
+              "Type": "AbilCmd",
+              "AbilCmd": "DehakaDroneMorph,Build5",
+              "Row": "1",
+              "Column": "2"
+            },
+            {
+              "Face": "DehakaNydusDestroyer",
+              "Type": "AbilCmd",
+              "AbilCmd": "DehakaDroneMorph,Build6",
+              "Row": "2",
+              "Column": "0"
+            }
+          ],
+          "name_key": null
+        }
+      ]
+    },
+    {
+      "group": "dehaka_support",
+      "unit_id": "DehakaHatchery",
+      "records": [
+        {
+          "layer": "starcoop/starcoop.sc2mod",
+          "parent": null,
+          "abilities": [
+            "DehakaHatcheryUproot",
+            "stop",
+            "PrimalBuildInProgress",
+            "DehakaHatcheryTrainEgg",
+            "que5Passive",
+            "RallyCommand",
+            "DehakaHatcheryBuild",
+            "DehakaHatcheryResearch"
+          ],
+          "weapons": [],
+          "buttons": [
+            {
+              "Face": "PrimalBuildingUproot",
+              "Type": "AbilCmd",
+              "AbilCmd": "DehakaHatcheryUproot,Execute",
+              "Row": "2",
+              "Column": "3"
+            },
+            {
+              "Face": "Cancel",
+              "Type": "AbilCmd",
+              "AbilCmd": "que5Passive,CancelLast",
+              "Row": "2",
+              "Column": "4"
+            },
+            {
+              "Face": "CancelBuilding",
+              "Type": "AbilCmd",
+              "AbilCmd": "PrimalBuildInProgress,Cancel",
+              "Row": "2",
+              "Column": "4"
+            },
+            {
+              "Face": "RallySCV",
+              "Type": "AbilCmd",
+              "AbilCmd": "RallyCommand,Rally1",
+              "Row": "1",
+              "Column": "4"
+            },
+            {
+              "Face": "DehakaDrone",
+              "Type": "AbilCmd",
+              "AbilCmd": "DehakaHatcheryTrainEgg,Train1",
+              "Row": "0",
+              "Column": "0"
+            },
+            {
+              "Face": "BuildDehakaExtractor",
+              "Type": "AbilCmd",
+              "AbilCmd": "DehakaHatcheryBuild,Build1",
+              "Row": "1",
+              "Column": "0"
+            },
+            {
+              "Face": "DehakaLearnPrimalWeaponsLevel1",
+              "Type": "AbilCmd",
+              "AbilCmd": "DehakaHatcheryResearch,Research1",
+              "Row": "2",
+              "Column": "0"
+            },
+            {
+              "Face": "DehakaLearnPrimalWeaponsLevel2",
+              "Type": "AbilCmd",
+              "AbilCmd": "DehakaHatcheryResearch,Research2",
+              "Row": "2",
+              "Column": "0"
+            },
+            {
+              "Face": "DehakaLearnPrimalWeaponsLevel3",
+              "Type": "AbilCmd",
+              "AbilCmd": "DehakaHatcheryResearch,Research3",
+              "Row": "2",
+              "Column": "0"
+            },
+            {
+              "Face": "DehakaLearnPrimalArmorLevel1",
+              "Type": "AbilCmd",
+              "AbilCmd": "DehakaHatcheryResearch,Research4",
+              "Row": "2",
+              "Column": "1"
+            },
+            {
+              "Face": "DehakaLearnPrimalArmorLevel2",
+              "Type": "AbilCmd",
+              "AbilCmd": "DehakaHatcheryResearch,Research5",
+              "Row": "2",
+              "Column": "1"
+            },
+            {
+              "Face": "DehakaLearnPrimalArmorLevel3",
+              "Type": "AbilCmd",
+              "AbilCmd": "DehakaHatcheryResearch,Research6",
+              "Row": "2",
+              "Column": "1"
+            }
+          ],
+          "name_key": null
+        }
+      ]
+    },
+    {
+      "group": "dehaka_support",
+      "unit_id": "DehakaBarracks",
+      "records": [
+        {
+          "layer": "starcoop/starcoop.sc2mod",
+          "parent": null,
+          "abilities": [
+            "DehakaBarracksUproot",
+            "stop",
+            "PrimalBuildInProgress",
+            "DehakaBarracksTrainEgg",
+            "que1",
+            "Rally"
+          ],
+          "weapons": [],
+          "buttons": [
+            {
+              "Face": "DehakaZergling",
+              "Type": "AbilCmd",
+              "AbilCmd": "DehakaBarracksTrainEgg,Train1",
+              "Row": "0",
+              "Column": "0"
+            },
+            {
+              "Face": "DehakaRoach",
+              "Type": "AbilCmd",
+              "AbilCmd": "DehakaBarracksTrainEgg,Train2",
+              "Row": "0",
+              "Column": "1"
+            },
+            {
+              "Face": "DehakaHydralisk",
+              "Type": "AbilCmd",
+              "AbilCmd": "DehakaBarracksTrainEgg,Train3",
+              "Row": "0",
+              "Column": "2"
+            },
+            {
+              "Face": "DehakaSwarmHost",
+              "Type": "AbilCmd",
+              "AbilCmd": "DehakaBarracksTrainEgg,Train4",
+              "Row": "1",
+              "Column": "0"
+            },
+            {
+              "Face": "DehakaUltralisk",
+              "Type": "AbilCmd",
+              "AbilCmd": "DehakaBarracksTrainEgg,Train5",
+              "Row": "1",
+              "Column": "1"
+            },
+            {
+              "Face": "SetRallyPoint2",
+              "Type": "AbilCmd",
+              "AbilCmd": "Rally,Rally1",
+              "Row": "1",
+              "Column": "4"
+            },
+            {
+              "Face": "PrimalBuildingUproot",
+              "Type": "AbilCmd",
+              "AbilCmd": "DehakaBarracksUproot,Execute",
+              "Row": "2",
+              "Column": "3"
+            },
+            {
+              "Face": "Cancel",
+              "Type": "AbilCmd",
+              "AbilCmd": "que1,CancelLast",
+              "Row": "2",
+              "Column": "4"
+            },
+            {
+              "Face": "CancelBuilding",
+              "Type": "AbilCmd",
+              "AbilCmd": "PrimalBuildInProgress,Cancel",
+              "Row": "2",
+              "Column": "4"
+            }
+          ],
+          "name_key": null
+        }
+      ]
+    },
+    {
+      "group": "dehaka_support",
+      "unit_id": "DehakaGlevigStructure",
+      "records": [
+        {
+          "layer": "starcoop/starcoop.sc2mod",
+          "parent": null,
+          "abilities": [
+            "PrimalBuildInProgress",
+            "que5",
+            "DehakaGlevigResearch"
+          ],
+          "weapons": [],
+          "buttons": [
+            {
+              "Face": "Cancel",
+              "Type": "AbilCmd",
+              "AbilCmd": "que5,CancelLast",
+              "Row": "2",
+              "Column": "4"
+            },
+            {
+              "Face": "CancelBuilding",
+              "Type": "AbilCmd",
+              "AbilCmd": "PrimalBuildInProgress,Cancel",
+              "Row": "2",
+              "Column": "4"
+            },
+            {
+              "Face": "ResearchDehakaRavasaurVSArmor",
+              "Type": "AbilCmd",
+              "AbilCmd": "DehakaGlevigResearch,Research10",
+              "Row": "0",
+              "Column": "0"
+            },
+            {
+              "Face": "ResearchDehakaRavasaurRange",
+              "Type": "AbilCmd",
+              "AbilCmd": "DehakaGlevigResearch,Research9",
+              "Row": "0",
+              "Column": "1"
+            },
+            {
+              "Face": "ResearchDehakaHydraliskSpeed",
+              "Type": "AbilCmd",
+              "AbilCmd": "DehakaGlevigResearch,Research8",
+              "Row": "1",
+              "Column": "0"
+            },
+            {
+              "Face": "ResearchDehakaImpalerTenderize",
+              "Type": "AbilCmd",
+              "AbilCmd": "DehakaGlevigResearch,Research11",
+              "Row": "1",
+              "Column": "1"
+            },
+            {
+              "Face": "DehakaRoachMoveSpeed",
+              "Type": "AbilCmd",
+              "AbilCmd": "DehakaGlevigResearch,Research7",
+              "Row": "0",
+              "Column": "2"
+            },
+            {
+              "Face": "DehakaGlevigRoachFireBreath",
+              "Type": "AbilCmd",
+              "AbilCmd": "DehakaGlevigResearch,Research3",
+              "Row": "0",
+              "Column": "3"
+            }
+          ],
+          "name_key": null
+        }
+      ]
+    },
+    {
+      "group": "dehaka_support",
+      "unit_id": "DehakaMurvarStructure",
+      "records": [
+        {
+          "layer": "starcoop/starcoop.sc2mod",
+          "parent": null,
+          "abilities": [
+            "PrimalBuildInProgress",
+            "DehakaMurvarResearch",
+            "que5"
+          ],
+          "weapons": [],
+          "buttons": [
+            {
+              "Face": "Cancel",
+              "Type": "AbilCmd",
+              "AbilCmd": "que5,CancelLast",
+              "Row": "2",
+              "Column": "4"
+            },
+            {
+              "Face": "CancelBuilding",
+              "Type": "AbilCmd",
+              "AbilCmd": "PrimalBuildInProgress,Cancel",
+              "Row": "2",
+              "Column": "4"
+            },
+            {
+              "Face": "ResearchSlicingGlave",
+              "Type": "AbilCmd",
+              "AbilCmd": "DehakaMurvarResearch,Research13",
+              "Row": "0",
+              "Column": "0"
+            },
+            {
+              "Face": "ResearchDehakaMutaliskDamageReduction",
+              "Type": "AbilCmd",
+              "AbilCmd": "DehakaMurvarResearch,Research8",
+              "Row": "0",
+              "Column": "1"
+            },
+            {
+              "Face": "ResearchDehakaMutaliskRespawnOnDeath",
+              "Type": "AbilCmd",
+              "AbilCmd": "DehakaMurvarResearch,Research9",
+              "Row": "0",
+              "Column": "2"
+            },
+            {
+              "Face": "DehakaMurvarCreeperAir",
+              "Type": "AbilCmd",
+              "AbilCmd": "DehakaMurvarResearch,Research12",
+              "Row": "1",
+              "Column": "0"
+            },
+            {
+              "Face": "ResearchDehakaGuardianExplosiveBomb",
+              "Type": "AbilCmd",
+              "AbilCmd": "DehakaMurvarResearch,Research11",
+              "Row": "0",
+              "Column": "3"
+            },
+            {
+              "Face": "ResearchDehakaGuardianFury",
+              "Type": "AbilCmd",
+              "AbilCmd": "DehakaMurvarResearch,Research10",
+              "Row": "0",
+              "Column": "4"
+            }
+          ],
+          "name_key": null
+        }
+      ]
+    },
+    {
+      "group": "dehaka_support",
+      "unit_id": "DehakaDakrunStructure",
+      "records": [
+        {
+          "layer": "starcoop/starcoop.sc2mod",
+          "parent": null,
+          "abilities": [
+            "PrimalBuildInProgress",
+            "DehakaDakrunStructureLearn",
+            "DehakaDakrunResearch",
+            "que5"
+          ],
+          "weapons": [],
+          "buttons": [
+            {
+              "Face": "Cancel",
+              "Type": "AbilCmd",
+              "AbilCmd": "que5,CancelLast",
+              "Row": "2",
+              "Column": "4"
+            },
+            {
+              "Face": "CancelBuilding",
+              "Type": "AbilCmd",
+              "AbilCmd": "PrimalBuildInProgress,Cancel",
+              "Row": "2",
+              "Column": "4"
+            },
+            {
+              "Face": "ResearchDehakaUltraliskCrashingCharge",
+              "Type": "AbilCmd",
+              "AbilCmd": "DehakaDakrunResearch,Research1",
+              "Row": "0",
+              "Column": "0"
+            },
+            {
+              "Face": "ResearchDehakaUltraliskRegen",
+              "Type": "AbilCmd",
+              "AbilCmd": "DehakaDakrunResearch,Research2",
+              "Row": "0",
+              "Column": "1"
+            },
+            {
+              "Face": "ResearchDehakaUltraliskBash",
+              "Type": "AbilCmd",
+              "AbilCmd": "DehakaDakrunResearch,Research3",
+              "Row": "0",
+              "Column": "2"
+            },
+            {
+              "Face": "ResearchDehakaTyrannozorFanOfKnives",
+              "Type": "AbilCmd",
+              "AbilCmd": "DehakaDakrunResearch,Research5",
+              "Row": "0",
+              "Column": "3"
+            },
+            {
+              "Face": "ResearchDehakaTyrannozorArmorAura",
+              "Type": "AbilCmd",
+              "AbilCmd": "DehakaDakrunResearch,Research4",
+              "Row": "0",
+              "Column": "4"
+            }
+          ],
+          "name_key": null
+        }
+      ]
+    },
+    {
+      "group": "dehaka_support",
+      "unit_id": "DehakaNydusDestroyer",
+      "records": [
+        {
+          "layer": "starcoop/starcoop.sc2mod",
+          "parent": null,
+          "abilities": [
+            "BuildInProgress",
+            "stop",
+            "attack",
+            "move",
+            "NydusDestroyerDeepTunnel",
+            "NydusDestroyerBeam"
+          ],
+          "weapons": [
+            "DehakaNydusDestroyerWeapon"
+          ],
+          "buttons": [
+            {
+              "Face": "Stop",
+              "Type": "AbilCmd",
+              "AbilCmd": "stop,Stop",
+              "Row": "0",
+              "Column": "1"
+            },
+            {
+              "Face": "AttackBuilding",
+              "Type": "AbilCmd",
+              "AbilCmd": "attack,Execute",
+              "Row": "0",
+              "Column": "4"
+            },
+            {
+              "Face": "NydusDestroyerBeam",
+              "Type": "AbilCmd",
+              "AbilCmd": "NydusDestroyerBeam,Execute",
+              "Row": "2",
+              "Column": "0"
+            },
+            {
+              "Face": "NydusDestroyerDeepTunnel",
+              "Type": "AbilCmd",
+              "AbilCmd": "NydusDestroyerDeepTunnel,Execute",
+              "Row": "2",
+              "Column": "4"
+            },
+            {
+              "Face": "CancelBuilding",
+              "Type": "AbilCmd",
+              "AbilCmd": "BuildInProgress,Cancel",
+              "Row": "2",
+              "Column": "4"
+            }
+          ],
+          "name_key": null
+        }
+      ]
+    },
+    {
+      "group": "dehaka_support",
+      "unit_id": "DehakaNydusDestroyerTimedNoFood",
+      "records": [
+        {
+          "layer": "starcoop/starcoop.sc2mod",
+          "parent": null,
+          "abilities": [
+            "BuildinProgressNydusCanal",
+            "stop",
+            "attack",
+            "move",
+            "GreaterNydusDestroyerDeepTunnel",
+            "DehakaNydusDestroyerTimedNoFoodBeam"
+          ],
+          "weapons": [
+            "DehakaNydusDestroyerTimedNoFoodWeapon"
+          ],
+          "buttons": [
+            {
+              "Face": "Stop",
+              "Type": "AbilCmd",
+              "AbilCmd": "stop,Stop",
+              "Row": "0",
+              "Column": "1"
+            },
+            {
+              "Face": "AttackBuilding",
+              "Type": "AbilCmd",
+              "AbilCmd": "attack,Execute",
+              "Row": "0",
+              "Column": "4"
+            },
+            {
+              "Face": "DehakaNydusDestroyerTimedNoFoodBeam",
+              "Type": "AbilCmd",
+              "AbilCmd": "DehakaNydusDestroyerTimedNoFoodBeam,Execute",
+              "Row": "2",
+              "Column": "0"
+            },
+            {
+              "Face": "GreaterNydusDestroyerDeepTunnel",
+              "Type": "AbilCmd",
+              "AbilCmd": "GreaterNydusDestroyerDeepTunnel,Execute",
+              "Row": "2",
+              "Column": "4"
+            }
+          ],
+          "name_key": null
+        }
+      ]
+    },
+    {
+      "group": "dehaka_support",
+      "unit_id": "DehakaCoop",
+      "records": [
+        {
+          "layer": "starcoop/starcoop.sc2mod",
+          "parent": "DehakaCoopBase",
+          "abilities": [],
+          "weapons": [],
+          "buttons": [],
+          "name_key": null
+        }
+      ]
+    },
+    {
+      "group": "dehaka_support",
+      "unit_id": "DehakaGlevig",
+      "records": [
+        {
+          "layer": "starcoop/starcoop.sc2mod",
+          "parent": null,
+          "abilities": [
+            "stop",
+            "attack",
+            "GlevigDeepTunnel",
+            "DehakaGlevigFirebreath",
+            "BuildInProgress",
+            "CommanderPrestigeDehakaPackLeadersRetreat"
+          ],
+          "weapons": [
+            "YagdraFireballWeapon"
+          ],
+          "buttons": [
+            {
+              "Face": "Move",
+              "Type": "AbilCmd",
+              "AbilCmd": "move,Move",
+              "Row": "0",
+              "Column": "0"
+            },
+            {
+              "Face": "Stop",
+              "Type": "AbilCmd",
+              "AbilCmd": "stop,Stop",
+              "Row": "0",
+              "Column": "1"
+            },
+            {
+              "Face": "MoveHoldPosition",
+              "Type": "AbilCmd",
+              "AbilCmd": "move,HoldPos",
+              "Row": "0",
+              "Column": "2"
+            },
+            {
+              "Face": "MovePatrol",
+              "Type": "AbilCmd",
+              "AbilCmd": "move,Patrol",
+              "Row": "0",
+              "Column": "3"
+            },
+            {
+              "Face": "Attack",
+              "Type": "AbilCmd",
+              "AbilCmd": "attack,Execute",
+              "Row": "0",
+              "Column": "4"
+            },
+            {
+              "Face": "GlevigTunnel",
+              "Type": "AbilCmd",
+              "AbilCmd": "GlevigDeepTunnel,Execute",
+              "Row": "2",
+              "Column": "4"
+            },
+            {
+              "Face": "GlevigFirebreath",
+              "Type": "AbilCmd",
+              "AbilCmd": "DehakaGlevigFirebreath,Execute",
+              "Row": "2",
+              "Column": "0"
+            },
+            {
+              "Face": "CommanderPrestigeDehakaPackLeadersRetreat",
+              "Type": "AbilCmd",
+              "AbilCmd": "CommanderPrestigeDehakaPackLeadersRetreat,Execute",
+              "Row": "2",
+              "Column": "3"
+            }
+          ],
+          "name_key": null
+        }
+      ]
+    },
+    {
+      "group": "dehaka_support",
+      "unit_id": "DehakaMurvar",
+      "records": [
+        {
+          "layer": "starcoop/starcoop.sc2mod",
+          "parent": null,
+          "abilities": [
+            "stop",
+            "attack",
+            "move",
+            "CoopMurvarSpawnCreepers",
+            "MurvarCoopPuke",
+            "CommanderPrestigeDehakaPackLeadersRetreat"
+          ],
+          "weapons": [
+            "SlivanRanged"
+          ],
+          "buttons": [
+            {
+              "Face": "Move",
+              "Type": "AbilCmd",
+              "AbilCmd": "move,Move",
+              "Row": "0",
+              "Column": "0"
+            },
+            {
+              "Face": "Stop",
+              "Type": "AbilCmd",
+              "AbilCmd": "stop,Stop",
+              "Row": "0",
+              "Column": "1"
+            },
+            {
+              "Face": "MoveHoldPosition",
+              "Type": "AbilCmd",
+              "AbilCmd": "move,HoldPos",
+              "Row": "0",
+              "Column": "2"
+            },
+            {
+              "Face": "Attack",
+              "Type": "AbilCmd",
+              "AbilCmd": "attack,Execute",
+              "Row": "0",
+              "Column": "4"
+            },
+            {
+              "Face": "MovePatrol",
+              "Type": "AbilCmd",
+              "AbilCmd": "move,Patrol",
+              "Row": "0",
+              "Column": "3"
+            },
+            {
+              "Face": "CoopMurvarSpawnCreepers",
+              "Type": "AbilCmd",
+              "AbilCmd": "CoopMurvarSpawnCreepers,Execute",
+              "Row": "2",
+              "Column": "0"
+            },
+            {
+              "Face": "MurvarPukeCoop",
+              "Type": "AbilCmd",
+              "AbilCmd": "MurvarCoopPuke,Execute",
+              "Row": "2",
+              "Column": "1"
+            },
+            {
+              "Face": "CommanderPrestigeDehakaPackLeadersRetreat",
+              "Type": "AbilCmd",
+              "AbilCmd": "CommanderPrestigeDehakaPackLeadersRetreat,Execute",
+              "Row": "2",
+              "Column": "3"
+            }
+          ],
+          "name_key": null
+        }
+      ]
+    },
+    {
+      "group": "dehaka_support",
+      "unit_id": "DehakaDakrun",
+      "records": [
+        {
+          "layer": "starcoop/starcoop.sc2mod",
+          "parent": null,
+          "abilities": [
+            "stop",
+            "attack",
+            "move",
+            "KraithCrashingCharge",
+            "CommanderPrestigeDehakaPackLeadersRetreat"
+          ],
+          "weapons": [
+            "KraithMelee"
+          ],
+          "buttons": [
+            {
+              "Face": "Move",
+              "Type": "AbilCmd",
+              "AbilCmd": "move,Move",
+              "Row": "0",
+              "Column": "0"
+            },
+            {
+              "Face": "Stop",
+              "Type": "AbilCmd",
+              "AbilCmd": "stop,Stop",
+              "Row": "0",
+              "Column": "1"
+            },
+            {
+              "Face": "MoveHoldPosition",
+              "Type": "AbilCmd",
+              "AbilCmd": "move,HoldPos",
+              "Row": "0",
+              "Column": "2"
+            },
+            {
+              "Face": "Attack",
+              "Type": "AbilCmd",
+              "AbilCmd": "attack,Execute",
+              "Row": "0",
+              "Column": "4"
+            },
+            {
+              "Face": "MovePatrol",
+              "Type": "AbilCmd",
+              "AbilCmd": "move,Patrol",
+              "Row": "0",
+              "Column": "3"
+            },
+            {
+              "Face": "DakrunCrashingCharge",
+              "Type": "AbilCmd",
+              "AbilCmd": "KraithCrashingCharge,Execute",
+              "Row": "2",
+              "Column": "0"
+            },
+            {
+              "Face": "CommanderPrestigeDehakaPackLeadersRetreat",
+              "Type": "AbilCmd",
+              "AbilCmd": "CommanderPrestigeDehakaPackLeadersRetreat,Execute",
+              "Row": "2",
+              "Column": "3"
+            }
+          ],
+          "name_key": null
+        }
+      ]
+    },
+    {
+      "group": "dehaka_support",
+      "unit_id": "DehakaTrainEggZergling",
+      "records": [
+        {
+          "layer": "starcoop/starcoop.sc2mod",
+          "parent": "DehakaTrainEgg",
+          "abilities": [
+            "DehakaTrainEggMorphToZergling"
+          ],
+          "weapons": [],
+          "buttons": [
+            {
+              "Face": "DehakaZergling",
+              "Type": "AbilCmd",
+              "AbilCmd": "DehakaTrainEggMorphToZergling,Train1",
+              "Row": "0",
+              "Column": "0"
+            }
+          ],
+          "name_key": null
+        }
+      ]
+    },
+    {
+      "group": "dehaka_support",
+      "unit_id": "DehakaTrainEggRoach",
+      "records": [
+        {
+          "layer": "starcoop/starcoop.sc2mod",
+          "parent": "DehakaTrainEgg",
+          "abilities": [
+            "DehakaTrainEggMorphToRoach"
+          ],
+          "weapons": [],
+          "buttons": [
+            {
+              "Face": "DehakaRoach",
+              "Type": "AbilCmd",
+              "AbilCmd": "DehakaTrainEggMorphToRoach,Train1",
+              "Row": "0",
+              "Column": "0"
+            }
+          ],
+          "name_key": null
+        }
+      ]
+    },
+    {
+      "group": "dehaka_support",
+      "unit_id": "DehakaTrainEggHydralisk",
+      "records": [
+        {
+          "layer": "starcoop/starcoop.sc2mod",
+          "parent": "DehakaTrainEgg",
+          "abilities": [
+            "DehakaTrainEggMorphToHydralisk"
+          ],
+          "weapons": [],
+          "buttons": [
+            {
+              "Face": "DehakaHydralisk",
+              "Type": "AbilCmd",
+              "AbilCmd": "DehakaTrainEggMorphToHydralisk,Train1",
+              "Row": "0",
+              "Column": "0"
+            }
+          ],
+          "name_key": null
+        }
+      ]
+    },
+    {
+      "group": "dehaka_support",
+      "unit_id": "DehakaTrainEggSwarmHost",
+      "records": [
+        {
+          "layer": "starcoop/starcoop.sc2mod",
+          "parent": "DehakaTrainEgg",
+          "abilities": [
+            "DehakaTrainEggMorphToSwarmHost"
+          ],
+          "weapons": [],
+          "buttons": [
+            {
+              "Face": "DehakaSwarmHost",
+              "Type": "AbilCmd",
+              "AbilCmd": "DehakaTrainEggMorphToSwarmHost,Train1",
+              "Row": "0",
+              "Column": "0"
+            }
+          ],
+          "name_key": null
+        }
+      ]
+    },
+    {
+      "group": "dehaka_support",
+      "unit_id": "DehakaTrainEggUltralisk",
+      "records": [
+        {
+          "layer": "starcoop/starcoop.sc2mod",
+          "parent": "DehakaTrainEgg",
+          "abilities": [
+            "DehakaTrainEggMorphToUltralisk"
+          ],
+          "weapons": [],
+          "buttons": [
+            {
+              "Face": "DehakaUltralisk",
+              "Type": "AbilCmd",
+              "AbilCmd": "DehakaTrainEggMorphToUltralisk,Train1",
+              "Row": "0",
+              "Column": "0"
+            }
+          ],
+          "name_key": null
+        }
+      ]
+    }
+  ],
+  "research_definition_candidates": [
+    {
+      "abil": "CyberneticsCoreResearch",
+      "slot": "Research15",
+      "upgrade": "FenixSentryGuardianZoneUpgrade",
+      "button": "ResearchFenixSentryGuardianZoneUpgrade",
+      "name": "Research Optimized Emitters",
+      "tip": "Increases the duration of the <c val=\"ffff8a\">Conservator's</c> Protective Field by 100%.",
+      "time": "60",
+      "cost": {
+        "Minerals": "100",
+        "Vespene": "100"
+      },
+      "requirements": "LearnFenixSentryGuardianZoneUpgrade",
+      "building_card_connected": null
+    },
+    {
+      "abil": "ForgeResearch",
+      "slot": "Research10",
+      "upgrade": "KaraxTurretRange",
+      "button": "ResearchKaraxTurretRange",
+      "name": "Research Enhanced Targeting",
+      "tip": "<c val=\"ffff8a\">Photon Cannons</c>, <c val=\"ffff8a\">Khaydarin Monoliths</c>, and <c val=\"ffff8a\">Shield Batteries</c> gain +2 range.",
+      "time": "120",
+      "cost": {
+        "Minerals": "100",
+        "Vespene": "100"
+      },
+      "requirements": "LearnKaraxTurretRange",
+      "building_card_connected": null
+    },
+    {
+      "abil": "ForgeResearch",
+      "slot": "Research11",
+      "upgrade": "KaraxTurretAttackSpeed",
+      "button": "ResearchKaraxTurretAttackSpeed",
+      "name": "Research Optimized Ordnance",
+      "tip": "Increases the attack speed of <c val=\"ffff8a\">Photon Cannons</c> and <c val=\"ffff8a\">Khaydarin Monoliths</c> by 25%.",
+      "time": "120",
+      "cost": {
+        "Minerals": "100",
+        "Vespene": "100"
+      },
+      "requirements": "LearnKaraxTurretAttackSpeed",
+      "building_card_connected": null
+    },
+    {
+      "abil": "ForgeResearch",
+      "slot": "Research15",
+      "upgrade": "FenixSuitAttackDamage",
+      "button": "ResearchFenixSuitAttackDamage",
+      "name": "Research Purifier Armaments",
+      "tip": "All <c val=\"ffff8a\">Fenix Armor Suits</c> gain +<d ref=\"$UpgradeEffectArrayValue:FenixSuitAttackDamage:Effect,FenixSOAWeaponDamage,Amount$\"/> attack damage.",
+      "time": "90",
+      "cost": {
+        "Minerals": "150",
+        "Vespene": "150"
+      },
+      "requirements": "LearnFenixSuitAttackDamage",
+      "building_card_connected": null
+    },
+    {
+      "abil": "ForgeResearch",
+      "slot": "Research16",
+      "upgrade": "FenixArbiterDetection",
+      "button": "ResearchFenixArbiterDetection",
+      "name": "Research Observation Protocol",
+      "tip": "Grants Fenix's <c val=\"ffff8a\">Cybros Arbiter Suit</c> detection, allowing him to detect cloaked enemies.",
+      "time": "60",
+      "cost": {
+        "Minerals": "100",
+        "Vespene": "100"
+      },
+      "requirements": "LearnFenixArbiterDetection",
+      "building_card_connected": null
+    },
+    {
+      "abil": "FleetBeaconResearch",
+      "slot": "Research10",
+      "upgrade": "CarrierRepairDrones",
+      "button": "ResearchCarrierRepairDrones",
+      "name": "Research Repair Drones",
+      "tip": "<c val=\"ffff8a\">Carriers</c> gain two repair drones that automatically heal nearby friendly mechanical units.",
+      "time": "120",
+      "cost": {
+        "Minerals": "100",
+        "Vespene": "100"
+      },
+      "requirements": "LearnCarrierRepairDrones",
+      "building_card_connected": null
+    },
+    {
+      "abil": "FleetBeaconResearch",
+      "slot": "Research17",
+      "upgrade": "MiragePhaseArmor",
+      "button": "ResearchPhaseArmor",
+      "name": "Research Phasing Armor",
+      "tip": "Prevents <c val=\"ffff8a\">Mirages</c> from taking damage for <d ref=\"Behavior,VoidPhoenixPhasingArmorBuff,Duration\"/> seconds after being attacked. Cannot occur more than once every <d ref=\"Behavior,VoidPhoenixPhasingArmor,DamageResponse.Cost.Cooldown.TimeUse\"/> seconds.",
+      "time": "90",
+      "cost": {
+        "Minerals": "100",
+        "Vespene": "100"
+      },
+      "requirements": "LearnMiragePhaseArmor",
+      "building_card_connected": null
+    },
+    {
+      "abil": "FleetBeaconResearch",
+      "slot": "Research18",
+      "upgrade": "KaraxCarrierInterceptorLaunchSpeed",
+      "button": "ResearchKaraxCarrerInterceptorLaunchSpeed",
+      "name": "Research Graviton Warp Catapult",
+      "tip": "Makes the <c val=\"ffff8a\">Carrier</c> launch Interceptors more quickly and increases Interceptor attack speed by <d ref=\"(Weapon,InterceptorBeam,Period-$UpgradeEffectArrayValue:KaraxCarrierInterceptorLaunchSpeed:Weapon,InterceptorBeam,Period$)/$UpgradeEffectArrayValue:KaraxCarrierInterceptorLaunchSpeed:Weapon,InterceptorBeam,Period$*100\" player = \"0\"/>%.",
+      "time": "120",
+      "cost": {
+        "Minerals": "150",
+        "Vespene": "150"
+      },
+      "requirements": "LearnGravitonWarpCatapult",
+      "building_card_connected": null
+    },
+    {
+      "abil": "FleetBeaconResearch",
+      "slot": "Research20",
+      "upgrade": "FenixChampionScoutAOEMissiles",
+      "button": "ResearchFenixChampionScoutAOEMissiles",
+      "name": "Research Suppression Procedure",
+      "tip": "<c val=\"ffff8a\">Mojo</c> fires a barrage of Anti-Matter Missiles, dealing area damage and stunning nearby enemy air units for <d time=\"[d ref='Behavior,FenixMojoScoutAirStun,Duration'/]\"/>.",
+      "time": "60",
+      "cost": {
+        "Minerals": "100",
+        "Vespene": "100"
+      },
+      "requirements": "LearnFenixChampionScoutAOEMissiles",
+      "building_card_connected": null
+    },
+    {
+      "abil": "FleetBeaconResearch",
+      "slot": "Research21",
+      "upgrade": "FenixChampionCarrierBombers",
+      "button": "ResearchFenixChampionCarrierBombers",
+      "name": "Research Interdictors",
+      "tip": "In addition to his Interceptors, <c val =\"ffff8a\">Clorarion</c> deploys 2 Interdictors that automatically bomb enemy ground units.",
+      "time": "90",
+      "cost": {
+        "Minerals": "150",
+        "Vespene": "150"
+      },
+      "requirements": "LearnFenixChampionCarrierBombers",
+      "building_card_connected": null
+    },
+    {
+      "abil": "FleetBeaconResearch",
+      "slot": "Research22",
+      "upgrade": "FenixScoutWeaponRange",
+      "button": "ResearchFenixScoutWeaponRange",
+      "name": "Research Combat Sensor Array",
+      "tip": "<c val=\"ffff8a\">Scouts</c> gain +3 air attack range and +1 ground attack range.",
+      "time": "60",
+      "cost": {
+        "Minerals": "100",
+        "Vespene": "100"
+      },
+      "requirements": "LearnFenixScoutWeaponRange",
+      "building_card_connected": null
+    },
+    {
+      "abil": "RoboticsBayResearch",
+      "slot": "Research10",
+      "upgrade": "ImmortalResearchShadowCannon",
+      "button": "ResearchShadowCannon",
+      "name": "Research Shadow Cannon",
+      "tip": "Allows <c val=\"ffff8a\">Immortals</c> to use Shadow Cannon. Deals <d ref=\"Effect,ImmortalShakurasShadowCannonDamage,Amount*Effect,ImmortalShakurasShadowCannonCP,PeriodCount\"/> damage to target unit or structure. <n/><n/><c val=\"#ColorAttackInfo\">Can target ground and air units.</c>",
+      "time": "120",
+      "cost": {
+        "Minerals": "100",
+        "Vespene": "100"
+      },
+      "requirements": "LearnShadowCannon",
+      "building_card_connected": null
+    },
+    {
+      "abil": "RoboticsBayResearch",
+      "slot": "Research21",
+      "upgrade": "FenixImmortalDetonationShot",
+      "button": "FenixImmortalResearchDetonationShot",
+      "name": "Research Gravimetric Overload",
+      "tip": "<c val=\"ffff8a\">Taldarin's</c> attacks store <d ref=\"Effect,FenixTaldarinImmortalDetonationDummyFraction,Amount\" player=\"0\"/>% of the damage dealt on the target. When that unit is killed, it explodes, dealing all of the stored damage to nearby enemy units.",
+      "time": "90",
+      "cost": {
+        "Minerals": "150",
+        "Vespene": "150"
+      },
+      "requirements": "LearnImmortalDetonationExplosion",
+      "building_card_connected": null
+    },
+    {
+      "abil": "RoboticsBayResearch",
+      "slot": "Research23",
+      "upgrade": "FenixWarbringerColossusPowerShot",
+      "button": "ResearchFenixWarbringerColossusPowerShot",
+      "name": "Research Purification Blast",
+      "tip": "<c val=\"ffff8a\">Warbringer</c> fires a devastating blast that deals <d ref=\"Effect,FenixWarbringerColossusPowerShotDamage,Amount\" player=\"0\"/> damage the target unit.",
+      "time": "90",
+      "cost": {
+        "Minerals": "150",
+        "Vespene": "150"
+      },
+      "requirements": "LearnFenixWarbringerColossusPowerShot",
+      "building_card_connected": null
+    },
+    {
+      "abil": "TwilightCouncilResearch",
+      "slot": "Research10",
+      "upgrade": "ZealotResearchReconstruction",
+      "button": "ZealotPurifierResearchReconstruction",
+      "name": "Research Reconstruction",
+      "tip": "<c val=\"ffff8a\">Sentinels</c> are revived when killed. This effect can only occur once every <d ref=\"Behavior,ZealotPurifierReviveSupressed,Cost.Cooldown.TimeStart\"/> seconds.",
+      "time": "90",
+      "cost": {
+        "Minerals": "100",
+        "Vespene": "100"
+      },
+      "requirements": "LearnZealotPurifierReconstruction",
+      "building_card_connected": null
+    },
+    {
+      "abil": "TwilightCouncilResearch",
+      "slot": "Research13",
+      "upgrade": "EnergizerReclamation",
+      "button": "ResearchEnergizerReclamation",
+      "name": "Research Reclamation",
+      "tip": "<c val=\"ffff8a\">Energizers</c> gain the ability to temporarily take control of enemy mechanical units. Reclaimed units self-destruct after <d ref=\"Behavior,SentryReclamation,Duration\"/> seconds.",
+      "time": "120",
+      "cost": {
+        "Minerals": "150",
+        "Vespene": "150"
+      },
+      "requirements": "LearnEnergizerReclamation",
+      "building_card_connected": null
+    },
+    {
+      "abil": "TwilightCouncilResearch",
+      "slot": "Research14",
+      "upgrade": "KaraxEnergyRegenUpgrade",
+      "button": "ResearchKaraxEnergyRegenUpgrade",
+      "name": "Research Rapid Recharging",
+      "tip": "Increases the energy regeneration rate of <c val=\"ffff8a\">Energizers</c> and <c val=\"ffff8a\">Shield Batteries</c> by 200%.",
+      "time": "90",
+      "cost": {
+        "Minerals": "100",
+        "Vespene": "100"
+      },
+      "requirements": "LearnKaraxEnergyRegenUpgrade",
+      "building_card_connected": null
+    },
+    {
+      "abil": "TwilightCouncilResearch",
+      "slot": "Research26",
+      "upgrade": "FenixChampionTalisAdeptBounceShotUpgrade",
+      "button": "FenixTalisAdeptLearnBounceShotUpgrade",
+      "name": "Research Debilitation System",
+      "tip": "<c val=\"ffff8a\">Talis'</c> Ricochet Glaive bounces 5 additional times and causes every unit hit by Ricochet Glaive to take additional damage for <d ref=\"Behavior,AdeptPsionicTransferDamageDebuff,Duration\"/> seconds.",
+      "time": "60",
+      "cost": {
+        "Minerals": "100",
+        "Vespene": "100"
+      },
+      "requirements": "LearnTalisBounceShotUpgrade",
+      "building_card_connected": null
+    },
+    {
+      "abil": "TwilightCouncilResearch",
+      "slot": "Research27",
+      "upgrade": "AdeptFenixShadeSpawn",
+      "button": "ResearchAdeptFenixShadeSpawn",
+      "name": "Research Psionic Projection",
+      "tip": "<c val=\"ffff8a\">Adept</c> attacks summon an invulnerable Shade that will attack enemies for a short time.",
+      "time": "60",
+      "cost": {
+        "Minerals": "100",
+        "Vespene": "100"
+      },
+      "requirements": "LearnAdeptFenixShadeSpawn",
+      "building_card_connected": null
+    },
+    {
+      "abil": "TwilightCouncilResearch",
+      "slot": "Research30",
+      "upgrade": "FenixKaldalisCleave",
+      "button": "ResearchFenixKaldalisZealotCleave",
+      "name": "Research Empowered Blades",
+      "tip": "<c val=\"ffff8a\">Kaldalis'</c> attacks deal area damage.",
+      "time": "60",
+      "cost": {
+        "Minerals": "100",
+        "Vespene": "100"
+      },
+      "requirements": "LearnKaldalisCleave",
+      "building_card_connected": null
+    },
+    {
+      "abil": "ImpalerDenResearch",
+      "slot": "Research1",
+      "upgrade": "SeismicSpines",
+      "button": "ResearchSeismicSpinesAbathur",
+      "name": "Evolve Seismic Spines",
+      "tip": "Increases the attack range of <c val=\"ffff8a\">Impalers</c> and <c val=\"ffff8a\">Lurkers</c> by +3.",
+      "time": "120",
+      "cost": {
+        "Minerals": "200",
+        "Vespene": "200"
+      },
+      "requirements": "LearnSeismicSpinesAbathur",
+      "building_card_connected": null
+    },
+    {
+      "abil": "FenixAltarOfPsiStormsResearch",
+      "slot": "Research1",
+      "upgrade": "FenixChampionKaldalisZealot",
+      "button": "FenixKaldalisZealotDownloadUpgrade",
+      "name": "Download Kaldalis' A.I. Personality",
+      "tip": "Ready Kaldalis' A.I. Personality for download into any available Legionnaire shell.",
+      "time": "40",
+      "cost": {
+        "Minerals": "200"
+      },
+      "requirements": "UpgradeFenixKaldalisZealot",
+      "building_card_connected": true
+    },
+    {
+      "abil": "FenixAltarOfPsiStormsResearch",
+      "slot": "Research2",
+      "upgrade": "FenixChampionTalisAdept",
+      "button": "FenixTalisAdeptDownloadUpgrade",
+      "name": "Download Talis' A.I. Personality",
+      "tip": "Ready Talis' A.I. Personality for download into any available Adept shell.",
+      "time": "60",
+      "cost": {
+        "Minerals": "200",
+        "Vespene": "100"
+      },
+      "requirements": "UpgradeFenixTalisAdept",
+      "building_card_connected": true
+    },
+    {
+      "abil": "FenixAltarOfPsiStormsResearch",
+      "slot": "Research3",
+      "upgrade": "FenixChampionMojoScout",
+      "button": "FenixMojoScoutDownloadUpgrade",
+      "name": "Download Mojo's A.I. Personality",
+      "tip": "Ready Mojo's A.I. Personality for download into any available Scout shell.",
+      "time": "60",
+      "cost": {
+        "Minerals": "200",
+        "Vespene": "100"
+      },
+      "requirements": "UpgradeFenixMojoScout",
+      "building_card_connected": true
+    },
+    {
+      "abil": "FenixAltarOfPsiStormsResearch",
+      "slot": "Research4",
+      "upgrade": "FenixChampionTaldarinImmortal",
+      "button": "FenixTaldarinImmortalDownloadUpgrade",
+      "name": "Download Taldarin's A.I. Personality",
+      "tip": "Ready Taldarin's A.I. Personality for download into any available Immortal shell.",
+      "time": "60",
+      "cost": {
+        "Minerals": "200",
+        "Vespene": "100"
+      },
+      "requirements": "UpgradeFenixTaldarinImmortal",
+      "building_card_connected": true
+    },
+    {
+      "abil": "FenixAltarOfPsiStormsResearch",
+      "slot": "Research5",
+      "upgrade": "FenixChampionWarbringerColossus",
+      "button": "FenixWarbringerColossusDownloadUpgrade",
+      "name": "Download Warbringer's A.I. Personality",
+      "tip": "Ready Warbringer's A.I. Personality for download into any available Colossus shell.",
+      "time": "60",
+      "cost": {
+        "Minerals": "200",
+        "Vespene": "100"
+      },
+      "requirements": "UpgradeFenixWarbringerColossus",
+      "building_card_connected": true
+    },
+    {
+      "abil": "FenixAltarOfPsiStormsResearch",
+      "slot": "Research6",
+      "upgrade": "FenixChampionClolarionCarrier",
+      "button": "FenixClolarionCarrierDownloadUpgrade",
+      "name": "Download Clolarion's A.I. Personality",
+      "tip": "Ready Clolarion' A.I. Personality for download into any available Carrier shell.",
+      "time": "60",
+      "cost": {
+        "Minerals": "200",
+        "Vespene": "100"
+      },
+      "requirements": "UpgradeFenixClolarionCarrier",
+      "building_card_connected": true
+    },
+    {
+      "abil": "DehakaGlevigResearch",
+      "slot": "Research1",
+      "upgrade": "DehakaGlevigPackLeaderPromotion",
+      "button": "DehakaGlevigPackLeaderPromotion",
+      "name": "",
+      "tip": "",
+      "time": "200",
+      "cost": {
+        "Minerals": "150",
+        "Vespene": "150"
+      },
+      "requirements": "LearnDehakaGlevigPackLeaderPromotion",
+      "building_card_connected": false
+    },
+    {
+      "abil": "DehakaGlevigResearch",
+      "slot": "Research2",
+      "upgrade": "DehakaGlevigPrimalGuardian",
+      "button": "DehakaGlevigPrimalGuardian",
+      "name": "",
+      "tip": "",
+      "time": "180",
+      "cost": {
+        "Minerals": "200",
+        "Vespene": "200"
+      },
+      "requirements": "LearnDehakaGlevigPrimalGuardian",
+      "building_card_connected": false
+    },
+    {
+      "abil": "DehakaGlevigResearch",
+      "slot": "Research3",
+      "upgrade": "DehakaGlevigRoachFireBreath",
+      "button": "DehakaGlevigRoachFireBreath",
+      "name": "Evolve Concentrated Fire",
+      "tip": "Increases the <c val =\"ffff8a\">Primal Igniter's</c> damage against light armored enemies.",
+      "time": "120",
+      "cost": {
+        "Minerals": "100",
+        "Vespene": "100"
+      },
+      "requirements": "LearnDehakaGlevigRoachFireBreath",
+      "building_card_connected": true
+    },
+    {
+      "abil": "DehakaGlevigResearch",
+      "slot": "Research4",
+      "upgrade": "PrimalHydraliskToMutalisk",
+      "button": "phResearchPrimalMutalisk",
+      "name": "",
+      "tip": "",
+      "time": "180",
+      "cost": {
+        "Minerals": "200",
+        "Vespene": "200"
+      },
+      "requirements": "LearnPrimalHydraliskToMutalisk",
+      "building_card_connected": false
+    },
+    {
+      "abil": "DehakaGlevigResearch",
+      "slot": "Research7",
+      "upgrade": "DehakaRoachMoveSpeed",
+      "button": "ResearchDehakaRoachMoveSpeed",
+      "name": "",
+      "tip": "",
+      "time": "60",
+      "cost": {
+        "Minerals": "100",
+        "Vespene": "100"
+      },
+      "requirements": "LearnDehakaRoachMoveSpeed",
+      "building_card_connected": true
+    },
+    {
+      "abil": "DehakaGlevigResearch",
+      "slot": "Research8",
+      "upgrade": "DehakaHydraliskSpeed",
+      "button": "DehakaHydraliskSpeed",
+      "name": "Muscular Augments",
+      "tip": "Increases movement speed and attack range.",
+      "time": "60",
+      "cost": {
+        "Minerals": "50",
+        "Vespene": "50"
+      },
+      "requirements": "LearnDehakaHydraliskSpeed",
+      "building_card_connected": true
+    },
+    {
+      "abil": "DehakaGlevigResearch",
+      "slot": "Research9",
+      "upgrade": "DehakaRavasaurRange",
+      "button": "ResearchDehakaRavasaurRange",
+      "name": "Evolve Enlarged Parotid Glands",
+      "tip": "Increases <c val =\"ffff8a\">Ravasaur</c> movement speed and attack range.",
+      "time": "60",
+      "cost": {
+        "Minerals": "100",
+        "Vespene": "100"
+      },
+      "requirements": "LearnDehakaRavasaurRange",
+      "building_card_connected": true
+    },
+    {
+      "abil": "DehakaGlevigResearch",
+      "slot": "Research10",
+      "upgrade": "DehakaRavasaurVSArmor",
+      "button": "ResearchDehakaRavasaurVSArmor",
+      "name": "Evolve Dissolving Acid",
+      "tip": "<c val =\"ffff8a\">Ravasaurs</c> deal +<d ref=\"$UpgradeEffectArrayValue:DehakaRavasaurVSArmor:Effect,DehakaRavasaurDamage,AttributeBonus[Armored]$\"/> damage to armored targets.",
+      "time": "60",
+      "cost": {
+        "Minerals": "100",
+        "Vespene": "100"
+      },
+      "requirements": "LearnDehakaRavasaurLife",
+      "building_card_connected": true
+    },
+    {
+      "abil": "DehakaGlevigResearch",
+      "slot": "Research11",
+      "upgrade": "DehakaImpalerTenderize",
+      "button": "ResearchDehakaImpalerTenderize",
+      "name": "Evolve Tenderize",
+      "tip": "Units hit by <c val =\"ffff8a\">Impalers</c> become tenderized. Tenderized units take <d ref=\"(Effect,ImpalerDehakaTenderizeDamage,Amount*Behavior,ImpalerDehakaTenderize,PeriodCount)\"/> damage over <d ref=\"Behavior,ImpalerDehakaTenderize,Duration\"/> seconds. A tenderized unit Devoured by <c val =\"ffff8a\">Dehaka</c> will invoke 25% of the normal cooldown time.",
+      "time": "60",
+      "cost": {
+        "Minerals": "100",
+        "Vespene": "100"
+      },
+      "requirements": "LearnDehakaImpalerTenderize",
+      "building_card_connected": true
+    },
+    {
+      "abil": "DehakaDakrunResearch",
+      "slot": "Research1",
+      "upgrade": "DehakaUltraliskCrashingCharge",
+      "button": "ResearchDehakaUltraliskCrashingCharge",
+      "name": "Evolve Brutal Charge",
+      "tip": "<c val =\"ffff8a\">Primal Ultralisks</c> can charge to a target location, knocking back units in the area and dealing <d ref=\"Effect,DehakaUltraliskCrashingChargeDamage,Amount\"/> damage.",
+      "time": "60",
+      "cost": {
+        "Minerals": "50",
+        "Vespene": "50"
+      },
+      "requirements": "LearnDehakaUltraliskCrashingCharge",
+      "building_card_connected": true
+    },
+    {
+      "abil": "DehakaDakrunResearch",
+      "slot": "Research2",
+      "upgrade": "DehakaUltraliskRegen",
+      "button": "ResearchDehakaUltraliskRegen",
+      "name": "Evolve Healing Adaptation",
+      "tip": "<c val =\"ffff8a\">Primal Ultralisks</c> and <c val =\"ffff8a\">Tyrannozors</c> regenerate life quickly when out of combat.",
+      "time": "60",
+      "cost": {
+        "Minerals": "100",
+        "Vespene": "100"
+      },
+      "requirements": "LearnDehakaUltraliskRegen",
+      "building_card_connected": true
+    },
+    {
+      "abil": "DehakaDakrunResearch",
+      "slot": "Research3",
+      "upgrade": "DehakaUltraliskBash",
+      "button": "ResearchDehakaUltraliskBash",
+      "name": "Evolve Impaling Strike",
+      "tip": "<c val =\"ffff8a\">Primal Ultralisk</c> and <c val =\"ffff8a\">Tyrannozor</c> melee attacks have a <d ref=\"Behavior,DehakaUltraliskBash,DamageResponse.Chance*100\" precision=\"1\"/>% chance to stun.",
+      "time": "60",
+      "cost": {
+        "Minerals": "100",
+        "Vespene": "100"
+      },
+      "requirements": "LearnDehakaUltraliskBash",
+      "building_card_connected": true
+    },
+    {
+      "abil": "DehakaDakrunResearch",
+      "slot": "Research4",
+      "upgrade": "DehakaTyrannozorArmorAura",
+      "button": "ResearchDehakaTyrannozorArmorAura",
+      "name": "Evolve Tyrant's Protection",
+      "tip": "<c val =\"ffff8a\">Tyrannozors</c> grants nearby friendly units <d ref=\"Behavior,DehakaTyrannozorArmorAuraTarget,Modification.LifeArmorBonus\"/> armor.",
+      "time": "60",
+      "cost": {
+        "Minerals": "100",
+        "Vespene": "100"
+      },
+      "requirements": "LearnDehakaTyrannozorArmorAura",
+      "building_card_connected": true
+    },
+    {
+      "abil": "DehakaDakrunResearch",
+      "slot": "Research5",
+      "upgrade": "DehakaTyrannozorFanOfKnives",
+      "button": "ResearchDehakaTyrannozorFanOfKnives",
+      "name": "Evolve Barrage of Spikes",
+      "tip": "<c val =\"ffff8a\">Tyrannozors</c> can unleash a Barrage of Spikes, dealing <d ref=\"Effect,DehakaTyrannozorFanOfKnivesDamage,Amount\"/> damage to nearby enemy ground and air units.",
+      "time": "60",
+      "cost": {
+        "Minerals": "100",
+        "Vespene": "100"
+      },
+      "requirements": "LearnDehakaTyrannozorFanOfKnives",
+      "building_card_connected": true
+    },
+    {
+      "abil": "DehakaHatcheryResearch",
+      "slot": "Research1",
+      "upgrade": "DehakaPrimalWeaponsLevel1",
+      "button": "DehakaLearnPrimalWeaponsLevel1",
+      "name": "Evolve Primal Attacks Level 1",
+      "tip": "Upgrades the attacks of all Primal Zerg units.",
+      "time": "160",
+      "cost": {
+        "Minerals": "100",
+        "Vespene": "100"
+      },
+      "requirements": "LearnDehakaPrimalWeapons1",
+      "building_card_connected": true
+    },
+    {
+      "abil": "DehakaHatcheryResearch",
+      "slot": "Research2",
+      "upgrade": "DehakaPrimalWeaponsLevel2",
+      "button": "DehakaLearnPrimalWeaponsLevel2",
+      "name": "Evolve Primal Attacks Level 2",
+      "tip": "Further upgrades the attacks of all Primal Zerg units.",
+      "time": "190",
+      "cost": {
+        "Minerals": "175",
+        "Vespene": "175"
+      },
+      "requirements": "LearnDehakaPrimalWeapons2",
+      "building_card_connected": true
+    },
+    {
+      "abil": "DehakaHatcheryResearch",
+      "slot": "Research3",
+      "upgrade": "DehakaPrimalWeaponsLevel3",
+      "button": "DehakaLearnPrimalWeaponsLevel3",
+      "name": "Evolve Primal Attacks Level 3",
+      "tip": "Maximizes the attacks of all Primal Zerg units.",
+      "time": "220",
+      "cost": {
+        "Minerals": "250",
+        "Vespene": "250"
+      },
+      "requirements": "LearnDehakaPrimalWeapons3",
+      "building_card_connected": true
+    },
+    {
+      "abil": "DehakaHatcheryResearch",
+      "slot": "Research4",
+      "upgrade": "DehakaPrimalArmorLevel1",
+      "button": "DehakaLearnPrimalArmorLevel1",
+      "name": "Evolve Primal Carapace Level 1",
+      "tip": "Upgrades the armor of all Primal Zerg units.",
+      "time": "160",
+      "cost": {
+        "Minerals": "100",
+        "Vespene": "100"
+      },
+      "requirements": "LearnDehakaPrimalArmor1",
+      "building_card_connected": true
+    },
+    {
+      "abil": "DehakaHatcheryResearch",
+      "slot": "Research5",
+      "upgrade": "DehakaPrimalArmorLevel2",
+      "button": "DehakaLearnPrimalArmorLevel2",
+      "name": "Evolve Primal Carapace Level 2",
+      "tip": "Further upgrades the armor of all Primal Zerg units.",
+      "time": "190",
+      "cost": {
+        "Minerals": "175",
+        "Vespene": "175"
+      },
+      "requirements": "LearnDehakaPrimalArmor2",
+      "building_card_connected": true
+    },
+    {
+      "abil": "DehakaHatcheryResearch",
+      "slot": "Research6",
+      "upgrade": "DehakaPrimalArmorLevel3",
+      "button": "DehakaLearnPrimalArmorLevel3",
+      "name": "Evolve Primal Carapace Level 3",
+      "tip": "Maximizes the armor of all Primal Zerg units.",
+      "time": "220",
+      "cost": {
+        "Minerals": "250",
+        "Vespene": "250"
+      },
+      "requirements": "LearnDehakaPrimalArmor3",
+      "building_card_connected": true
+    },
+    {
+      "abil": "DehakaMurvarResearch",
+      "slot": "Research8",
+      "upgrade": "DehakaMutaliskDamageReduction",
+      "button": "ResearchDehakaMutaliskDamageReduction",
+      "name": "Evolve Shifting Carapace",
+      "tip": "<c val =\"ffff8a\">Primal Mutalisks</c> take <d ref=\"Behavior,DehakaMutaliskDamageReduction,Modification.DamageTakenFraction[Melee]*(-100)\" precision=\"1\"/>% less damage while moving.",
+      "time": "60",
+      "cost": {
+        "Minerals": "100",
+        "Vespene": "100"
+      },
+      "requirements": "LearnDehakaMutaliskDamageReduction",
+      "building_card_connected": true
+    },
+    {
+      "abil": "DehakaMurvarResearch",
+      "slot": "Research9",
+      "upgrade": "DehakaMutaliskRespawnOnDeath",
+      "button": "ResearchDehakaMutaliskRespawnOnDeath",
+      "name": "Evolve Primal Reconstitution",
+      "tip": "<c val =\"ffff8a\">Primal Mutalisks</c> revive on death after a short time. Cannot occur more than once every <d ref=\"Behavior,DehakaMutaliskTimerBehavior,Cost.Cooldown.TimeStart\"/> seconds.",
+      "time": "90",
+      "cost": {
+        "Minerals": "150",
+        "Vespene": "150"
+      },
+      "requirements": "LearnDehakaMutaliskRespawnOnDeath",
+      "building_card_connected": true
+    },
+    {
+      "abil": "DehakaMurvarResearch",
+      "slot": "Research10",
+      "upgrade": "DehakaGuardianFury",
+      "button": "ResearchDehakaGuardianFury",
+      "name": "Evolve Primordial Fury",
+      "tip": "<c val =\"ffff8a\">Primal Guardian</c> attacks temporarily increases its attack speed by <d ref=\"(Behavior,DehakaGuardianRage1,Modification.AttackSpeedMultiplier - 1) * 100\"/>%. Can stack up to <d ref=\"(Behavior,DehakaGuardianRage5,Modification.AttackSpeedMultiplier - 1) * 100\"/>% increased attack speed.",
+      "time": "60",
+      "cost": {
+        "Minerals": "100",
+        "Vespene": "100"
+      },
+      "requirements": "LearnDehakaGuardianFury",
+      "building_card_connected": true
+    },
+    {
+      "abil": "DehakaMurvarResearch",
+      "slot": "Research11",
+      "upgrade": "DehakaGuardianExplosiveBomb",
+      "button": "ResearchDehakaGuardianExplosiveBomb",
+      "name": "Evolve Explosive Spores",
+      "tip": "<c val =\"ffff8a\">Primal Guardians</c> can fire an Explosive Spore at the target, causing the target and all nearby enemy ground units to take <d ref=\"Effect,DehakaGuardianMineChargeExplodeDamage,Amount\"/> damage.",
+      "time": "60",
+      "cost": {
+        "Minerals": "100",
+        "Vespene": "100"
+      },
+      "requirements": "LearnDehakaGuardianExplosiveBomb",
+      "building_card_connected": true
+    },
+    {
+      "abil": "DehakaMurvarResearch",
+      "slot": "Research12",
+      "upgrade": "DehakaMurvarCreeperAir",
+      "button": "DehakaMurvarCreeperAir",
+      "name": "Evolve Aerial Burst Sacs",
+      "tip": "Allows the <c val =\"ffff8a\">Creeper Host's</c> Creepers to target air units and increases their movement speed.",
+      "time": "90",
+      "cost": {
+        "Minerals": "150",
+        "Vespene": "150"
+      },
+      "requirements": "LearnDehakaSwarmHostCreepers",
+      "building_card_connected": true
+    },
+    {
+      "abil": "DehakaMurvarResearch",
+      "slot": "Research13",
+      "upgrade": "DehakaMutaliskAirDoubleDamage",
+      "button": "ResearchSlicingGlave",
+      "name": "Evolve Slicing Glave",
+      "tip": "<c val =\"ffff8a\">Primal Mutalisks</c> deal <d ref=\"(Effect,DehakaMutaliskAirLevel3GlaiveWurmDamage,Amount-Effect,DehakaMutaliskLevel3GlaiveWurmDamage,Amount)*100/Effect,DehakaMutaliskLevel3GlaiveWurmDamage,Amount\"/>% increased damage against air units. ",
+      "time": "60",
+      "cost": {
+        "Minerals": "100",
+        "Vespene": "100"
+      },
+      "requirements": "LearnDehakaMutaliskAirDoubleDamage",
+      "building_card_connected": true
+    }
+  ]
+}

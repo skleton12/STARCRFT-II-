@@ -395,3 +395,10 @@ CRC·XML·31개 매장량 값 및 비대상 데이터 보존 검사를 통과했
 ## 2026-10-19: 사용자 지정 기술실 배치 — 0.4.35
 
 어부지리 병영 기술실의 첫째 줄 3번 칸(0기준 Row=0 Column=2)에 충격탄→억제탄, 첫째 줄 4번 칸(Row=0 Column=3)에 파편탄을 둔다. 자기가속 제외 유지. 연구 조건·비용·시간·효과와 다른 버튼은 보존. ZIP 변경은 metadata.txt와 TTychus01 unitdata.xml뿐. 전체 배포 검사와 15개 연구 조건 검사 통과, 실제 게임 표시 검증 미실행. tools/build_v0435.py로 재현.
+
+
+## 2026-10-20: 정화자·협동전 원시저그 자료 조사 — Claude 인수인계
+
+사용자 요청으로 docs/HANDOFF_ally_unit_research.md, docs/research/purifier_and_primal_unit_reference.md와 data/ally_unit_reference_index.json을 추가했다. 협동전 피닉스/카락스, 공허 캠페인 정화자, 데하카 협동전을 구분하고 일반 병력·영웅·소환·알·변태 중간형, 능력/연구·생산 경로·공용 ID의 사령관 보정을 정리했다. 피닉스 영웅 전투복 제외라는 최신 기록을 반영하며 이를 일반 병력으로 재제안하지 않는다.
+
+주의: PhoenixPurifier는 신기루, DehakaSwarmHost는 원시 숙주, DehakaPrimalSwarmHost는 땅무지 숙주. ImpalerDehaka 관통촉수 존재를 확인했다. 공용 ZealotPurifier는 피닉스 군단병/카락스 파수병 설정을 구분해야 한다. 원작 데이터 미러 고정 커밋과 5개 카탈로그 바이트 대조, 본문 ID/타입 실재와 생산/진화 경로를 확인했다. 연구 53개는 정의 후보이며 전부 실제 사용 연구라고 해석하지 않는다. 자료 조사는 새 편성 승인이나 구현 완료가 아니다. 맵·코드·배포 ZIP은 변경하지 않았고 게임 검증은 미실행이다.

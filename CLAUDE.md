@@ -616,3 +616,10 @@ docs/research/coop_buildings.md 기준으로 3번 미션 원시저그를 실제 
 데이터 확인: 정찰기 Scout, 폭풍함 TempestPurifier, 거신 ColossusPurifier, 피닉스 PhoenixPurifier, 용기병 FenixDragoon, 중재자 FenixArbiter, 원시 수호군주 DehakaGuardian, 티라노조르 DehakaUltraliskLevel3, 원시 점화자 DehakaRoachLevel3, 원시 숙주 DehakaPrimalSwarmHost. 우주모함·불멸자는 정화자 외형 전용 ID가 없어 구현 때 외형 연결 확인. 원시 가시지옥은 데이터에 없어 제외. 구현은 다음 작업 (Claude 또는 GPT).
 
 **수정 (사용자 2026-10-20):** 용기병(FenixDragoon)·중재자(FenixArbiter)는 피닉스 본인의 변신 형태라 **제외**한다 (피닉스가 병력으로 나오면 안 됨). 우주모함은 유지. 정화자 유닛 목록은 GPT가 다시 조사한 뒤 확정하고, 그 전에는 구현하지 않는다. 참고(Claude 확인): 정화자 외형 모델이 있는 유닛 — ImmortalPurifier, Disruptor_Purifier, Carrier_Purifier, ColossusPurifier, PhoenixPurifier, TempestPurifier, Scout(협동전 정화자 아이콘). 생산은 차원 관문 WarpGateTrain의 빈 칸을 8번 플레이어에게만 열고, 원시저그는 원시 감시자 알(DehakaBarracksTrainEgg)에 알 종류를 추가하는 방식으로 설계했다.
+
+
+## 2026-10-20: 정화자·협동전 원시저그 자료 조사 — Claude 인수인계
+
+사용자 요청으로 docs/HANDOFF_ally_unit_research.md, docs/research/purifier_and_primal_unit_reference.md와 data/ally_unit_reference_index.json을 추가했다. 협동전 피닉스/카락스, 공허 캠페인 정화자, 데하카 협동전을 구분하고 일반 병력·영웅·소환·알·변태 중간형, 능력/연구·생산 경로·공용 ID의 사령관 보정을 정리했다. 피닉스 영웅 전투복 제외라는 최신 기록을 반영하며 이를 일반 병력으로 재제안하지 않는다.
+
+주의: PhoenixPurifier는 신기루, DehakaSwarmHost는 원시 숙주, DehakaPrimalSwarmHost는 땅무지 숙주. ImpalerDehaka 관통촉수 존재를 확인했다. 공용 ZealotPurifier는 피닉스 군단병/카락스 파수병 설정을 구분해야 한다. 원작 데이터 미러 고정 커밋과 5개 카탈로그 바이트 대조, 본문 ID/타입 실재와 생산/진화 경로를 확인했다. 연구 53개는 정의 후보이며 전부 실제 사용 연구라고 해석하지 않는다. 자료 조사는 새 편성 승인이나 구현 완료가 아니다. 맵·코드·배포 ZIP은 변경하지 않았고 게임 검증은 미실행이다.
