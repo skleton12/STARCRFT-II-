@@ -1,0 +1,51 @@
+<?xml version='1.0' encoding='utf-8'?>
+<Catalog>
+  <CBehaviorBuff id="FenixAdeptShadeSpawnShadTimedLife">
+    <InfoFlags index="Hidden" value="1" />
+    <DisplayDuration index="Self" value="1" />
+    <DisplayDuration index="Ally" value="1" />
+    <Duration value="5" />
+    <ExpireEffect value="TimedLifeFate" />
+  </CBehaviorBuff>
+  <CBehaviorBuff id="MarauderMengskAbsorb">
+    <Alignment value="Positive" />
+    <InfoIcon value="Assets\Textures\btn-ability-mengsk-marauder-selfabsorbshield.dds" />
+    <EditorCategories value="AbilityorEffectType:Units" />
+    <RemoveValidatorArray value="ShieldGZero" />
+    <TimeScaleSource Value="Global" />
+    <FinalEffect value="MarauderMengskAbsorbKnockbackSearch" />
+    <DamageResponse>
+      <Handled value="MarauderMengskAbsorbReapplicatorSet" />
+      <ModifyFraction value="0" />
+      <ModifyLimit value="300" />
+      <ModifyMinimumDamage value="1" />
+      <Chance value="1" />
+    </DamageResponse>
+  </CBehaviorBuff>
+  <CBehaviorBuff id="MarauderMengskAbsorbReapplicator">
+    <InfoFlags index="Hidden" value="1" />
+    <EditorCategories value="AbilityorEffectType:Units" />
+    <TimeScaleSource Value="Global" />
+    <Duration value="60" />
+    <ExpireEffect value="MarauderMengskAbsorbAB" />
+    <Cost>
+      <Cooldown Location="Unit" TimeUse="60" />
+    </Cost>
+  </CBehaviorBuff>
+  <CBehaviorBuff id="MarauderMengskAttackSpeedBoost">
+    <Alignment value="Positive" />
+    <InfoIcon value="Assets\Textures\btn-ability-mengsk-marauder-royalstimpack.dds" />
+    <BehaviorCategories index="Fast" value="1" />
+    <BehaviorCategories index="User13" value="1" />
+    <EditorCategories value="Race:Terran,AbilityorEffectType:Units" />
+    <Duration value="10" />
+    <Modification AttackSpeedMultiplier="3" />
+  </CBehaviorBuff>
+  <CBehaviorBuff id="MarauderMengskShrapnelSlow">
+    <Alignment value="Negative" />
+    <EditorCategories value="AbilityorEffectType:Units" />
+    <Duration value="3" />
+    <Modification MoveSpeedMultiplier="0.4" />
+    <InfoIcon value="Assets\Textures\btn-ability-mengsk-marauder-superconcussiveshells.dds" />
+  </CBehaviorBuff>
+</Catalog>

@@ -1,0 +1,79 @@
+<?xml version='1.0' encoding='utf-8'?>
+<Catalog>
+  <CActorUnit id="FenixAdeptShade" parent="GenericUnitStandard" unitName="FenixAdeptShade">
+    <Model value="FenixAdeptShadeSpirit" />
+    <AnimBlendTime value="0.066600" />
+    <ModelFlags index="OutlineEmitter" value="1" />
+    <BuildModel value="AdeptWarpIn" />
+    <DeathArray index="Normal" ModelLink="AdeptSpiritDeath" SoundLink="Adept_DeathFX" />
+    <PlacementModel value="AdeptPlacement" />
+    <PlacementSound value="Protoss_BuildingPlacementSmall" />
+    <PortraitModel value="ShadePortrait" />
+    <WalkAnimMoveSpeed value="2.25" />
+    <BarOffset value="60" />
+    <BarWidth value="42" />
+    <GroupIcon>
+      <Image value="Assets\Textures\btn-unit-protoss-adept.dds" />
+    </GroupIcon>
+    <LifeArmorIcon value="Assets\Textures\btn-upgrade-protoss-groundarmorlevel0.dds" />
+    <UnitIcon value="Assets\Textures\btn-unit-protoss-adept.dds" />
+    <Wireframe>
+      <Image value="Assets\Textures\wireframe-protoss-adept.dds" />
+    </Wireframe>
+    <WireframeShield>
+      <Image value="Assets\Textures\wireframe-protoss-adept-shield01.dds" />
+      <Image value="Assets\Textures\wireframe-protoss-adept-shield02.dds" />
+      <Image value="Assets\Textures\wireframe-protoss-adept-shield03.dds" />
+    </WireframeShield>
+    <StatusBarFlags index="Shields" value="0" />
+    <StatusBarFlags index="Life" value="0" />
+    <Aliases value="_UnitSmall" />
+  </CActorUnit>
+  <CActorAction id="FenixAdeptShadeAttack" parent="GenericAttack" effectImpact="FenixAdeptShadeDamage" effectLaunch="FenixAdeptShadeLM">
+    <LaunchAssets Sound="Adept_AttackLaunch" />
+    <ImpactMap index="None" Model="FenixAdeptShadeImpact" Sound="Adept_AttackImpact" />
+  </CActorAction>
+  <CActorMissile id="FenixAdeptShadeAttackMissile" parent="GenericAttackMissile" unitName="FenixAdeptShadeWeapon" />
+  <CActorModel id="MarauderMengskAbsorbImpact" parent="ModelAnimationStyleOneShot">
+    <Macros value="GlobalLoopMacro" />
+    <On Terms="Behavior.MarauderMengskAbsorb.On" Send="Create" />
+    <Host Subject="_Unit" />
+    <HostSiteOps Ops="SOpAttachCenter" />
+    <Model value="SOASuperShieldImpact" />
+    <AutoScaleFactor value="1.000000" />
+  </CActorModel>
+  <CActorModel id="MarauderMengskAbsorbKnockbackModel" parent="ModelAnimationStyleOneShot">
+    <On Terms="Effect.MarauderMengskAbsorbKnockbackSearch.Start" Send="Create" />
+    <On Terms="Effect.MarauderMengskAbsorbKnockbackSearch.Stop" Send="AnimBracketStop BSD" />
+    <HostSiteOps Ops="SOpShadow" />
+  </CActorModel>
+  <CActorSound id="MarauderMengskAbsorbKnockbackSound" parent="SoundOneShot">
+    <On Terms="Effect.MarauderMengskAbsorbKnockbackSearch.Start; At Effect" Send="Create" />
+  </CActorSound>
+  <CActorSound id="MarauderMengskAbsorbOffSound" parent="SoundOneShot">
+    <On Terms="Behavior.MarauderMengskAbsorb.Off" Send="Create" />
+    <Host Subject="_Unit" />
+    <Sound value="SOA_SuperShieldOff" />
+  </CActorSound>
+  <CActorSound id="MarauderMengskAbsorbOnSound" parent="SoundOneShot">
+    <On Terms="Behavior.MarauderMengskAbsorb.On" Send="Create" />
+    <Host Subject="_Unit" />
+    <Sound value="SOA_SuperShieldOn" />
+  </CActorSound>
+  <CActorModel id="MarauderMengskAttackSpeedBoostEnd" parent="ModelAnimationStyleOneShot">
+    <Inherits index="CloakEffect" value="1" />
+    <On Terms="Behavior.MarauderMengskAttackSpeedBoost.Off; ValidateUnit NotDead" Send="Create" />
+    <Host Subject="_Selectable" />
+    <HostSiteOps Ops="SOpAttachOverhead" />
+  </CActorModel>
+  <CActorSound id="MarauderMengskAttackSpeedBoostSound" parent="SoundOneShot">
+    <On Terms="Abil.MarauderMengskAttackSpeedBoost.SourceCastStart" Send="Create" />
+    <Sound value="MarauderMengskAttackSpeedBoost" />
+  </CActorSound>
+  <CActorModel id="MarauderMengskAttackSpeedBoostStart" parent="ModelAnimationStyleOneShot">
+    <Inherits index="CloakEffect" value="1" />
+    <On Terms="Abil.MarauderMengskAttackSpeedBoost.SourceCastStart" Send="Create" />
+    <Host Subject="_Selectable" />
+    <HostSiteOps Ops="SOpAttachOverhead" />
+  </CActorModel>
+</Catalog>

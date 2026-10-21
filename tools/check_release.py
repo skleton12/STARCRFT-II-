@@ -341,6 +341,12 @@ def main():
         zf.extractall(t)
         for name in MAPS:
             check_map(Path(t), name)
+        if tuple(map(int, ver.split('.'))) >= (0, 4, 64):
+            from check_coop_abilities import check
+            try:
+                check(zf)
+            except (AssertionError, KeyError, AttributeError) as exc:
+                fail(f'협동전 능력 회귀 검사: {exc}')
     print('결과:', '통과' if not fails else f'실패 {len(fails)}개 — 배포하지 않는다')
     sys.exit(1 if fails else 0)
 

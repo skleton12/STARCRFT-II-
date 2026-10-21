@@ -1,0 +1,13 @@
+<?xml version='1.0' encoding='utf-8'?>
+<Catalog>
+  <CWeaponLegacy id="FenixAdeptShade">
+    <EditorCategories value="Race:Protoss" />
+    <Icon value="Assets\Textures\btn-upgrade-protoss-groundweaponslevel0.dds" />
+    <DisplayEffect value="FenixAdeptShadeDamage" />
+    <TargetFilters value="Visible;Missile,Stasis,Dead,Hidden,Invulnerable" />
+    <Period value="2.25" />
+    <Effect value="FenixAdeptShadeLM" />
+    <Range value="3" />
+    <MinScanRange value="10" />
+  </CWeaponLegacy>
+</Catalog>

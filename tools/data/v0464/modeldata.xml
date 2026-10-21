@@ -1,0 +1,34 @@
+<?xml version='1.0' encoding='utf-8'?>
+<Catalog>
+  <CModel id="FenixAdeptShadeImpact" parent="MissileFX">
+    <Model value="Assets\Effects\Protoss\Adept_Collection_Purifier_Missile_Impact\Adept_Collection_Purifier_Missile_Impact.m3" />
+    <EditorCategories value="Race:Protoss" />
+  </CModel>
+  <CModel id="FenixAdeptShadeSpirit" parent="Unit" Race="Protoss">
+    <Model value="Assets\Units\Protoss\AdeptSpirit_Collection_Purifier_Coop\AdeptSpirit_Collection_Purifier_Coop.m3" />
+    <Occlusion value="Show" />
+    <SquibTypeDefault value="Metal" />
+  </CModel>
+  <CModel id="FenixAdeptShadeWeapon" parent="MissileFX">
+    <Model value="Assets\Effects\Protoss\Adept_Collection_Purifier_Missile\Adept_Collection_Purifier_Missile.m3" />
+    <EditorCategories value="Race:Protoss" />
+  </CModel>
+  <CModel id="MarauderMengskAbsorbKnockbackModel" parent="OneShotSpellFX">
+    <Model value="Assets\Effects\Terran\EMP\EMP.m3" />
+    <EditorCategories value="Race:Terran" />
+    <RadiusLoose value="0.600000" />
+    <ScaleMax value="0.600000,0.600000,0.600000" />
+    <ScaleMin value="0.600000,0.600000,0.600000" />
+  </CModel>
+  <CModel id="MarauderMengskAttackSpeedBoostEnd" parent="OneShotSpellFX">
+    <Model value="Assets\COOP\Mengsk\Effects\Marauder_Mengsk_COOP_StimpackEnd\Marauder_Mengsk_COOP_StimpackEnd.m3" />
+    <EditorCategories value="Race:Terran" />
+  </CModel>
+  <CModel id="MarauderMengskAttackSpeedBoostStart" parent="OneShotSpellFX">
+    <Model value="Assets\COOP\Mengsk\Effects\Marauder_Mengsk_COOP_StimpackStart\Marauder_Mengsk_COOP_StimpackStart.m3" />
+    <EditorCategories value="Race:Terran" />
+  </CModel>
+  <CModel id="SOASuperShieldImpact" parent="PersistentSpellFX">
+    <Model value="Assets\Effects\Protoss\SOA_ShieldOvercharge_Impact\SOA_ShieldOvercharge_Impact.m3" />
+  </CModel>
+</Catalog>

@@ -1,0 +1,13 @@
+<?xml version='1.0' encoding='utf-8'?>
+<Catalog>
+  <CValidatorUnitCompareCooldown id="FenixAdeptShadeNotOnCooldown">
+    <WhichUnit Value="Caster" />
+    <CooldownLink value="Abil/FenixAdeptShadeCooldown" />
+    <Location value="Unit" />
+    <Behavior value="FenixAdeptShadeCooldown" />
+  </CValidatorUnitCompareCooldown>
+  <CValidatorUnitCompareBehaviorCount id="NoMarauderMengskAbsorbReapplicator">
+    <WhichUnit Value="Caster" />
+    <Behavior value="MarauderMengskAbsorbReapplicator" />
+  </CValidatorUnitCompareBehaviorCount>
+</Catalog>

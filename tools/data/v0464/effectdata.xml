@@ -1,0 +1,83 @@
+<?xml version='1.0' encoding='utf-8'?>
+<Catalog>
+  <CEffectSet id="AdeptLMSet">
+    <EffectArray value="AdeptLM" />
+    <EffectArray value="FenixAdeptShadeSpawnShade" />
+    <EffectArray value="FenixAdeptShadeSetCooldown" />
+  </CEffectSet>
+  <CEffectDamage id="FenixAdeptShadeDamage" parent="DU_WEAP">
+    <EditorCategories value="Race:Protoss" />
+    <AttributeBonus index="Light" value="3" />
+    <Kind value="Ranged" />
+    <Amount value="8" />
+    <Death value="Blast" />
+  </CEffectDamage>
+  <CEffectLaunchMissile id="FenixAdeptShadeLM">
+    <EditorCategories value="Race:Protoss" />
+    <ImpactEffect value="FenixAdeptShadeDamage" />
+    <AmmoUnit value="FenixAdeptShadeWeapon" />
+    <Movers Link="FenixAdeptShadeWeapon" />
+  </CEffectLaunchMissile>
+  <CEffectModifyUnit id="FenixAdeptShadeSetCooldown">
+    <EditorCategories value="Race:Protoss" />
+    <Cost Abil="FenixAdeptShadeCooldown,Execute" CooldownTimeUse="5">
+      <Player Value="Caster" />
+    </Cost>
+    <ImpactUnit Value="Caster" />
+    <ValidatorArray value="FenixAdeptShadeNotOnCooldown" />
+    <ValidatorArray value="HaveAdeptFenixShadeSpawn" />
+  </CEffectModifyUnit>
+  <CEffectCreateUnit id="FenixAdeptShadeSpawnShade">
+    <SpawnEffect value="FenixAdeptShadeTimedLife" />
+    <SpawnUnit value="FenixAdeptShade" />
+    <SpawnRange value="1" />
+    <WhichLocation Value="CasterUnit" />
+    <CreateFlags index="ProvideFood" value="0" />
+    <CreateFlags index="UseFood" value="0" />
+    <ValidatorArray value="FenixAdeptShadeNotOnCooldown" />
+    <ValidatorArray value="HaveAdeptFenixShadeSpawn" />
+  </CEffectCreateUnit>
+  <CEffectApplyBehavior id="FenixAdeptShadeTimedLife">
+    <EditorCategories value="Race:Protoss" />
+    <Behavior value="FenixAdeptShadeSpawnShadTimedLife" />
+  </CEffectApplyBehavior>
+  <CEffectApplyBehavior id="MarauderMengskAbsorbAB">
+    <EditorCategories value="" />
+    <WhichUnit Value="Caster" />
+    <Behavior value="MarauderMengskAbsorb" />
+  </CEffectApplyBehavior>
+  <CEffectEnumArea id="MarauderMengskAbsorbKnockbackSearch">
+    <EditorCategories value="" />
+    <SearchFilters value="Ground;Player,Ally,Neutral,Structure,Missile,Destructible,Buried,Stasis,Dead,Hidden,Invulnerable" />
+    <AreaArray Radius="1" Effect="UnitKnockbackBy3" />
+    <SearchFlags index="ExtendByUnitRadius" value="1" />
+  </CEffectEnumArea>
+  <CEffectApplyBehavior id="MarauderMengskAbsorbReapplicatorAB">
+    <EditorCategories value="" />
+    <WhichUnit Value="Caster" />
+    <Behavior value="MarauderMengskAbsorbReapplicator" />
+  </CEffectApplyBehavior>
+  <CEffectModifyUnit id="MarauderMengskAbsorbReapplicatorMU">
+    <EditorCategories value="Race:Terran" />
+    <Cost Behavior="MarauderMengskAbsorbReapplicator" CooldownTimeUse="60" />
+    <ImpactUnit Value="Caster" />
+  </CEffectModifyUnit>
+  <CEffectSet id="MarauderMengskAbsorbReapplicatorSet">
+    <EditorCategories value="Race:Terran" />
+    <ValidatorArray value="NoMarauderMengskAbsorbReapplicator" />
+    <EffectArray value="MarauderMengskAbsorbReapplicatorAB" />
+    <EffectArray value="MarauderMengskAbsorbReapplicatorMU" />
+  </CEffectSet>
+  <CEffectApplyBehavior id="MarauderMengskAttackSpeedBoostAB">
+    <EditorCategories value="Race:Terran" />
+    <WhichUnit Value="Source" />
+    <Behavior value="MarauderMengskAttackSpeedBoost" />
+  </CEffectApplyBehavior>
+  <CEffectApplyBehavior id="MarauderMengskShrapnelSlowAB">
+    <EditorCategories value="" />
+    <Behavior value="MarauderMengskShrapnelSlow" />
+    <ValidatorArray index="0" value="HaveMarauderMengskSlow" />
+    <ValidatorArray value="NotStructure" />
+    <ValidatorArray value="NotFrenzied" />
+  </CEffectApplyBehavior>
+</Catalog>
