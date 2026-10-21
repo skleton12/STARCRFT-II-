@@ -97,7 +97,12 @@ def check_map(base, name):
     if rn.exists():
         for el in ET.parse(rn).getroot():
             if el.tag in ('CRequirementAnd', 'CRequirementOr') and any(o.get('index') is not None for o in el.findall('OperandArray')):
-                fail(f'{name} {el.tag} {el.get("id")}: OperandArray에 index가 있음 (엔진이 무시 → 조건 거짓)')
+                fail(f'{name} {el.tag} {el.get("id")}: OperandArray에 index가 있음 (원본 And/Or 표기와 다름)')
+            # Not 등 고정 칸 노드는 index 필수 (0.4.54 진단 확정): 번호가 없으면 피연산자가 비어 무효 →
+            # 혼자 쓰이면 통과(보임), And 안에서는 거짓(숨음). 원본 Not 약 800개는 모두 index="0".
+            if el.tag in ('CRequirementNot', 'CRequirementEq', 'CRequirementNE', 'CRequirementGT', 'CRequirementLT',
+                          'CRequirementGTE', 'CRequirementLTE') and any(o.get('index') is None for o in el.findall('OperandArray')):
+                fail(f'{name} {el.tag} {el.get("id")}: OperandArray에 index가 없음 (피연산자 무효 → And 안에서 거짓)')
     # 모드 버튼(RM3_/RM4_)은 단축키가 있어야 한다 (사용자 요청 2026-10-18)
     hk = m / 'kokr.sc2data/localizeddata/gamehotkeys.txt'
     have = hk.read_text(encoding='utf-8-sig') if hk.exists() else ''

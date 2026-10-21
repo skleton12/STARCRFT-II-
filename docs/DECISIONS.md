@@ -448,3 +448,10 @@ CRC·XML·31개 매장량 값 및 비대상 데이터 보존 검사를 통과했
 
 0.4.52 결과 (사용자, 무기고 구매 없음): 보이던 G는 원작 충격탄 버튼(BarracksTechLabResearch Research3, 명령 허용=1)이고 우리 충격탄 R6은 숨어 있었다. Not 하나짜리 조건(파편탄·협동전 안정제·충격완화복 미연구)은 보임. And(되는 Not 하나)·And(망치 해금, 되는 Not)·망치 해금 개수 단독은 숨음 → 이 맵에서 우리 And 노드가 거짓으로 계산된다 (번호 유무와 무관, 원인 미확정). 원작 충격탄 버튼이 보이는 것은 별도 문제(스크립트 금지가 안 먹음)로 남긴다.
 0.4.53: 시험 업그레이드 RMT_Have(1단계)·RMT_None(0)으로 개수·Not·And·Or·Not(Or(Not)) 노드를 각각 시험. Or나 Not(Or(Not))가 정상이면 And 대신 그 형태로 다시 쓴다. 진단판 한정. 도구: tools/build_v0453.py. 게임 미실행.
+
+
+## 2026-10-21: 연구 숨김 원인 확정·수정 — 0.4.54
+
+0.4.53 결과 (사용자 스크린샷): 시험 업그레이드로 만든 개수·Not[index 0]·And·Or·Not(Or(Not)) 노드 모두 정상. 0.4.52의 And(우리 고급 의무관 Not)만 거짓 → 차이는 우리 Not 노드에 index="0"이 없다는 것뿐. 원인 확정: 번호 없는 Not은 피연산자가 비어 무효 → 단독 Show면 통과, And 안에서는 거짓. 0.4.49의 'And 번호' 판단은 틀렸다.
+0.4.54: 4번 맵 번호 없는 Not 21개에 index="0" (1~3번은 해당 없음). 원작 충격탄 버튼(BarracksTechLabResearch Research3, State=Suppressed는 조건 충족 시 보임)을 항상 거짓 Show(RM4_HideOriginal → RMZ_NeverNode)로 숨김. 진단 스크립트·시험 데이터 제거, 파편탄 아이콘 유지. check_release에 '고정 칸 노드 번호 필수' 검사 추가(0.4.53에서 21개 실패 재현). 0.4.49 대비 바뀐 파일: metadata, 4번 abildata·buttondata·requirementdata·requirementnodedata·upgradedata. check_release 통과, 불곰 연구 검사 15사례 통과. 게임 미실행.
+남은 확인: 망치 경호대 해금 표식(RM4_HammerUnlocked)이 임무 초반에 0이면 불곰 연구 세 개(충격탄·파편탄·충격완화복)는 해금 전까지 숨는 것이 정상.
