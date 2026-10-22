@@ -359,6 +359,11 @@ def main():
                     xp = el.find("XPFraction[@index='Kills']")
                     if xp is None or xp.get('value') != '0':
                         fail('근위대 직접 처치 경험치와 공유 경험치 중복')
+        if tuple(map(int, ver.split('.'))) >= (0, 4, 66):
+            actors = ET.fromstring(zf.read('TTychus01.SC2Map/base.sc2data/gamedata/actordata.xml'))
+            aegis = next(e for e in actors if e.get('id') == 'MarauderMengsk')
+            if aegis.find('CustomUnitStatusFrame').get('value') or aegis.find("UnitFlags[@index='SuppressDefaultStatusBar']").get('value') != '0':
+                fail('이지스 기본 체력바가 누락된 협동전 UI에 가려짐')
     print('결과:', '통과' if not fails else f'실패 {len(fails)}개 — 배포하지 않는다')
     sys.exit(1 if fails else 0)
 
