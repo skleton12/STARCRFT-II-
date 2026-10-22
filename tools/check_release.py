@@ -347,6 +347,18 @@ def main():
                 check(zf)
             except (AssertionError, KeyError, AttributeError) as exc:
                 fail(f'협동전 능력 회귀 검사: {exc}')
+        if tuple(map(int, ver.split('.'))) >= (0, 4, 65):
+            from build_v0465 import SELECTION, XP, SCRIPT, BEHAVIOR
+            script = zf.read(SCRIPT).decode('utf-8')
+            if SELECTION not in script or XP not in script:
+                fail('동맹 선택/근위대 경험치 공유 스크립트 누락')
+            if script.count('TriggerAddEventUnitDied(t,null);') != 1:
+                fail('근위대 경험치 사망 이벤트 누락 또는 중복')
+            for el in ET.fromstring(zf.read(BEHAVIOR)):
+                if el.get('id') in ('RMK_MengskVeterancyMarineMengsk', 'RMK_MengskVeterancyMarauderMengsk'):
+                    xp = el.find("XPFraction[@index='Kills']")
+                    if xp is None or xp.get('value') != '0':
+                        fail('근위대 직접 처치 경험치와 공유 경험치 중복')
     print('결과:', '통과' if not fails else f'실패 {len(fails)}개 — 배포하지 않는다')
     sys.exit(1 if fails else 0)
 

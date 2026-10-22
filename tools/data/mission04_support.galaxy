@@ -591,23 +591,82 @@ void gf_m4_Start () {
 }
 
 
-// 0.4.59: an allied (Purifier) Pylon is dropped from player 1's selection when other units are selected with it.
+// 0.4.65: keep controlled units in mixed selections; allied solo inspection remains possible.
 bool gt_m4_PylonDrag_Func (bool testConds,bool runActions) {
     unitgroup sel;
-    unitgroup pylons;
+    unitgroup excluded;
     unit u;
     int i;
+    int owner;
+    bool controlled;
+    bool worker;
     if (!runActions) { return true; }
     sel=UnitGroupSelected(1);
-    pylons=UnitGroupEmpty();
+    excluded=UnitGroupEmpty();
+    controlled=false;
     i=UnitGroupCount(sel,c_unitCountAll);
     for (;i>0;i-=1) {
         u=UnitGroupUnit(sel,i);
-        if (UnitGetType(u)=="Pylon" && UnitGetOwner(u)==8) { UnitGroupAdd(pylons,u); }
+        owner=UnitGetOwner(u);
+        worker=(owner==8 && UnitGetType(u)=="Probe") || (owner==9 && UnitGetType(u)=="DehakaDrone");
+        if (owner==1 || worker) { controlled=true; }
+        else if (owner==8 || owner==9) { UnitGroupAdd(excluded,u); }
     }
-    if (UnitGroupCount(pylons,c_unitCountAll)==0 || UnitGroupCount(pylons,c_unitCountAll)>=UnitGroupCount(sel,c_unitCountAll)) { return true; }
-    i=UnitGroupCount(pylons,c_unitCountAll);
-    for (;i>0;i-=1) { UnitSelect(UnitGroupUnit(pylons,i),1,false); }
+    if (!controlled) { return true; }
+    i=UnitGroupCount(excluded,c_unitCountAll);
+    for (;i>0;i-=1) { UnitSelect(UnitGroupUnit(excluded,i),1,false); }
+    return true;
+}
+
+// 0.4.65: Mengsk co-op kill XP sharing, adapted to player 1 and allies 8/9.
+// Existing rank thresholds are unchanged. Native per-kill XP is disabled to avoid double credit.
+bool gt_m4_GuardXP_Func (bool testConds,bool runActions) {
+    unit dead;
+    unit u;
+    unitgroup army;
+    unitgroup eligible;
+    unitgroup nearby;
+    int killer;
+    int i;
+    int count;
+    string kind;
+    string veterancy;
+    fixed xp;
+    if (!runActions) { return true; }
+    dead=EventUnit();
+    if (dead==null || EventUnitDamageDeathCheck(c_deathTypeRemove)) { return true; }
+    killer=libNtve_gf_KillingPlayer();
+    if (killer!=1 && killer!=8 && killer!=9) { return true; }
+    if (!UnitFilterMatch(dead,1,UnitFilter(0,0,(1 << c_targetFilterPlayer) | (1 << c_targetFilterAlly) | (1 << c_targetFilterNeutral) | (1 << c_targetFilterStructure) | (1 << c_targetFilterRawResource) | (1 << c_targetFilterHarvestableResource) | (1 << c_targetFilterMissile) | (1 << c_targetFilterDestructible) | (1 << c_targetFilterItem) | (1 << c_targetFilterUncommandable),(1 << (c_targetFilterHallucination - 32))))) { return true; }
+    xp=UnitTypeGetProperty(UnitGetType(dead),c_unitPropSuppliesUsed)*100.0;
+    if (xp<=0.0 && UnitFilterMatch(dead,1,UnitFilter((1 << c_targetFilterHeroic),0,0,0))) { xp=800.0; }
+    if (xp<=0.0) { return true; }
+    army=UnitGroup(null,1,RegionEntireMap(),UnitFilter(0,0,0,0),0);
+    eligible=UnitGroupEmpty();
+    nearby=UnitGroupEmpty();
+    i=UnitGroupCount(army,c_unitCountAll);
+    for (;i>0;i-=1) {
+        u=UnitGroupUnit(army,i);
+        if (!UnitIsAlive(u)) { continue; }
+        kind=UnitGetType(u);
+        if (kind=="MarauderMengsk") { veterancy="RMK_MengskVeterancyMarauderMengsk"; }
+        else if (kind=="RMK_MarineMengsk") { veterancy="RMK_MengskVeterancyMarineMengsk"; }
+        else { continue; }
+        if (!UnitHasBehavior2(u,veterancy) || UnitXPGetCurrentLevel(u,veterancy)>=4) { continue; }
+        UnitGroupAdd(eligible,u);
+        if (DistanceBetweenPoints(UnitGetPosition(u),UnitGetPosition(dead))<=15.0) { UnitGroupAdd(nearby,u); }
+    }
+    count=UnitGroupCount(nearby,c_unitCountAlive);
+    if (count>0) { eligible=nearby; }
+    else { count=UnitGroupCount(eligible,c_unitCountAlive); }
+    if (count==0) { return true; }
+    xp=MaxF(Round(xp/IntToFixed(count)),1.0);
+    for (i=1;i<=count;i+=1) {
+        u=UnitGroupUnit(eligible,i);
+        if (UnitGetType(u)=="MarauderMengsk") { veterancy="RMK_MengskVeterancyMarauderMengsk"; }
+        else { veterancy="RMK_MengskVeterancyMarineMengsk"; }
+        UnitXPAddXP(u,veterancy,xp);
+    }
     return true;
 }
 
@@ -737,6 +796,8 @@ void gf_m4_Init () {
     gt_m4_arrive=TriggerCreate("gt_m4_Arrive_Func");
     gt_m4_tick=TriggerCreate("gt_m4_Tick_Func");
     TriggerAddEventTimePeriodic(gt_m4_tick,2.0,c_timeGame);
+    t=TriggerCreate("gt_m4_GuardXP_Func");
+    TriggerAddEventUnitDied(t,null);
     t=TriggerCreate("gt_m4_PylonDrag_Func");
     TriggerAddEventUnitSelected(t,null,1,true);
     t=TriggerCreate("gt_m4_Ping_Func");
