@@ -498,8 +498,11 @@ void gf_rmUpSync (int pp,int pz) {
     for (i=1;i<=3;i+=1) {
         n=IntToString(i);
         if (i<=w && TechTreeUpgradeCount(pp,"ProtossGroundWeaponsLevel"+n,c_techCountCompleteOnly)==0) { TechTreeUpgradeAddLevel(pp,"ProtossGroundWeaponsLevel"+n,1); }
+        if (i<=w && TechTreeUpgradeCount(pp,"ProtossAirWeaponsLevel"+n,c_techCountCompleteOnly)==0) { TechTreeUpgradeAddLevel(pp,"ProtossAirWeaponsLevel"+n,1); }
         if (i<=w && TechTreeUpgradeCount(pz,"DehakaPrimalWeaponsLevel"+n,c_techCountCompleteOnly)==0) { TechTreeUpgradeAddLevel(pz,"DehakaPrimalWeaponsLevel"+n,1); }
         if (i<=a && TechTreeUpgradeCount(pp,"ProtossGroundArmorsLevel"+n,c_techCountCompleteOnly)==0) { TechTreeUpgradeAddLevel(pp,"ProtossGroundArmorsLevel"+n,1); }
+        if (i<=a && TechTreeUpgradeCount(pp,"ProtossAirArmorsLevel"+n,c_techCountCompleteOnly)==0) { TechTreeUpgradeAddLevel(pp,"ProtossAirArmorsLevel"+n,1); }
+        if (i<=a && TechTreeUpgradeCount(pp,"ProtossShieldsLevel"+n,c_techCountCompleteOnly)==0) { TechTreeUpgradeAddLevel(pp,"ProtossShieldsLevel"+n,1); }
         if (i<=a && TechTreeUpgradeCount(pz,"DehakaPrimalArmorLevel"+n,c_techCountCompleteOnly)==0) { TechTreeUpgradeAddLevel(pz,"DehakaPrimalArmorLevel"+n,1); }
     }
 }
