@@ -529,3 +529,8 @@ check_release 통과. 게임 미실행. 도구: tools/build_v0461.py.
 ## 2026-10-22: 이지스 체력바 의존성 보정 — 0.4.66
 
 사용자는 전투 중 멩스크 용병이 사라지는 듯하다고 보고했다. 사망 시 인구 감소 여부는 아직 미확인이다. 이지스 액터가 이식되지 않은 Coop_UnitStatus_Mengsk/MengskMarauder_StatusFrame을 사용하면서 기본 상태바를 숨기는 설정을 확인했다. CustomUnitStatusFrame을 비우고 Custom 상태바를 끄며 기본 상태바 숨김을 해제했다. 체력·방어력·보호막·경험치·유닛 생성 및 제거 로직은 변경하지 않는다. 이는 확인된 UI 의존성 문제 보정이며, 전투 중 사망/모델 소실 원인 확정이나 해결 검증이 아니다. 전체 check_release 통과 및 metadata·이지스 액터의 세 필드 이외 데이터 보존 확인. 실제 게임·Galaxy 실행은 미실행이다. 다음 게임 확인은 새 어부지리에서 체력 감소와 인구 감소를 함께 확인한다. 재현: tools/build_v0466.py.
+
+
+## 2026-10-23: 이지스 탄환 유닛 누락 복구 — 0.4.67
+
+사용자의 자폭 의심으로 공격 경로를 조사해, Core 기본값 AmmoUnit=##id##Weapon이 요구하는 PunisherGrenadesMengskLMWeapon 유닛이 맵에 없음을 확인했다. 같은 이름의 모델/탄환 액터는 존재했다. 원본 MISSILE 유닛을 추가하고 발사 효과 AmmoUnit을 명시한다. 피해량·경험치·사거리·보호막은 보존한다. 실제 자폭/발사자 소실 원인 확정은 게임 확인 전이며, 상세: docs/testing/2026-10-23_v0467_aegis_projectile.md.

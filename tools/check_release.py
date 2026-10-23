@@ -364,6 +364,16 @@ def main():
             aegis = next(e for e in actors if e.get('id') == 'MarauderMengsk')
             if aegis.find('CustomUnitStatusFrame').get('value') or aegis.find("UnitFlags[@index='SuppressDefaultStatusBar']").get('value') != '0':
                 fail('이지스 기본 체력바가 누락된 협동전 UI에 가려짐')
+        if tuple(map(int, ver.split('.'))) >= (0, 4, 67):
+            gd = 'TTychus01.SC2Map/base.sc2data/gamedata/'
+            units = {e.get('id'): e for e in ET.fromstring(zf.read(gd+'unitdata.xml'))}
+            effects = {e.get('id'): e for e in ET.fromstring(zf.read(gd+'effectdata.xml'))}
+            launch = effects['PunisherGrenadesMengskLM']
+            ammo = launch.find('AmmoUnit')
+            if ammo is None or ammo.get('value') != 'PunisherGrenadesMengskLMWeapon' or ammo.get('value') not in units:
+                fail('이지스 공격의 탄환 유닛 누락 (Core의 암묵적 AmmoUnit 포함)')
+            elif units[ammo.get('value')].get('parent') != 'MISSILE':
+                fail('이지스 탄환이 MISSILE 유닛이 아님')
     print('결과:', '통과' if not fails else f'실패 {len(fails)}개 — 배포하지 않는다')
     sys.exit(1 if fails else 0)
 
