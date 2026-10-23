@@ -350,14 +350,15 @@ def main():
         if tuple(map(int, ver.split('.'))) >= (0, 4, 65):
             from build_v0465 import SELECTION, XP, SCRIPT, BEHAVIOR
             script = zf.read(SCRIPT).decode('utf-8')
-            if SELECTION not in script or XP not in script:
+            fixed_elites = tuple(map(int, ver.split('.'))) >= (0, 4, 68)
+            if SELECTION not in script or (not fixed_elites and XP not in script):
                 fail('동맹 선택/근위대 경험치 공유 스크립트 누락')
-            if script.count('TriggerAddEventUnitDied(t,null);') != 1:
+            if not fixed_elites and script.count('TriggerAddEventUnitDied(t,null);') != 1:
                 fail('근위대 경험치 사망 이벤트 누락 또는 중복')
             for el in ET.fromstring(zf.read(BEHAVIOR)):
                 if el.get('id') in ('RMK_MengskVeterancyMarineMengsk', 'RMK_MengskVeterancyMarauderMengsk'):
                     xp = el.find("XPFraction[@index='Kills']")
-                    if xp is None or xp.get('value') != '0':
+                    if not fixed_elites and (xp is None or xp.get('value') != '0'):
                         fail('근위대 직접 처치 경험치와 공유 경험치 중복')
         if tuple(map(int, ver.split('.'))) >= (0, 4, 66):
             actors = ET.fromstring(zf.read('TTychus01.SC2Map/base.sc2data/gamedata/actordata.xml'))
@@ -374,6 +375,12 @@ def main():
                 fail('이지스 공격의 탄환 유닛 누락 (Core의 암묵적 AmmoUnit 포함)')
             elif units[ammo.get('value')].get('parent') != 'MISSILE':
                 fail('이지스 탄환이 MISSILE 유닛이 아님')
+        if tuple(map(int, ver.split('.'))) >= (0, 4, 68):
+            from check_elite_mercs import check as check_elites
+            try:
+                check_elites(zf)
+            except (AssertionError, KeyError, AttributeError) as exc:
+                fail(f'3등급 정예 용병 검사: {exc}')
     print('결과:', '통과' if not fails else f'실패 {len(fails)}개 — 배포하지 않는다')
     sys.exit(1 if fails else 0)
 
