@@ -139,12 +139,13 @@ void gf_m4_Attack (int p) {
     unitgroup sent;
     int i;
     int need;
+    fixed food;
     unit u;
     point rally;
     // Ping first (30 s); base threat: everyone defends; else gather at the rally and leave together (user 2026-10-18).
     g=gf_m4_Army(p);
     i=UnitGroupCount(g,c_unitCountAll);
-    if (p==8) { rally=Point(63.0,29.0); sent=gv_m4_sent8; need=10; } else { rally=Point(66.0,30.0); sent=gv_m4_sent9; need=8; }
+    if (p==8) { rally=Point(63.0,29.0); sent=gv_m4_sent8; need=10; } else { rally=Point(66.0,30.0); sent=gv_m4_sent9; need=16; }
     if (GameGetMissionTime()<gv_m4_pingUntil) {
         for (;i>0;i-=1) {
             u=UnitGroupUnit(g,i);
@@ -171,7 +172,14 @@ void gf_m4_Attack (int p) {
         if (DistanceBetweenPoints(UnitGetPosition(u),rally)<=8.0) { UnitGroupAdd(ready,u); }
         else if (UnitOrderCount(u)==0) { UnitIssueOrder(u,OrderTargetingPoint(AbilityCommand("attack",0),rally),c_orderQueueReplace); }
     }
-    if (gv_m4_hasBase && UnitGroupCount(ready,c_unitCountAlive)>=need) {
+    // Purifiers leave at 10 units; Primal Zerg at 16 supply (mission doc, trial; 0.4.55, was 8 units).
+    food=IntToFixed(UnitGroupCount(ready,c_unitCountAlive));
+    if (p==9) {
+        food=0.0;
+        i=UnitGroupCount(ready,c_unitCountAll);
+        for (;i>0;i-=1) { food+=gf_m4_UnitFood(UnitGetType(UnitGroupUnit(ready,i))); }
+    }
+    if (gv_m4_hasBase && food>=IntToFixed(need)) {
         i=UnitGroupCount(ready,c_unitCountAll);
         for (;i>0;i-=1) {
             u=UnitGroupUnit(ready,i);
@@ -260,6 +268,12 @@ void gf_m4_Warp () {
     }
 }
 
+// Purifier unit upgrades only for unlocked units (user 2026-10-21). k=-1 = always (base units).
+void gf_m4_Grant (int k, string up) {
+    if (k>=0 && !gf_m4_Unl(k)) { return; }
+    if (TechTreeUpgradeCount(8,up,c_techCountQueuedOrBetter)==0) { TechTreeUpgradeAddLevel(8,up,1); }
+}
+
 void gf_m4_Unlocks () {
     int k;
     int p;
@@ -268,7 +282,8 @@ void gf_m4_Unlocks () {
     for (k=0;k<=8;k+=1) {
         for (p=2;p<=7;p+=1) { TechTreeAbilityAllow(p,AbilityCommand("WarpGateTrain",6+k),false); }
         TechTreeAbilityAllow(1,AbilityCommand("WarpGateTrain",6+k),false);
-        TechTreeAbilityAllow(8,AbilityCommand("WarpGateTrain",6+k),gf_m4_Unl(k));
+        // Sentinel/Conservator (k=6) from the start, with the Energizer (user 2026-10-21).
+        TechTreeAbilityAllow(8,AbilityCommand("WarpGateTrain",6+k),gf_m4_Unl(k) || k==6);
     }
     TechTreeUnitAllow(8,"StalkerPurifier",true);
     TechTreeUnitAllow(8,"Immortal",true);
@@ -296,6 +311,14 @@ void gf_m4_Unlocks () {
             TechTreeAbilityAllow(9,AbilityCommand(merge[k],1),gf_m4_Unl(k));
         }
     }
+    gf_m4_Grant(-1,"AdeptFenixShadeSpawn");
+    gf_m4_Grant(2,"ColossusFireBeam");
+    gf_m4_Grant(2,"ExtendedThermalLance");
+    gf_m4_Grant(3,"DisruptorCloak");
+    gf_m4_Grant(4,"MiragePhaseArmor");
+    gf_m4_Grant(4,"PhoenixRangeUpgrade");
+    gf_m4_Grant(5,"FenixScoutWeaponRange");
+    gf_m4_Grant(7,"TempestDisintegration");
 }
 
 void gf_m4_MergeOne (string src, string abil) {
@@ -334,7 +357,7 @@ void gf_m4_Produce () {
     int k;
     for (k=0;k<gv_m4_fxN;k+=1) { ActorSend(gv_m4_fx[k],"Destroy"); }
     gv_m4_fxN=0;
-    // Income (trial): 25 minerals / 8 gas per 2 s tick; Primal Zerg minerals 40 (0.4.25, user 2026-10-19).
+    // Income (trial, same as mission 3): 25 minerals / 8 gas per 2 s tick for each ally.
     PlayerModifyPropertyInt(8,c_playerPropMinerals,c_playerPropOperAdd,25);
     PlayerModifyPropertyInt(8,c_playerPropVespene,c_playerPropOperAdd,8);
     PlayerModifyPropertyInt(9,c_playerPropMinerals,c_playerPropOperAdd,40);
@@ -342,7 +365,7 @@ void gf_m4_Produce () {
     // Unlocked extras for this tick's rotation.
     gv_m4_warpExtra=0;
     for (k=0;k<=8;k+=1) {
-        if (gf_m4_Unl(k)) { gv_m4_warpSlot[gv_m4_warpExtra]=6+k; gv_m4_warpExtra+=1; }
+        if (gf_m4_Unl(k) || k==6) { gv_m4_warpSlot[gv_m4_warpExtra]=6+k; gv_m4_warpExtra+=1; }
     }
     gv_m4_eggExtra=0;
     if (gf_m4_Unl(2)) { gv_m4_eggSlot[gv_m4_eggExtra]=3; gv_m4_eggExtra+=1; }
@@ -376,6 +399,11 @@ void gf_m4_Skin (int p) {
     for (;i>0;i-=1) {
         u=UnitGroupUnit(g,i);
         if (!UnitHasBehavior2(u,"RM3_AllySkin")) { UnitBehaviorAdd(u,"RM3_AllySkin",u,1); }
+        // Purifier probes become Probius (co-op Fenix: name behavior + actor, 0.4.60).
+        if (p==8 && UnitGetType(u)=="Probe" && !UnitHasBehavior2(u,"FenixProbiusProbe")) {
+            UnitBehaviorAdd(u,"FenixProbiusProbe",u,1);
+            libNtve_gf_SendActorMessageToUnit(u,"Create FenixProbiusProbe");
+        }
         if (gf_m4_IsArmyType(u)) { libNtve_gf_MakeUnitUncommandable(u,true); }  // new ally kinds (0.4.42)
     }
 }
@@ -400,6 +428,13 @@ void gf_m4_Workers () {
 }
 
 void gf_m4_Mercs () {
+    // 0.4.64: mission research gates the mercenary abilities, not Hyperion command availability.
+    TechTreeAbilityAllow(1,AbilityCommand("RM4_MercStimpack",0),true);
+    TechTreeAbilityAllow(1,AbilityCommand("SuperStimpackMarine",0),true);
+    TechTreeAbilityAllow(1,AbilityCommand("RMK_MarineMengskAttackSpeedBoost",0),true);
+    TechTreeAbilityAllow(1,AbilityCommand("MarauderMengskAttackSpeedBoost",0),true);
+    TechTreeUpgradeAllow(1,"MarauderMengskSlow",true);
+    TechTreeAbilityAllow(1,AbilityCommand("RM3_TechResearch",16),true);
     // 0.4.31: runtime command permissions are separate from upgrade permissions.
     // Show/Use requirements still gate each research, so this does not unlock future units.
     TechTreeUpgradeAllow(1,"RM4_HammerUnlocked",true);
@@ -422,22 +457,6 @@ void gf_m4_Mercs () {
     TechTreeUpgradeAllow(1,"BearclawNozzles",true);
     TechTreeAbilityAllow(1,AbilityCommand("RM3_TechResearch",13),true);
     TechTreeUpgradeAllow(1,"FirebatJuggernautPlating",true);
-    TechTreeAbilityAllow(1,AbilityCommand("RM3_BayResearch",9),true);
-    TechTreeUpgradeAllow(1,"NeoSteelFrame",true);
-    TechTreeAbilityAllow(1,AbilityCommand("RM3_BayResearch",10),true);
-    TechTreeUpgradeAllow(1,"ProjectileAccelerators",true);
-    TechTreeAbilityAllow(1,AbilityCommand("RM3_BayResearch",11),true);
-    TechTreeUpgradeAllow(1,"DualFusionWelders",true);
-    TechTreeAbilityAllow(1,AbilityCommand("RM3_BayResearch",12),true);
-    TechTreeUpgradeAllow(1,"AdvancedConstruction",true);
-    TechTreeAbilityAllow(1,AbilityCommand("RM3_BayResearch",13),true);
-    TechTreeUpgradeAllow(1,"FireSuppressionSystems",true);
-    TechTreeAbilityAllow(1,AbilityCommand("RM3_BayResearch",14),true);
-    TechTreeUpgradeAllow(1,"OrbitalRelay",true);
-    TechTreeAbilityAllow(1,AbilityCommand("RM3_BayResearch",15),true);
-    TechTreeUpgradeAllow(1,"ReinforcedSuperstructure",true);
-    TechTreeAbilityAllow(1,AbilityCommand("RM3_BayResearch",16),true);
-    TechTreeUpgradeAllow(1,"HailstormMissilePods",true);
     TechTreeUpgradeAllow(1,"RMA_DevilDogUnlocked",true);
     // Co-op research page (0.4.41).
     TechTreeAbilityAllow(1,AbilityCommand("RM3_TechResearch",14),true);
@@ -463,6 +482,28 @@ void gf_m4_Mercs () {
     TechTreeUpgradeAllow(1,"RM4_Shrapnel",true);
 }
 
+void gf_rmUpSync (int pp,int pz) {
+    int w;
+    int a;
+    int i;
+    string n;
+    // Allies match Raynor's infantry weapon/armor levels (user 2026-10-18). Never given twice.
+    w=0;
+    a=0;
+    for (i=1;i<=3;i+=1) {
+        n=IntToString(i);
+        if (TechTreeUpgradeCount(1,"TerranInfantryWeaponsLevel"+n,c_techCountCompleteOnly)+TechTreeUpgradeCount(1,"TerranInfantryWeaponsUltraCapacitorsLevel"+n,c_techCountCompleteOnly)>0) { w=i; }
+        if (TechTreeUpgradeCount(1,"TerranInfantryArmorsLevel"+n,c_techCountCompleteOnly)+TechTreeUpgradeCount(1,"TerranInfantryArmorsVanadiumPlatingLevel"+n,c_techCountCompleteOnly)>0) { a=i; }
+    }
+    for (i=1;i<=3;i+=1) {
+        n=IntToString(i);
+        if (i<=w && TechTreeUpgradeCount(pp,"ProtossGroundWeaponsLevel"+n,c_techCountCompleteOnly)==0) { TechTreeUpgradeAddLevel(pp,"ProtossGroundWeaponsLevel"+n,1); }
+        if (i<=w && TechTreeUpgradeCount(pz,"DehakaPrimalWeaponsLevel"+n,c_techCountCompleteOnly)==0) { TechTreeUpgradeAddLevel(pz,"DehakaPrimalWeaponsLevel"+n,1); }
+        if (i<=a && TechTreeUpgradeCount(pp,"ProtossGroundArmorsLevel"+n,c_techCountCompleteOnly)==0) { TechTreeUpgradeAddLevel(pp,"ProtossGroundArmorsLevel"+n,1); }
+        if (i<=a && TechTreeUpgradeCount(pz,"DehakaPrimalArmorLevel"+n,c_techCountCompleteOnly)==0) { TechTreeUpgradeAddLevel(pz,"DehakaPrimalArmorLevel"+n,1); }
+    }
+}
+
 bool gt_m4_Tick_Func (bool testConds,bool runActions) {
     int gates;
     if (!runActions || gv_gameOver) { return true; }
@@ -471,6 +512,7 @@ bool gt_m4_Tick_Func (bool testConds,bool runActions) {
     if (TechTreeUpgradeCount(1,"RM4_HammerUnlocked",c_techCountQueuedOrBetter)==0 && TechTreeAbilityIsAllowed(1,AbilityCommand("BarracksTrain",3))) {
         TechTreeUpgradeAddLevel(1,"RM4_HammerUnlocked",1);
     }
+    gf_rmUpSync(8,9);
     gf_m4_Skin(8);
     gf_m4_Skin(9);
     if (!gv_m4_ready) { return true; }
@@ -548,6 +590,86 @@ void gf_m4_Start () {
     TriggerExecute(gt_m4_arrive,false,false);
 }
 
+
+// 0.4.65: keep controlled units in mixed selections; allied solo inspection remains possible.
+bool gt_m4_PylonDrag_Func (bool testConds,bool runActions) {
+    unitgroup sel;
+    unitgroup excluded;
+    unit u;
+    int i;
+    int owner;
+    bool controlled;
+    bool worker;
+    if (!runActions) { return true; }
+    sel=UnitGroupSelected(1);
+    excluded=UnitGroupEmpty();
+    controlled=false;
+    i=UnitGroupCount(sel,c_unitCountAll);
+    for (;i>0;i-=1) {
+        u=UnitGroupUnit(sel,i);
+        owner=UnitGetOwner(u);
+        worker=(owner==8 && UnitGetType(u)=="Probe") || (owner==9 && UnitGetType(u)=="DehakaDrone");
+        if (owner==1 || worker) { controlled=true; }
+        else if (owner==8 || owner==9) { UnitGroupAdd(excluded,u); }
+    }
+    if (!controlled) { return true; }
+    i=UnitGroupCount(excluded,c_unitCountAll);
+    for (;i>0;i-=1) { UnitSelect(UnitGroupUnit(excluded,i),1,false); }
+    return true;
+}
+
+// 0.4.65: Mengsk co-op kill XP sharing, adapted to player 1 and allies 8/9.
+// Existing rank thresholds are unchanged. Native per-kill XP is disabled to avoid double credit.
+bool gt_m4_GuardXP_Func (bool testConds,bool runActions) {
+    unit dead;
+    unit u;
+    unitgroup army;
+    unitgroup eligible;
+    unitgroup nearby;
+    int killer;
+    int i;
+    int count;
+    string kind;
+    string veterancy;
+    fixed xp;
+    if (!runActions) { return true; }
+    dead=EventUnit();
+    if (dead==null || EventUnitDamageDeathCheck(c_deathTypeRemove)) { return true; }
+    killer=libNtve_gf_KillingPlayer();
+    if (killer!=1 && killer!=8 && killer!=9) { return true; }
+    if (!UnitFilterMatch(dead,1,UnitFilter(0,0,(1 << c_targetFilterPlayer) | (1 << c_targetFilterAlly) | (1 << c_targetFilterNeutral) | (1 << c_targetFilterStructure) | (1 << c_targetFilterRawResource) | (1 << c_targetFilterHarvestableResource) | (1 << c_targetFilterMissile) | (1 << c_targetFilterDestructible) | (1 << c_targetFilterItem) | (1 << c_targetFilterUncommandable),(1 << (c_targetFilterHallucination - 32))))) { return true; }
+    xp=UnitTypeGetProperty(UnitGetType(dead),c_unitPropSuppliesUsed)*100.0;
+    if (xp<=0.0 && UnitFilterMatch(dead,1,UnitFilter((1 << c_targetFilterHeroic),0,0,0))) { xp=800.0; }
+    if (xp<=0.0) { return true; }
+    army=UnitGroup(null,1,RegionEntireMap(),UnitFilter(0,0,0,0),0);
+    eligible=UnitGroupEmpty();
+    nearby=UnitGroupEmpty();
+    i=UnitGroupCount(army,c_unitCountAll);
+    for (;i>0;i-=1) {
+        u=UnitGroupUnit(army,i);
+        if (!UnitIsAlive(u)) { continue; }
+        kind=UnitGetType(u);
+        if (kind=="MarauderMengsk") { veterancy="RMK_MengskVeterancyMarauderMengsk"; }
+        else if (kind=="RMK_MarineMengsk") { veterancy="RMK_MengskVeterancyMarineMengsk"; }
+        else { continue; }
+        if (!UnitHasBehavior2(u,veterancy) || UnitXPGetCurrentLevel(u,veterancy)>=4) { continue; }
+        UnitGroupAdd(eligible,u);
+        if (DistanceBetweenPoints(UnitGetPosition(u),UnitGetPosition(dead))<=15.0) { UnitGroupAdd(nearby,u); }
+    }
+    count=UnitGroupCount(nearby,c_unitCountAlive);
+    if (count>0) { eligible=nearby; }
+    else { count=UnitGroupCount(eligible,c_unitCountAlive); }
+    if (count==0) { return true; }
+    xp=MaxF(Round(xp/IntToFixed(count)),1.0);
+    for (i=1;i<=count;i+=1) {
+        u=UnitGroupUnit(eligible,i);
+        if (UnitGetType(u)=="MarauderMengsk") { veterancy="RMK_MengskVeterancyMarauderMengsk"; }
+        else { veterancy="RMK_MengskVeterancyMarineMengsk"; }
+        UnitXPAddXP(u,veterancy,xp);
+    }
+    return true;
+}
+
 void gf_m4_Init () {
     trigger t;
     int p;
@@ -575,6 +697,10 @@ void gf_m4_Init () {
     TechTreeUpgradeAddLevel(8,"WarpGateResearch",1);
     CatalogLinkReplace(8,c_gameCatalogUnit,"Zealot","ZealotPurifier");
     CatalogLinkReplace(8,c_gameCatalogUnit,"Stalker","AdeptFenix");
+    CatalogFieldValueSet(c_gameCatalogAbil,"WarpGateTrain","InfoArray[Train2].Button.DefaultButtonFace",8,"RM4_WarpAdept");
+    CatalogFieldValueSet(c_gameCatalogAbil,"WarpGateTrain","InfoArray[Train6].Button.DefaultButtonFace",8,"RM4_WarpEnergizer");
+    CatalogFieldValueSet(c_gameCatalogUnit,"WarpGate","CardLayouts[0].LayoutButtons[1].Face",8,"RM4_WarpAdept");
+    CatalogFieldValueSet(c_gameCatalogUnit,"WarpGate","CardLayouts[0].LayoutButtons[6].Face",8,"RM4_WarpEnergizer");
     // The player moves/builds with the ally workers (control + spending shared). Ally army types are Uncommandable.
     libNtve_gf_SetAlliance(8,1,libNtve_ge_AllianceSetting_AllyWithSharedVisionAndControl);
     // One-way (user 2026-10-18): the player builds with ally workers on ally money; allies never spend Raynor's money or use his units.
@@ -670,6 +796,10 @@ void gf_m4_Init () {
     gt_m4_arrive=TriggerCreate("gt_m4_Arrive_Func");
     gt_m4_tick=TriggerCreate("gt_m4_Tick_Func");
     TriggerAddEventTimePeriodic(gt_m4_tick,2.0,c_timeGame);
+    t=TriggerCreate("gt_m4_GuardXP_Func");
+    TriggerAddEventUnitDied(t,null);
+    t=TriggerCreate("gt_m4_PylonDrag_Func");
+    TriggerAddEventUnitSelected(t,null,1,true);
     t=TriggerCreate("gt_m4_Ping_Func");
     TriggerAddEventPing(t,1);
 }
