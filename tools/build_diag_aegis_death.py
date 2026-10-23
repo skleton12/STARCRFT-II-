@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Build CCM 0.4.64 from 0.4.63: 이지스 근위대 사망 진단판 (4번, 진단 전용).
+"""이지스 근위대 사망 진단판 (4번, 진단 전용). 2026-10-23 내 0.4.64 진단판으로 냈으나 GPT 0.4.64~0.4.67 계열이 본선이 되어 쓰지 않음 (번호 충돌 때문에 이름 바꿈).
 
 사용자 보고 2026-10-23: 이지스 근위대(MarauderMengsk, 고용소 '망치 경호대' 2기)가 적에게 다가가다가 이유 불명으로 죽는다.
 데이터 대조: 무기·효과·파편(자기·아군 제외)·계급은 협동전 원본과 같고 스크립트도 죽이지 않는다 → 원인 미발견.
@@ -7,7 +7,7 @@
 진단: 이지스 근위대(1번)가 받은 피해마다 '가한 유닛 종류·소유자·효과 ID·피해량'을 기록하고, 이지스가 준 피해 횟수를 센다.
 이지스가 죽으면 채팅창에 [RM diag] 줄로 출력한다. 원인을 찾으면 다음 판에서 이 진단을 뺀다.
 
-Usage: python3 tools/build_v0464.py <0.4.63 zip> <new output zip>
+Usage: python3 tools/build_diag_aegis_death.py <0.4.63 zip> <new output zip>
 """
 import argparse, copy, zipfile
 from pathlib import Path
