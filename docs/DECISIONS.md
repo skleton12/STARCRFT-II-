@@ -572,3 +572,8 @@ check_release 통과. 게임 미실행. 도구: tools/build_v0461.py.
 ## 2026-10-23: 전투 방패 외형 — 0.4.74
 
 사용자 보고 "방패 업글하면 방패 착용 않하넹". 원인: 전쟁광(액터 KelmorianMiner)·코랄의 후예 액터는 원작 ShieldWall/CombatShield 업그레이드가 없으면 방패를 가리는 Cover 애니메이션을 틀고, 그 업그레이드가 들어올 때만 지운다. 모드 연구 RM3_Shield는 ID가 달라 외형이 안 바뀌었다. 3·4번 맵: RM3_Shield 완료 후 2초 틱마다 레이너의 전쟁광·코랄의 후예에게 한 번 'AnimClear Cover'(표식 버프 RM4_ShieldShown으로 1회). 능력치·조건은 그대로. check_release 등 통과. 게임 미실행. 도구: tools/build_v0474.py.
+
+
+## 2026-10-23: 코랄의 후예 레일건 오류 구 수정 — 0.4.75
+
+사용자가 0.4.70 진단판으로 확인: 흰 반구는 코랄의 후예 '자기 가속 탄약'(레일건)을 쓸 때 생긴다. 원인: 탄환 유닛 RMK_MagrailMunitionMissileMengsk 의 이동기 WarHoundWeapon 이 swarm.sc2mod 에만 있고 맵 의존성(Liberty)에는 없어 탄환이 날아가지 못하고 그 자리에 남았다. 탄환·발사·명중 액터도 없었다. 수정: 네 맵에 WarHoundWeapon 이동기 정의를 옮기고, 원작 노바 레일건 구조대로 투명 탄환 액터와 발사·명중 연출 액터(MagrailMunition_Launch/Impact, RailGun 소리)를 추가했다(모델·소리 정의가 없는 맵은 4번에서 옮김). 0.4.70 진단 스크립트는 뺐다. **배포 전 검사에 '맵 유닛의 이동기가 맵·의존성에 없음' 항목을 추가했다** (0.4.74에 적용하면 실패 5건으로 잡힘). check_release 등 통과. 게임 미실행. 도구: tools/build_v0475.py.

@@ -309,6 +309,14 @@ def check_map(base, name):
         if any(s.find('Race') is not None for s in src_units.get(i, [])):
             fail(f'{name} 유닛 {i}: 원본에 있는 종족(Race)이 빠짐')
 
+    # 맵에서 정의한 유닛의 이동기(Mover)가 맵·의존성에 없으면 탄환이 날아가지 못하고 남는다
+    # (0.4.75 코랄의 후예 레일건: WarHoundWeapon 이 swarm.sc2mod 에만 있어 오류 구로 남음)
+    movers = ids.get('moverdata.xml', set()) | set(records([S / x for x in DEPS], 'moverdata.xml'))
+    for el in ET.parse(m / 'base.sc2data/gamedata/unitdata.xml').getroot():
+        mv = el.find('Mover')
+        if el.tag == 'CUnit' and mv is not None and mv.get('value') and mv.get('value') not in movers:
+            fail(f'{name} 유닛 {el.get("id")}: 이동기 {mv.get("value")} 정의 없음 (의존성 밖)')
+
     # 사령관 레벨 잠금은 이 모드에 없다 (사용자 확정 2026-10-17). 진급 레벨은 자치령 용병(RMK_…Veterancy)에만 있다.
     for f in glob.glob(str(m) + '/base.sc2data/gamedata/*.xml'):
         for x in sorted(set(re.findall(r'"(\w+Level\d\d)"', Path(f).read_text(encoding='utf-8')))):
