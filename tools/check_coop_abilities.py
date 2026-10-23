@@ -84,13 +84,19 @@ def check(z):
 
     # Rank boundaries: new units start at internal level 1 (displayed rank 0).
     rankid = 'RMK_MengskVeterancyMarauderMengsk'
-    for rank in range(4):
-        r = {rankid: rank + 1}
-        assert usable('RM4_AegisRank1Use', {}, r) == (rank >= 1)
-        assert usable('RM4_AegisRank3Use', {}, r) == (rank >= 3)
-    levels = beh[rankid].findall('VeterancyLevelArray')
-    assert [l.get('MinVeterancyXP') for l in levels] == [None,'1200','2400','3600']
-    assert levels[1].get('LevelGainEffect') == 'MarauderMengskAbsorbAB'
+    if beh[rankid].tag == 'CBehaviorVeterancy':
+        for rank in range(4):
+            r = {rankid: rank + 1}
+            assert usable('RM4_AegisRank1Use', {}, r) == (rank >= 1)
+            assert usable('RM4_AegisRank3Use', {}, r) == (rank >= 3)
+        levels = beh[rankid].findall('VeterancyLevelArray')
+        assert [l.get('MinVeterancyXP') for l in levels] == [None,'1200','2400','3600']
+        assert levels[1].get('LevelGainEffect') == 'MarauderMengskAbsorbAB'
+    else:
+        assert beh[rankid].tag == 'CBehaviorBuff'
+        assert usable('RM4_AegisRank1Use', {}, {rankid:1})
+        assert usable('RM4_AegisRank3Use', {}, {rankid:1})
+        assert un['MarauderMengsk'].find("BehaviorArray[@Link='MarauderMengskAbsorb']") is not None
     assert beh['MarauderMengskAbsorb'].find('DamageResponse/ModifyLimit').get('value') == '300'
     assert v(beh['MarauderMengskAbsorbReapplicator'],'Duration') == '60'
     assert v(beh['MarauderMengskAbsorbReapplicator'],'ExpireEffect') == 'MarauderMengskAbsorbAB'
