@@ -590,3 +590,8 @@ check_release 통과. 게임 미실행. 도구: tools/build_v0461.py.
 ## 2026-10-24: GPT 0.4.69(정화자 공방업·보호막) 본선 합류 — 0.4.77
 
 GPT가 0.4.68 위에 만든 0.4.69(codex/coop-fixes-0464 bebfbde: 정화자 지상·공중 공방업 누락 보완, 레이너 보병 방업 단계에 정화자 보호막 방어력 연동)를 Claude 0.4.76 위에 그대로 다시 적용해 0.4.77로 냈다. 번호 충돌(Claude 0.4.69 = 제로 아워 코랄 3등급) 때문에 GPT 빌더는 tools/build_v0477.py로 이름·버전만 바꿨고, check_purifier_upgrades 는 그 파일을 읽고, check_release 의 정화자 검사는 0.4.77부터 돈다. check_release·정화자 업그레이드·불곰 연구·협동전 능력·정예 용병 검사 통과. 게임 미실행.
+
+
+## 2026-10-24: 방패 외형 표식 버프 숨김 — 0.4.78
+
+사용자 보고 "언노운 rm4 쉴드 뭐시기". 0.4.74의 내부 표식 버프 RM4_ShieldShown(방패 외형을 한 번만 바꾸려는 표시, 효과 없음)이 유닛 정보 칸에 이름 없이 떴다. InfoFlags Hidden으로 숨기고 이름 문자열도 넣었다(3·4번). **앞으로 내부 표식용 버프는 InfoFlags Hidden을 켠다.** check_release 등 통과. 게임 미실행. 도구: tools/build_v0478.py.
