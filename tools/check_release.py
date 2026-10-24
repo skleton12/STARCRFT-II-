@@ -359,6 +359,9 @@ def main():
             from build_v0465 import SELECTION, XP, SCRIPT, BEHAVIOR
             script = zf.read(SCRIPT).decode('utf-8')
             fixed_elites = tuple(map(int, ver.split('.'))) >= (0, 4, 68)
+            if tuple(map(int, ver.split('.'))) >= (0, 4, 92):  # 0.4.92: base miners are not "my worker" in mixed selections
+                SELECTION = SELECTION.replace('worker=(owner==8 && UnitGetType(u)=="Probe") || (owner==9 && UnitGetType(u)=="DehakaDrone");',
+                    'worker=((owner==8 && UnitGetType(u)=="Probe") || (owner==9 && UnitGetType(u)=="DehakaDrone")) && !UnitHasBehavior2(u,"RM_AllyMiner");')
             if SELECTION not in script or (not fixed_elites and XP not in script):
                 fail('동맹 선택/근위대 경험치 공유 스크립트 누락')
             if not fixed_elites and script.count('TriggerAddEventUnitDied(t,null);') != 1:

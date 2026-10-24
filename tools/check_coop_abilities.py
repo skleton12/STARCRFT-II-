@@ -96,7 +96,8 @@ def check(z):
         assert beh[rankid].tag == 'CBehaviorBuff'
         assert usable('RM4_AegisRank1Use', {}, {rankid:1})
         assert usable('RM4_AegisRank3Use', {}, {rankid:1})
-        assert un['MarauderMengsk'].find("BehaviorArray[@Link='MarauderMengskAbsorb']") is not None
+        # 0.4.92: absorb buff replaced by real 300 shields (user choice).
+        assert un['MarauderMengsk'].find("BehaviorArray[@Link='MarauderMengskAbsorb']") is not None or float(un['MarauderMengsk'].find('ShieldsMax').get('value'))==300
     assert beh['MarauderMengskAbsorb'].find('DamageResponse/ModifyLimit').get('value') == '300'
     assert v(beh['MarauderMengskAbsorbReapplicator'],'Duration') == '60'
     assert v(beh['MarauderMengskAbsorbReapplicator'],'ExpireEffect') == 'MarauderMengskAbsorbAB'

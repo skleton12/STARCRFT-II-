@@ -18,7 +18,12 @@ def check(z):
         assert beh[rank].tag=='CBehaviorBuff' and not beh[rank].findall('VeterancyLevelArray')
         for kind in ['Melee','Ranged','Splash']:
             assert float(beh[rank].find(f"Modification/DamageDealtFraction[@index='{kind}']").get('value'))==damage
-    assert un['MarauderMengsk'].find("BehaviorArray[@Link='MarauderMengskAbsorb']") is not None
+    # 0.4.92: the co-op absorb buff became real 300 shields (user choice); the barrier must exist in one form only.
+    aegis=un['MarauderMengsk']
+    if aegis.find('ShieldsMax') is not None:
+        assert float(aegis.find('ShieldsMax').get('value'))==300 and aegis.find("BehaviorArray[@Link='MarauderMengskAbsorb']") is None
+    else:
+        assert aegis.find("BehaviorArray[@Link='MarauderMengskAbsorb']") is not None
     for nid in ['RM4_AegisRank1','RM4_AegisRank3','RMK_GTECountBehaviorMengskVeterancyMarineMengskCompleteOnlyAtUnit2','RMK_GTECountBehaviorMengskVeterancyMarineMengskCompleteOnlyAtUnit4']:
         assert nodes[nid].find("OperandArray[@index='1']").get('value')=='1'
     def increment(template,ref):
