@@ -625,3 +625,8 @@ GPT가 0.4.68 위에 만든 0.4.69(codex/coop-fixes-0464 bebfbde: 정화자 지�
 ## 2026-10-24: 원시저그 방어 이름 Unknown — 0.4.84
 
 사용자 보고 "원시저그 방어 언노운". 데하카 유닛의 방어 이름 키 Unit/LifeArmorName/PrimalZergArmor와 동력기 무기 이름 Weapon/Name/Energizer 문자열이 협동전 이식 때 빠졌다. '원시 갑피 /// Primal Carapace', '동력기 /// Energizer'를 그 키를 쓰는 맵(1~4번)에 넣었다. check_release 등 통과. 게임 미실행. 도구: tools/build_v0484.py.
+
+
+## 2026-10-24: 코랄의 후예 레일건 광선 — 0.4.85
+
+사용자 보고 "레일건 쏘는 게 안 보임". 원작(공허 캠페인 노바) 레일건은 탄환은 투명하고 발사자→대상 광선 액터(MagrailMunitionBeam, GenericAttackBeam, 모델 MagrailMunition_Missile)가 보이는 부분이다. 공격 액터 기본값 Beam=##id##Beam으로 이어진다. 0.4.75에서 광선을 빠뜨려 RMK_MagrailMunitionBeam과 모델 정의를 1~4번 맵에 넣었다. check_release 등 통과. 게임 미실행. 도구: tools/build_v0485.py.
