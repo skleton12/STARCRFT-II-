@@ -389,6 +389,13 @@ def main():
                 check_elites(zf)
             except (AssertionError, KeyError, AttributeError) as exc:
                 fail(f'3등급 정예 용병 검사: {exc}')
+        # GPT 0.4.69 purifier sync lands on the main line as 0.4.77 (Claude 0.4.69 was Zero Hour Korhal).
+        if tuple(map(int, ver.split('.'))) >= (0, 4, 77):
+            from check_purifier_upgrades import check as check_purifiers
+            try:
+                check_purifiers(zf)
+            except (AssertionError, KeyError, AttributeError) as exc:
+                fail(f'정화자 공방업/보호막 검사: {exc}')
     print('결과:', '통과' if not fails else f'실패 {len(fails)}개 — 배포하지 않는다')
     sys.exit(1 if fails else 0)
 
