@@ -21,7 +21,7 @@ from pathlib import Path
 
 ROOT = Path(__file__).resolve().parent.parent
 S = ROOT / 'source'
-MAPS = ['TRaynor01.SC2Map', 'TRaynor02.SC2Map', 'TRaynor03.SC2Map', 'TTychus01.SC2Map']
+MAPS = ['TRaynor01.SC2Map', 'TRaynor02.SC2Map', 'TRaynor03.SC2Map', 'TTychus01.SC2Map', 'TTosh01.SC2Map']
 LOCALES = ['enus', 'dede', 'eses', 'esmx', 'frfr', 'itit', 'plpl', 'ptbr', 'ruru', 'zhcn', 'zhtw']
 DEPS = ['core.sc2mod', 'liberty.sc2mod', 'liberty.sc2campaign', 'libertystory.sc2campaign']
 ALL_SRC = DEPS + ['swarm.sc2mod', 'void.sc2mod', 'voidmulti.sc2mod', 'starcoop/starcoop.sc2mod',
@@ -118,7 +118,9 @@ def check_map(base, name):
     ko = strings(m / 'kokr.sc2data/localizeddata/gamestrings.txt')
     shown = {k: v for k, v in ko.items()
              if k.split('/')[0] not in EDITOR_ONLY and not k.split('/')[1:2] == [''] and not (k.count('/') and k.split('/')[1].startswith('Editor'))}
-    no_ko = [k for k, v in shown.items() if v.strip() and not HANGUL.search(v) and re.search('[A-Za-z]', re.sub(r'<[^>]*>', '', v))]
+    # Blizzard text fragments are not display text: %Token% replacement words and pieces like 'g', 'm', ' at (' (TTosh01, 0.5.1).
+    frag = lambda v: len(re.findall('[A-Za-z]', re.sub(r'%\w+%', '', v.split(' /// ')[0]))) <= 2
+    no_ko = [k for k, v in shown.items() if v.strip() and not HANGUL.search(v) and re.search('[A-Za-z]', re.sub(r'<[^>]*>', '', v)) and not frag(v)]
     no_en = [k for k, v in ko.items() if HANGUL.search(v) and '///' not in v]
     if no_ko: fail(f'{name} kokr 한글 없는 문자열 {len(no_ko)}개 {no_ko[:5]}')
     if no_en: fail(f'{name} kokr 영어 없는 한국어 줄 {len(no_en)}개 {no_en[:5]}')
