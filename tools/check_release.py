@@ -363,6 +363,14 @@ def undeclared(name, script):
     decl_f = set(re.findall(r'^[ \t]*(?:static\s+)?(?:native\s+)?[A-Za-z_]\w*(?:\[[^\]\n]*\])*\s+(gf_\w+)\s*\(', body, re.M))
     for v in sorted(set(re.findall(r'(?<![\w.])(gv_\w+)\b', body)) - decl_v):
         fail(f'{name} 스크립트: 선언 없는 전역 변수 {v}')
+    # 같은 전역 변수를 두 번 선언해도 스크립트 전체가 컴파일되지 않는다 (0.5.13 gv_m5_callPanel).
+    tops = re.findall(r'^(?:static\s+)?(?:const\s+)?[A-Za-z_]\w*(?:\[[^\]\n]*\])*\s+(gv_\w+)\s*[;=\[]', body, re.M)
+    for v in sorted({v for v in tops if tops.count(v) > 1}):
+        fail(f'{name} 스크립트: 전역 변수 {v}를 두 번 선언')
+    # 함수 본문(같은 이름 두 번 정의)도 같다.
+    defs = re.findall(r'^(?:static\s+)?[A-Za-z_]\w*\s+(g[ft]_\w+)\s*\([^)]*\)\s*\{', body, re.M)
+    for f in sorted({f for f in defs if defs.count(f) > 1}):
+        fail(f'{name} 스크립트: 함수 {f}를 두 번 정의')
     for f in sorted(set(re.findall(r'(?<![\w.])(gf_\w+)\s*\(', body)) - decl_f):
         fail(f'{name} 스크립트: 선언 없는 함수 {f}')
 
