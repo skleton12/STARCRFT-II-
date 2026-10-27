@@ -326,6 +326,7 @@ def check_map(base, name):
                 fail(f'{name} {Path(f).name}: 사령관 레벨 {x} 남음 (레벨 잠금 버튼·요구조건 제거)')
 
     script = (m / 'mapscript.galaxy').read_text(encoding='utf-8')
+    undeclared(name, script)
     # Galaxy: 함수는 정의나 앞선 선언 뒤에서만 부를 수 있다 (0.3.28 초안에서 gf_m3_Workers 호출이 정의보다 앞섰다).
     first_decl = {}
     for mm in re.finditer(r'^(?:static\s+)?[A-Za-z_][\w\[\]]*\s+(g[ft]_\w+)\s*\([^)]*\)\s*[;{]', script, re.M):
@@ -339,6 +340,17 @@ def check_map(base, name):
         fail(f'{name} 스크립트가 고치/건설 모델 {x}를 땅에 띄움 (협동전 건설 방식으로)')
 
 
+def undeclared(name, script):
+    """Galaxy: 선언 없는 전역 변수(gv_)·함수(gf_)를 쓰면 맵 스크립트 전체가 컴파일되지 않는다 (0.5.7 gv_m5_callReady)."""
+    body = re.sub(r'"(?:\\.|[^"\\])*"', '""', re.sub(r'//[^\n]*', '', script))
+    decl_v = set(re.findall(r'^[ \t]*(?:static\s+)?(?:const\s+)?[A-Za-z_]\w*(?:\[[^\]\n]*\])*\s+(gv_\w+)\s*[;=\[]', body, re.M))
+    decl_f = set(re.findall(r'^[ \t]*(?:static\s+)?(?:native\s+)?[A-Za-z_]\w*(?:\[[^\]\n]*\])*\s+(gf_\w+)\s*\(', body, re.M))
+    for v in sorted(set(re.findall(r'(?<![\w.])(gv_\w+)\b', body)) - decl_v):
+        fail(f'{name} 스크립트: 선언 없는 전역 변수 {v}')
+    for f in sorted(set(re.findall(r'(?<![\w.])(gf_\w+)\s*\(', body)) - decl_f):
+        fail(f'{name} 스크립트: 선언 없는 함수 {f}')
+
+
 def check_hub(t):
     """히페리온 허브 맵 (0.5.4~): 무료 계약·업적 끄기·번역 규칙."""
     name = 'TStory01.SC2Map'
@@ -349,6 +361,7 @@ def check_hub(t):
     script = (m / 'mapscript.galaxy').read_text(encoding='utf-8', errors='replace')
     if 'AchievementsDisable(1);' not in script:
         fail(f'{name} 업적 끄기(AchievementsDisable) 없음')
+    undeclared(name, script)
     defn = script.find('void gf_rmFreeMercContracts () {')
     calls = [mm.start() for mm in re.finditer(r'(?<!void )gf_rmFreeMercContracts\(\);', script)]
     if defn < 0 or len(calls) < 3:
