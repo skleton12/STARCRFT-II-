@@ -1,0 +1,73 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes"?>
+<!-- Redstone (TTosh01) ally support top bar, 0.5.13. A real command panel shows the hidden caster's card
+     (RM5_AllyCaster: RM5_AllySupport, RM5_PrimalSupport), so its buttons open the game's own target cursor.
+     Mechanism (UI layout command panel hooked into the upper game UI) follows the co-op top bar; written for this mod. -->
+<Desc>
+    <Frame type="Frame" name="GameUI/UIContainer/FullscreenUpperContainer" file="GameUI">
+        <Frame type="Frame" name="RM5SupportHolder">
+            <Width val="240"/>
+            <Height val="86"/>
+            <Anchor side="Top" relative="$parent" pos="Min" offset="4"/>
+            <Anchor side="Left" relative="$parent" pos="Mid" offset="-120"/>
+            <RenderPriority val="500"/>
+            <Visible val="false"/>
+        </Frame>
+    </Frame>
+
+    <Frame type="CommandPanel" name="RM5CommandPanelTemplate" template="CommandPanel/CommandPanelTemplate">
+        <Width val="240"/>
+        <Height val="86"/>
+        <Anchor side="Top" relative="$parent" pos="Min" offset="0"/>
+        <Anchor side="Left" relative="$parent" pos="Min" offset="0"/>
+        <HideUnusedButtons val="true"/>
+        <DisplayCancelCommandCard val="false"/>
+        <UseGridHotkeys val="false"/>
+
+        <Frame type="CommandTooltip" name="RM5Tooltip" template="CommandButton/CommandTooltipTemplate">
+            <Anchor side="Top" relative="$parent" pos="Min" offset="110"/>
+            <Anchor side="Left" relative="$parent" pos="Mid" offset="-225"/>
+        </Frame>
+
+        <Frame type="CommandButton" name="CommandButton00">
+            <Width val="76"/>
+            <Height val="76"/>
+            <Anchor side="Top" relative="$parent" pos="Min" offset="4"/>
+            <Anchor side="Bottom" relative="$this" pos="Min" offset="0"/>
+            <Anchor side="Left" relative="$parent" pos="Min" offset="36"/>
+            <Anchor side="Right" relative="$this" pos="Min" offset="0"/>
+            <TooltipFrame val="RM5Tooltip"/>
+        </Frame>
+
+        <Frame type="CommandButton" name="CommandButton01">
+            <Width val="76"/>
+            <Height val="76"/>
+            <Anchor side="Top" relative="$parent/CommandButton00" pos="Min" offset="0"/>
+            <Anchor side="Bottom" relative="$this" pos="Min" offset="0"/>
+            <Anchor side="Left" relative="$parent/CommandButton00" pos="Max" offset="8"/>
+            <Anchor side="Right" relative="$this" pos="Min" offset="0"/>
+            <TooltipFrame val="RM5Tooltip"/>
+        </Frame>
+
+        <Frame type="Label" name="RowText0">
+            <Visible val="false"/>
+        </Frame>
+        <Frame type="Label" name="RowText1">
+            <Visible val="false"/>
+        </Frame>
+        <Frame type="Label" name="RowText2">
+            <Visible val="false"/>
+        </Frame>
+        <Frame type="Image" name="CommandTargetImage">
+            <Visible val="false"/>
+        </Frame>
+        <Frame type="Label" name="CommandTargetName">
+            <Visible val="false"/>
+        </Frame>
+        <Frame type="Label" name="CommandTargetPrompt">
+            <Visible val="false"/>
+        </Frame>
+        <Frame type="Frame" name="UncontrollableUnitFrame">
+            <Visible val="false"/>
+        </Frame>
+    </Frame>
+</Desc>
