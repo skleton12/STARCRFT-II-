@@ -339,6 +339,30 @@ def check_map(base, name):
         fail(f'{name} 스크립트가 고치/건설 모델 {x}를 땅에 띄움 (협동전 건설 방식으로)')
 
 
+def check_hub(t):
+    """히페리온 허브 맵 (0.5.4~): 무료 계약·업적 끄기·번역 규칙."""
+    name = 'TStory01.SC2Map'
+    m = t / name
+    if not m.exists():
+        return
+    print(name)
+    script = (m / 'mapscript.galaxy').read_text(encoding='utf-8', errors='replace')
+    if 'AchievementsDisable(1);' not in script:
+        fail(f'{name} 업적 끄기(AchievementsDisable) 없음')
+    defn = script.find('void gf_rmFreeMercContracts () {')
+    calls = [mm.start() for mm in re.finditer(r'(?<!void )gf_rmFreeMercContracts\(\);', script)]
+    if defn < 0 or len(calls) < 3:
+        fail(f'{name} 무료 계약 함수 또는 호출(불러온 직후·용병 패널 2곳) 누락')
+    elif min(calls) < defn:
+        fail(f'{name} 무료 계약 함수를 선언 전에 부름')
+    ko = strings(m / 'kokr.sc2data/localizeddata/gamestrings.txt')
+    no_en = [k for k, v in ko.items() if HANGUL.search(v) and '///' not in v]
+    if no_en: fail(f'{name} kokr 영어 없는 한국어 줄 {len(no_en)}개 {no_en[:5]}')
+    for loc in LOCALES:
+        if not (m / f'{loc}.sc2data/localizeddata/gamestrings.txt').exists():
+            fail(f'{name} {loc} 언어 파일 없음')
+
+
 def main():
     z = Path(sys.argv[1])
     print('ZIP', z)
@@ -351,6 +375,7 @@ def main():
         zf.extractall(t)
         for name in MAPS:
             check_map(Path(t), name)
+        check_hub(Path(t))
         if tuple(map(int, ver.split('.'))) >= (0, 4, 64):
             from check_coop_abilities import check
             try:
