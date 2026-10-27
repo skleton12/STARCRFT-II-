@@ -88,9 +88,25 @@ def strings(path):
     return out
 
 
+def ally_names(m, name):
+    """플레이어 이름 문자열 MapInfo/PlayerNN/Name의 NN은 플레이어 번호가 아니라 mapinfo 레코드 순서다 (0.5.14).
+    원본에 빈 플레이어 번호가 있으면(레드스톤 3·7번) 동맹 레코드 순서가 번호와 달라져 '컴퓨터 8'로 보였다."""
+    allies = {10: '정화자', 11: '원시저그'} if name == 'TRaynor03.SC2Map' else {8: '정화자', 9: '원시저그'}
+    ids = [int(x.group(1)[0]) for x in re.finditer(rb'([\x01-\x0f])[\x01-\x03]\x00\x00\x00.{4}(?:Terr|Zerg|Prot|Neut)',
+                                                    (m / 'mapinfo').read_bytes(), re.S)]
+    s = strings(m / 'kokr.sc2data/localizeddata/gamestrings.txt')
+    for pid, want in allies.items():
+        if pid not in ids:
+            fail(f'{name} mapinfo에 동맹 플레이어 {pid} 레코드 없음'); continue
+        key = f'MapInfo/Player{ids.index(pid) + 1:02d}/Name'
+        if not s.get(key, '').startswith(want + ' ///'):
+            fail(f'{name} 동맹 {pid}번 이름: 레코드 순서 키 {key}가 "{s.get(key)}" (→ {want})')
+
+
 def check_map(base, name):
     m = base / name
     print(name)
+    ally_names(m, name)
     # And/Or 피연산자는 늘어나는 배열이라 번호(index)를 붙이면 엔진이 무시해 조건이 거짓이 된다 (0.4.49, 연구 버튼 숨김).
     # 블리자드 원본 And/Or 약 780개는 번호를 안 쓴다. Not/Eq 같은 고정 칸 노드는 번호가 맞다.
     rn = m / 'base.sc2data/gamedata/requirementnodedata.xml'

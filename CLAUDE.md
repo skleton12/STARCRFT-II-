@@ -795,4 +795,9 @@ Raynor Rogue 조사: 재능(업그레이드)이 효과 데이터 값을 직접 �
 
 ## 2026-10-27: 레드스톤 지원 = 진짜 명령 패널(UI 레이아웃)·4분 뒤·120초·연출 뒤 등장 — 0.5.13 (사용자 지시)
 
-사용자: "커서는 없음, 모드 보면서 참고해봐", "4분 뒤에 열리게 하고 120초 대기", "투하나 소환이 완료된 뒤 나와야". 대화 상자 버튼 + UISetTargetingOrder는 게임에서 지점 커서를 못 열었다 (0.5.10~0.5.12). RaynorRogue 모드 구조를 참고해(파일은 가져오지 않음) 맵에 UI 레이아웃(`base.sc2data/ui/layout/DescIndex.SC2Layout`, `RM5Topbar.SC2Layout`, 원본 data/rm5_topbar.SC2Layout)을 넣고, 화면 위 칸(UIContainer/FullscreenUpperContainer)에 진짜 CommandPanel을 걸어 시전 유닛 카드(RM5_AllySupport·RM5_PrimalSupport)를 보여 준다. **화면 위 능력 버튼은 대화 상자 버튼이 아니라 UI 레이아웃의 명령 패널로 만든다.** 첫 사용 임무 4분, 재사용 120초(시험값, 버튼에 대기 표시). 정화자 소환 2.5초·원시저그 투하 3초 뒤 유닛 등장. 동맹 이름: 적도 '컴퓨터 N'으로 표시됨(사용자 확인) → CCM 실행 시 엔진 표시로 보이며 스크립트로 바꿀 수 없음. 게임 미실행. 도구: tools/build_v0513.py.
+사용자: "커서는 없음, 모드 보면서 참고해봐", "4분 뒤에 열리게 하고 120초 대기", "투하나 소환이 완료된 뒤 나와야". 대화 상자 버튼 + UISetTargetingOrder는 게임에서 지점 커서를 못 열었다 (0.5.10~0.5.12). RaynorRogue 모드 구조를 참고해(파일은 가져오지 않음) 맵에 UI 레이아웃(`base.sc2data/ui/layout/DescIndex.SC2Layout`, `RM5Topbar.SC2Layout`, 원본 data/rm5_topbar.SC2Layout)을 넣고, 화면 위 칸(UIContainer/FullscreenUpperContainer)에 진짜 CommandPanel을 걸어 시전 유닛 카드(RM5_AllySupport·RM5_PrimalSupport)를 보여 준다. **화면 위 능력 버튼은 대화 상자 버튼이 아니라 UI 레이아웃의 명령 패널로 만든다.** 첫 사용 임무 4분, 재사용 120초(시험값, 버튼에 대기 표시). 정화자 소환 2.5초·원시저그 투하 3초 뒤 유닛 등장. (동맹 이름 '엔진 표시' 판단은 틀렸음 → 0.5.14) 게임 미실행. 도구: tools/build_v0513.py.
+
+
+## 2026-10-27: 동맹 이름 '컴퓨터 8/9' 원인·수정 — 0.5.14 (사용자 지적 "너가 잘못 만든 거, 어부지리에선 잘 나왔다")
+
+**맵 문자열 `MapInfo/PlayerNN/Name`의 NN은 플레이어 번호가 아니라 mapinfo 플레이어 레코드의 순서다.** 레드스톤 원본 레코드는 0·1·2·4·5·6번뿐이라(원본 Player03 '저그 군단' = 4번 저그) 뒤에 붙인 8·9번 동맹은 6·7번째였는데 이름은 Player08/09에만 있어 '컴퓨터 8/9'로 보였다. 어부지리는 1~7번이 다 있어 순서=번호. 1·2번 미션도 같은 문제(1번은 '행위자'·'타우렌 족장'이 붙음). TRaynor01·02·TTosh01에 Player06/07 = 정화자/원시저그를 12개 언어 문자열과 문서 헤더에 넣었다. **동맹 플레이어를 추가할 때는 레코드 순서로 이름 키를 정한다** — check_release가 검사한다. 게임 미실행. 도구: tools/build_v0514.py.
