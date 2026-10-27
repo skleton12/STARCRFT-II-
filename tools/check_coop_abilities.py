@@ -121,7 +121,9 @@ def check(z):
     for ability, _, _ in stages:
         assert f'TechTreeAbilityAllow(1,AbilityCommand("{ability}",0),true);' in body
     assert 'TechTreeAbilityAllow(1,AbilityCommand("RM3_TechResearch",16),true);' in body
-    assert 'if (gf_m4_Unl(k) || k==6) { gv_m4_warpSlot' in script
+    # Conservator (k==6) always in the rotation; 0.5.5 drops the Mirage (k==4, user 2026-10-27).
+    assert ('if (gf_m4_Unl(k) || k==6) { gv_m4_warpSlot' in script
+            or 'if ((gf_m4_Unl(k) || k==6) && k!=4) { gv_m4_warpSlot' in script)
     assert 'CatalogLinkReplace(8,c_gameCatalogUnit,"Sentry","RM21_Energizer");' in script
     assert 'gf_m4_Grant(-1,"AdeptFenixShadeSpawn");' in script
     assert 'TechTreeUpgradeAddLevel(1,"MarauderMengskSlow"' not in script
