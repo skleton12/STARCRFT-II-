@@ -873,3 +873,8 @@ GPT 기록(docs/missions/NEXT_artillery_prometheus_2026-10-31.md, 브랜치 code
 ## 2026-10-31: 이지스 근위대 고용 낙하 주머니 — 0.6.6 (사용자 보고 "이지스는 왜 낙하로 안 내려옴")
 
 고용소 고용은 원작 MercGroundDrop 행동을 걸고, 원작 용병 액터가 그때 낙하 주머니 모델을 만든다. 협동전에서 옮긴 MarauderMengsk 액터에는 이 연결이 없어 주머니 없이 1~3초 뒤 그냥 나타났다. 4·5·6번 MarauderMengsk 액터에 `Behavior.MercGroundDrop.Create → Create HammerSecurityDropModel`(원작 망치 경호대와 같음)을 넣었다. 코랄의 후예(WarPigDropModel)·프로메테우스(DevilDogDropModel)는 이미 있었다. **고용소에 새 용병을 넣을 때는 액터에 낙하 주머니 연결이 있는지 확인한다.** check_release 통과. 게임 미실행. 도구: tools/build_v066.py.
+
+
+## 2026-10-31: 프로메테우스 중대 = 대피 완료 뒤 — 0.6.7 (사용자 재보고 "대피 안 갔는데 풀려 있다니까")
+
+0.6.5의 계약 상태(MercDevilDogs 구매됨) 조건만으로는 사용자 게임에서 대피 전에도 열렸다 (계약 상태가 열린 원인은 미확정). 원작 전투 보고서가 쓰는 완료 판정 `libCamp_gf_TS_BattleReportMissionCompleted(libCamp_ge_MapID_MapTHanson01)`을 함께 조건으로 건다 (4·5·6번 고용소). **임무 해금 조건은 계약·기술 상태만 믿지 말고 해당 임무 완료 기록으로 확인한다.** check_release 통과. 게임 미실행. 도구: tools/build_v067.py.
