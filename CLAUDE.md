@@ -894,3 +894,8 @@ GPT 기록(docs/missions/NEXT_artillery_prometheus_2026-10-31.md, 브랜치 code
 ## 2026-10-31: 프로메테우스 중대 모델 = WoM Incinerator — 0.6.10 (사용자 "멩스크 모드에서 모델 가져와 적용해봐, 프로메테우스 중대 없는 것만 빌려 적용하자")
 
 협동전 멩스크에 화염방사병이 없어 Wings of Mengsk(WoM-1.3_Armory.zip, WoMRoyalGuards.SC2Mod)의 Incinerator 모델을 빌렸다 — 코랄의 후예(0.2.16)와 같은 방식. 0.6.9 협동전 블레이즈(경로 추정)는 철회. 몸체 모델만 바꿈(능력·수치·가격·해금·초상화·아이콘·소리·사망 모델 그대로). 4·5·6번 맵 Assets에 Incinerator.m3와 모드 전용 텍스처 6개(Incinerator_Dif/Emi/Norm/Spec, IncineratorA_Dif/Spec)를 넣었다. 모델이 참조하는 나머지 텍스처(Firebat_Heavens_Parts_COOP_* 등)는 WoM에도 없는 블리자드 게임 파일. **용병 모델 규칙 갱신: 협동전 멩스크에 없는 것만 WoM에서 빌린다** (CLAUDE.md 3장). 원작자 미확인은 코랄의 후예와 같은 상태. ZIP 약 +4.4MB. check_release 통과. 게임 미실행. 도구: tools/build_v0610.py (WoM ZIP 경로 필요).
+
+
+## 2026-10-31: 대피 전 프로메테우스 버튼 숨김 — 0.6.11 (사용자 재보고 "대피 안 가서 화염방사병 안 풀렸는데 왜 고용소에 프로메테우스 중대가 있는 건데")
+
+0.6.5·0.6.7의 TechTreeAbilityAllow(고용 명령 허용)만으로는 게임에서 버튼이 그대로 보였다 (허용을 꺼도 버튼이 안 숨는지, 캠페인 스크립트가 다시 허용하는지는 미확정). 버튼 자체에 요구조건을 건다: 표시 업그레이드 RM6_PrometheusUnlocked, 요구조건 RM6_CanHirePrometheus(Show·Use)를 고용소 Train2 버튼에 연결. 스크립트는 대피 완료 기록 && 악마의 개 계약 구매됨일 때만 시작 때 한 번 그 업그레이드를 1로. **해금 버튼은 명령 허용만 믿지 말고 버튼 요구조건(업그레이드)으로 숨긴다** (RMA_DevilDogUnlocked와 같은 방식). 4·5·6번. check_release 통과. 게임 미실행. 도구: tools/build_v0611.py.
