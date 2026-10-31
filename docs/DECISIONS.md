@@ -867,3 +867,8 @@ Claude 추천안(블리자드 에셋 재구성)을 사용자가 진행 지시. W
 ## 2026-10-31: 프로메테우스 중대 고용 버튼·해금 수정 — 0.6.5 (사용자 보고 "미션 안 했는데 풀려 있음", "악마의 개로 나옴")
 
 원인: 맵의 고용소 CardLayouts는 원작 카드에 덧붙는 방식이라, 원작 HireDevilDogs 버튼(0,1)이 0.6.4의 RM6_HirePrometheus를 가렸다. 또 0.6.4가 Train2 고용을 조건 없이 허용했다. 수정(4·5·6번): 덧붙인 버튼을 지우고 원작 HireDevilDogs 버튼의 이름·설명·아이콘·단축키(D)를 프로메테우스 중대로 바꿈(맵 안에서만). **고용소 원작 칸을 바꿀 때는 새 버튼을 덧붙이지 말고 원작 버튼(HireXxx)을 다시 정의한다.** 고용은 히페리온 악마의 개 계약(libCamp MercDevilDogs, 화염방사병 해금 = 대피 뒤)이 구매됨일 때만 허용 — 0.4.109 무료 계약으로 대피를 끝내면 자동으로 열린다. check_release 통과. 게임 미실행. 도구: tools/build_v065.py.
+
+
+## 2026-10-31: 이지스 근위대 고용 낙하 주머니 — 0.6.6 (사용자 보고 "이지스는 왜 낙하로 안 내려옴")
+
+고용소 고용은 원작 MercGroundDrop 행동을 걸고, 원작 용병 액터가 그때 낙하 주머니 모델을 만든다. 협동전에서 옮긴 MarauderMengsk 액터에는 이 연결이 없어 주머니 없이 1~3초 뒤 그냥 나타났다. 4·5·6번 MarauderMengsk 액터에 `Behavior.MercGroundDrop.Create → Create HammerSecurityDropModel`(원작 망치 경호대와 같음)을 넣었다. 코랄의 후예(WarPigDropModel)·프로메테우스(DevilDogDropModel)는 이미 있었다. **고용소에 새 용병을 넣을 때는 액터에 낙하 주머니 연결이 있는지 확인한다.** check_release 통과. 게임 미실행. 도구: tools/build_v066.py.
