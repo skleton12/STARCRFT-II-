@@ -335,6 +335,18 @@ def check_map(base, name):
         if el.tag == 'CUnit' and mv is not None and mv.get('value') and mv.get('value') not in movers:
             fail(f'{name} 유닛 {el.get("id")}: 이동기 {mv.get("value")} 정의 없음 (의존성 밖)')
 
+    # 투사체 발사 효과의 탄환 유닛(AmmoUnit)이 없으면 그 공격·능력이 나가지 않는다
+    # (0.6.33 3번 피닉스 태양 대포: ChargedBuster 유닛이 공용 엔트리로 빠져 Q가 안 나감; 0.4.67 이지스도 같은 유형)
+    map_units = {el.get('id') for el in ET.parse(m / 'base.sc2data/gamedata/unitdata.xml').getroot()}
+    effects_xml = m / 'base.sc2data/gamedata/effectdata.xml'
+    if effects_xml.exists():
+        for el in ET.parse(effects_xml).getroot():
+            if el.tag != 'CEffectLaunchMissile':
+                continue
+            am = el.find('AmmoUnit')
+            if am is not None and am.get('value') and am.get('value') not in map_units and am.get('value') not in base_units:
+                fail(f'{name} 효과 {el.get("id")}: 탄환 유닛 {am.get("value")} 정의 없음')
+
     # 사령관 레벨 잠금은 이 모드에 없다 (사용자 확정 2026-10-17). 진급 레벨은 자치령 용병(RMK_…Veterancy)에만 있다.
     for f in glob.glob(str(m) + '/base.sc2data/gamedata/*.xml'):
         for x in sorted(set(re.findall(r'"(\w+Level\d\d)"', Path(f).read_text(encoding='utf-8')))):
