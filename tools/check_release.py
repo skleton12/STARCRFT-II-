@@ -119,6 +119,16 @@ def check_map(base, name):
             if el.tag in ('CRequirementNot', 'CRequirementEq', 'CRequirementNE', 'CRequirementGT', 'CRequirementLT',
                           'CRequirementGTE', 'CRequirementLTE') and any(o.get('index') is None for o in el.findall('OperandArray')):
                 fail(f'{name} {el.tag} {el.get("id")}: OperandArray에 index가 없음 (피연산자 무효 → And 안에서 거짓)')
+    # 모드 연구는 한 번만 (0.6.53 멀티샷·0.6.54 영원한 자원이 반복 연구됨): 모드 CAbilResearch 칸의 버튼은
+    # 요구조건이 있어야 한다 (대기·완료 뒤 숨김). 요구조건이 없으면 MaxLevel이 없는 업그레이드를 계속 살 수 있다.
+    ab = m / 'base.sc2data/gamedata/abildata.xml'
+    if ab.exists():
+        for el in ET.parse(ab).getroot().iter('CAbilResearch'):
+            if not el.get('id', '').startswith('RM'): continue
+            for ia in el.findall('InfoArray'):
+                b = ia.find('Button')
+                if ia.get('Upgrade') and b is not None and not b.get('Requirements'):
+                    fail(f'{name} {el.get("id")} {ia.get("index")} {ia.get("Upgrade")}: 연구 버튼에 요구조건 없음 (반복 연구 가능)')
     # 모드 버튼(RM3_/RM4_)은 단축키가 있어야 한다 (사용자 요청 2026-10-18)
     hk = m / 'kokr.sc2data/localizeddata/gamehotkeys.txt'
     have = hk.read_text(encoding='utf-8-sig') if hk.exists() else ''
