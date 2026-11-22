@@ -185,8 +185,12 @@ def objects(data):
             el.set('UnitType', 'RichMineralField'); el.set('Resources', str(int(el.get('Resources')) * 120 // 100)); rich += 1
         elif ut == 'VespeneGeyser':
             el.set('UnitType', 'RichVespeneGeyser'); el.set('Resources', str(int(el.get('Resources')) * 2)); gas += 1
-        elif ut == 'Refinery':
-            el.set('Resources', str(int(el.get('Resources')) * 2)); gas += 1
+        elif ut == 'Refinery':  # 0.6.74: rich refinery too
+            el.set('UnitType', 'RefineryRich'); el.set('Resources', str(int(el.get('Resources')) * 2)); gas += 1
+        else: continue
+        k = 2 if ut in ('VespeneGeyser', 'Refinery') else None  # 0.6.74: per-difficulty reserves (Index 3/4) too
+        for r in el.findall('Resources'):
+            v = int(r.get('Value')); r.set('Value', str(v * 2 if k else v * 120 // 100))
     assert (rich, gas) == (8, 2), (rich, gas)
     return E.tostring(root, encoding='utf-8', xml_declaration=True)
 
