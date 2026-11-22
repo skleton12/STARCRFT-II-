@@ -1223,3 +1223,8 @@ Claude 추천안(블리자드 에셋 재구성)을 사용자가 진행 지시. W
 ## 2026-11-22: 군수 공장 기술실 빈 아이콘 (사용자 보고, 나중에 수정)
 
 사용자: "군수 기술실에 아무것도 없는 아이콘 발견 나중에 고쳐" (0.6.72). 아직 안 고침. 후보(미확인): 원작 FactoryTechLab 카드에 남은 버튼 — 자날 스토리 층의 ResearchCharonBoosters(0,2, Research4를 스크립트로 막음), 멜리 층의 ResearchHighCapacityBarrels(0,0)·ResearchSiegeTech(0,1). 사용자 추가 정보: 첫째 줄 두 번째나 세 번째 칸 → (0,1) ResearchSiegeTech 또는 (0,2) ResearchCharonBoosters. 고칠 때 둘 다(필요하면 (0,0)도) 숨기고, 막은 명령의 버튼은 항상 거짓 Show 요구조건으로 숨긴다(0.4.54 원작 충격탄 버튼과 같은 방식).
+
+
+## 2026-11-22: 군수 공장 기술실 빈 아이콘 숨김 — 0.6.73 (사용자 "지금고쳐")
+
+4~7번 군수 공장 기술실·기술 반응로에 원작 버튼이 빈 아이콘으로 남아 있던 것: FactoryTechLabResearch Research1(공성 모드, 0,1)·Research2(고성능 포신, 0,0)·Research4(자날 아레스 'CharonBoosters', 0,2). 세 버튼에 항상 거짓 Show 요구조건 RM4_HideOriginal(0.4.54 방식)을 붙이고 스크립트도 명령 0·1·3을 막는다. 모드 연구(Research5~7)는 그대로. check_release·Galaxy 검사 통과, 코덱스 검토 OK. 게임 미실행(빈 칸이 사라지는지 확인 필요). 도구: tools/build_v0673.py.
