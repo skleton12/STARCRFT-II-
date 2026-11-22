@@ -1146,4 +1146,4 @@ GPT 기록(docs/missions/NEXT_artillery_prometheus_2026-10-31.md, 브랜치 code
 
 ## 2026-11-22: 군수 공장 기술실 빈 아이콘 (사용자 보고, 나중에 수정)
 
-사용자: "군수 기술실에 아무것도 없는 아이콘 발견 나중에 고쳐" (0.6.72). 아직 안 고침. 후보(미확인): 원작 FactoryTechLab 카드에 남은 버튼 — 자날 스토리 층의 ResearchCharonBoosters(0,2, Research4를 스크립트로 막음), 멜리 층의 ResearchHighCapacityBarrels(0,0)·ResearchSiegeTech(0,1). 고칠 때 어느 칸인지 사용자 스크린샷이나 위치를 확인하고, 막은 명령의 버튼은 항상 거짓 Show 요구조건으로 숨긴다(0.4.54 원작 충격탄 버튼과 같은 방식).
+사용자: "군수 기술실에 아무것도 없는 아이콘 발견 나중에 고쳐" (0.6.72). 아직 안 고침. 후보(미확인): 원작 FactoryTechLab 카드에 남은 버튼 — 자날 스토리 층의 ResearchCharonBoosters(0,2, Research4를 스크립트로 막음), 멜리 층의 ResearchHighCapacityBarrels(0,0)·ResearchSiegeTech(0,1). 사용자 추가 정보: 첫째 줄 두 번째나 세 번째 칸 → (0,1) ResearchSiegeTech 또는 (0,2) ResearchCharonBoosters. 고칠 때 둘 다(필요하면 (0,0)도) 숨기고, 막은 명령의 버튼은 항상 거짓 Show 요구조건으로 숨긴다(0.4.54 원작 충격탄 버튼과 같은 방식).
