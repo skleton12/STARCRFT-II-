@@ -3,3 +3,6 @@ source/
 coop/
 __pycache__/
 build/
+
+# 0.6.74~: 전체 배포 ZIP은 100MiB 한도 때문에 조각(releases/parts/)으로만 올린다
+releases/RaynorMercs_WoL_CCM.zip

@@ -1233,3 +1233,8 @@ Claude 추천안(블리자드 에셋 재구성)을 사용자가 진행 지시. W
 ## 2026-11-22: 벨시르 정제소 풍부하게·방패 2단계 무기고 구매 인정 — 0.6.74 (사용자 "가스 1개가 풍부하지 않는군", "방패 2단계 업그레이드 무기고 업글시 사라짐")
 
 (1) 7번(TTosh02) 레이너 본진에 처음부터 지어진 일반 정제소(Id 97)를 풍부한 정제소(RefineryRich, 같은 자리·매장량 6200)로 바꿨다 (0.6.65 아그리아와 같음). 또 0.6.70이 기본 매장량만 늘리고 어려움·아주 어려움 전용 매장량(Resources Index 3·4)을 빠뜨린 것을 고쳤다: 본진 광물 8개 +20%, 가스 2곳 ×2. build_v0670도 같이 고침. (2) 3~7번 전투 방패 2단계(RM6_ShieldSplash) 버튼 조건 RM6_ShieldDone이 미션 연구(RM3_Shield)만 셌는데, 히페리온 무기고에서 전투 방패(CombatShield, 자날 층에서 전쟁광 생명력 +10)를 사면 미션 연구가 막혀 2단계가 안 나왔다. RM6_ShieldDone = RM3_Shield 또는 CombatShield 완료로 바꾸고, 무기고에서 샀으면 1단계 버튼은 숨긴다. **미션 연구 다음 단계 조건은 무기고 구매판도 함께 센다.** check_release 통과, 코덱스 검토 OK. 게임 미실행. 도구: tools/build_v0674.py.
+
+
+## 2026-11-22: 배포 ZIP을 GitHub에는 조각으로 (사용자 "나눠 줄때 합쳐서 주고")
+
+GitHub는 파일 하나가 100MiB를 넘으면 푸시를 거부한다 (한도는 못 늘림). 0.6.74 ZIP이 99.6MB라 다음 맵부터 넘친다. **GitHub에는 `releases/parts/RaynorMercs_WoL_CCM.zip.001…`(45MiB 조각)과 `SHA256SUMS.txt`만 올리고, 전체 ZIP(`releases/RaynorMercs_WoL_CCM.zip`)은 로컬에만 둔다(.gitignore). 사용자에게는 항상 합친 전체 ZIP을 보낸다.** 배포 순서: 빌드 → check_release(전체 ZIP) → `python3 tools/split_release.py` → 조각 커밋·푸시 → 전체 ZIP 전송. 새 세션·GPT는 `python3 tools/split_release.py --join`으로 합친다(목록·해시 확인). 예전 커밋에 들어간 전체 ZIP 기록은 그대로 둔다(강제 푸시 금지). 코덱스 검토 반영. 도구: tools/split_release.py, 설명 releases/parts/README.md.
