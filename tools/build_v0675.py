@@ -2,10 +2,15 @@
 """0.6.74 -> 0.6.75 (user 2026-11-22 "플토 저그 연구 5단계잖음 1단계마다 유닛 2개 추가로", "1단계 연구 적용 안 되는 것 같은데 확인좀").
 
 Ally support tiers (Hyperion lab research bought: Protoss -> Purifier, Zerg -> Primal Zerg, 0-5), maps 3-7:
-- Each tier now adds 2 units of its kind instead of 1 (zergling tier: 4 zerglings, they come in pairs). Free, trial.
-- Check result: maps 4-7 counted the tier once when the support buttons were set up. Map 3 (TRaynor03) never set its
-  tier at all (always 0). The tier is now recounted every time a support group is filled, in all five maps, so
-  the group always uses the current lab state.
+- Each tier now adds 2 light (low-supply) units instead of 1 heavy one, so more units arrive under the 120 cap
+  (zergling tiers: 4). Maps 4-7: Purifier Fenix Adept / Instigator / Adept / Instigator / Adept; Primal Zerg
+  zergling / Ravasaur / Roach / Hydralisk / zergling. Map 3 keeps its own light list (Legionnaire, Adept, zergling,
+  Ravasaur, Roach, Hydralisk). Free, trial.
+- Check result: the tier count (libCamp research state Purchased, Protoss/Zerg category) matches the original lab
+  code in all five maps; it was counted once when the support buttons were set up. It is now also recounted every
+  time a support group is filled, so the group always uses the current lab state. No code bug found for tier 1.
+- Free tier units counted toward the 120 army cap, so a big group could make the whole call fail (and with 2 per
+  tier, more often). Now only the paid part must fit; free units fill the room that is left.
 Game not run.
 
 Usage: python3 tools/build_v0675.py <0.6.74 zip> <new output zip>
@@ -20,8 +25,9 @@ TIERS = {
                   ['DehakaZerglingLevel2', 'DehakaRavasaur', 'DehakaRoachLevel2', 'DehakaHydraliskLevel2', 'DehakaRavasaur']),
 }
 for m, pre in (('TTychus01', 'm4'), ('TTosh01', 'm5'), ('THanson01', 'm6'), ('TTosh02', 'm7')):
-    TIERS[m] = (pre, 8, ['ZealotPurifier', 'StalkerPurifier', 'AdeptFenix', 'ColossusPurifier', 'TempestPurifier'],
-                ['DehakaZerglingLevel2', 'DehakaRavasaur', 'DehakaRoachLevel3', 'DehakaUltraliskLevel2', 'DehakaUltraliskLevel3'])
+    # user 2026-11-22 "5단계마다 더 많은 유닛 나오지 않음, 적절한 경유닛을 넣어": light (low-supply) units only.
+    TIERS[m] = (pre, 8, ['AdeptFenix', 'StalkerPurifier', 'AdeptFenix', 'StalkerPurifier', 'AdeptFenix'],
+                ['DehakaZerglingLevel2', 'DehakaRavasaur', 'DehakaRoachLevel2', 'DehakaHydraliskLevel2', 'DehakaZerglingLevel2'])
 
 
 def patch(s, pre, prot, zerg):
@@ -34,20 +40,35 @@ def patch(s, pre, prot, zerg):
         zergside = seen['p'] >= 5; seen['p'] += 1
         kind = (zerg if zergside else prot)[n - 1]
         cnt = 4 if kind == 'DehakaZerglingLevel2' else 2
-        assert f'"{kind}"' in mt.group(0), (pre, n, kind)  # same kind as before, only the count changes
         adds = ' '.join(f'gf_{pre}_SupAdd(p,"{kind}");' for _ in range(cnt))
         return f'{ind}if (gv_{pre}_tier[p]>={n}) {{ {adds} }}\n'
     s = tl.sub(rep, s)
     head = f'    gv_{pre}_supN[p]=0;\n'
     i = s.index(f'void gf_{pre}_SupFill (int p) {{')
     j = s.index(head, i); assert j - i < 200
-    s = s[:j] + head + f'    gv_{pre}_tier[p]=gf_{pre}_Tier(p);  // 0.6.75: recount each group (map 3 never set it)\n' + s[j + len(head):]
+    s = s[:j] + head + f'    gv_{pre}_tier[p]=gf_{pre}_Tier(p);  // 0.6.75: recount each group\n' + s[j + len(head):]
     assert s.index(f'int gf_{pre}_Tier (int p)') < i  # declared before use
-    if pre == 'm3c':  # map 3 label showed the never-set tier: count it when the buttons are set up too
-        a = '    gv_m3c_callAt[10]=MaxF(240.0,GameGetMissionTime());\n'
-        assert s.count(a) == 1
-        s = s.replace(a, '    gv_m3c_tier[10]=gf_m3c_Tier(10);\n    gv_m3c_tier[11]=gf_m3c_Tier(11);\n' + a)
     return s
+
+
+def cap_free(s, pre):
+    # Free tier units counted toward the 120 cap and could make the whole call fail; now only the paid group
+    # must fit, and free units fill the room that is left (the rest are dropped for that call).
+    fpre = 'm3' if pre == 'm3c' else pre
+    kind = f'gv_{pre}_supKind[p][i]'
+    old = (f'        food+=gf_{fpre}_UnitFood({kind});\n    }}\n'
+           f'    if (gf_{fpre}_Food(p)+food>120.0 || ')
+    new = (f'        if (i<gv_{pre}_supPaid[p]) {{ food+=gf_{fpre}_UnitFood({kind}); }}\n    }}\n'
+           f'    if (gf_{fpre}_Food(p)+food>120.0 || ')
+    assert s.count(old) == 1, pre; s = s.replace(old, new)
+    pay = f'    PlayerModifyPropertyInt(p,c_playerPropVespene,c_playerPropOperSubtract,g);\n    return true;\n}}\n'
+    i = s.index(f'bool gf_{pre}_CallPay (int p) {{'); j = s.index(pay, i); assert j - i < 1500
+    fill = (f'    PlayerModifyPropertyInt(p,c_playerPropVespene,c_playerPropOperSubtract,g);\n'
+            f'    // 0.6.75: free tier units only fill the room left under the cap.\n'
+            f'    for (i=gv_{pre}_supPaid[p];i<gv_{pre}_supN[p];i+=1) {{\n'
+            f'        if (gf_{fpre}_Food(p)+food+gf_{fpre}_UnitFood({kind})>120.0) {{ gv_{pre}_supN[p]=i; break; }}\n'
+            f'        food+=gf_{fpre}_UnitFood({kind});\n    }}\n    return true;\n}}\n')
+    return s[:j] + fill + s[j + len(pay):]
 
 
 def build(src, out):
@@ -60,7 +81,7 @@ def build(src, out):
         for m, (pre, _, prot, zerg) in TIERS.items():
             k = f'{m}.SC2Map/mapscript.galaxy'
             t = files[k].decode('utf-8'); crlf = '\r\n' in t
-            t = patch(t.replace('\r\n', '\n'), pre, prot, zerg)
+            t = cap_free(patch(t.replace('\r\n', '\n'), pre, prot, zerg), pre)
             files[k] = (t.replace('\n', '\r\n') if crlf else t).encode('utf-8'); changed.add(k)
         with zipfile.ZipFile(out, 'x', compression=zipfile.ZIP_DEFLATED, compresslevel=9) as z:
             for info in prev.infolist():
