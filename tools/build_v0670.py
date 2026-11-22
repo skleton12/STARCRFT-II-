@@ -86,6 +86,16 @@ def adapt(block):
                  '        gf_rmVHProtoss(p);\n'
                  '    }\n}\n') + t[b:]
     t = sub1(t, '                else if (p==1 || p==4 || p>=8) {', '                else if (p==1 || p>=8) {')
+    # Codex review: the 0.6.40 extra production buildings came over Zerg-only (mission 6). Tal'darim get the mission 4 set.
+    t = sub1(t, '        if (gf_rmVHBaseBuild(p,"RoachWarren",c)) { n += 1; }\n    }\n',
+             '        if (gf_rmVHBaseBuild(p,"RoachWarren",c)) { n += 1; }\n    }\n'
+             '    else if (r=="Prot") {\n'
+             '        if (gf_rmVHBaseBuild(p,"Pylon",c)) { n += 1; }\n'
+             '        if (gf_rmVHBaseBuild(p,"Gateway",c)) { n += 1; }\n'
+             '        if (gf_rmVHBaseBuild(p,"Gateway",c)) { n += 1; }\n    }\n')
+    t = sub1(t, '    if (k=="RoachWarren") {\n        gf_rmVHBaseUnits(b,"Roach",2,s);\n    }\n',
+             '    if (k=="RoachWarren") {\n        gf_rmVHBaseUnits(b,"Roach",2,s);\n    }\n'
+             '    if (k=="Gateway") {\n        gf_rmVHBaseUnits(b,"Zealot",2,s);\n        gf_rmVHBaseUnits(b,"Stalker",1,s);\n    }\n')
     # Goliath / Siege Tank -> Spartan Company / Siege Breakers (merc table), placed and trained.
     for fn in ('gf_m7_Reapers', 'gt_m7_TrainMerc_Func'):
         a = t.index(fn + ' (')
@@ -154,6 +164,10 @@ def script(raw, mod6):
              '    // 0.4.109: every Hyperion mercenary contract that is not locked counts as bought, free (user 2026-10-25).\n'
              '    gf_rmFreeMercContracts();\n')
     t = sub1(t, '    libCamp_gf_PurchaseStorymodeTech();\n', '    libCamp_gf_PurchaseStorymodeTech();\n    gf_m7_Init();\n')
+    # Codex review: enemy AI one slot up before the original starts the campaign AI and registers the first waves
+    # (gf_rmAIUp runs once per player; the later call from gf_m7_EnemyRules does nothing).
+    t = sub1(t, '    TriggerExecute(gt_StartAI, true, false);\n',
+             '    gf_rmAIUp(2);\n    gf_rmAIUp(3);\n    gf_rmAIUp(4);\n    TriggerExecute(gt_StartAI, true, false);\n')
     t = sub1(t, '    TriggerExecute(gt_StartGame, true, false);\n', '    gf_m7_Start();\n    TriggerExecute(gt_StartGame, true, false);\n')
     t = sub1(t, 'void InitMap () {\n    InitLibs();\n', 'void InitMap () {\n    InitLibs();\n    AchievementsDisable(1);\n')
     return t.replace('\n', '\r\n').encode('utf-8')
