@@ -39,7 +39,21 @@ DROP = 'FenixCommander|^SOA|AllUnitBehaviorController|FenixDragoon|FenixArbiter|
 SEEDS = CHAMPS[1:] + ['FenixTalisAdeptUpgradeWeapon', 'ImmortalOverload', 'FenixChampionTalisAdeptBounceShotUpgrade',
                       'FenixWarbringerColossusIceBeam', 'CountUpgradeFenixChampionTalisAdeptBounceShotUpgradeCompleteOnly',
                       'CountUpgradeFenixWarbringerColossusIceBeamCompleteOnly', 'FenixNetworkedSuperiority',
-                      'CountUpgradeFenixNetworkedSuperiorityCompleteOnly']
+                      'CountUpgradeFenixNetworkedSuperiorityCompleteOnly',
+                      # shared entries port_units skips (Codex review 0.6.77): Warbringer slow, Talis bounce chain,
+                      # Barrier, Clolarion beam phases, voice exclusivity, the validator also used by DehakaConsume
+                      'FenixWarbringerColossusIceABNormal', 'FenixWarbringerColossusIceABHeroic',
+                      'FenixWarbringerColossusIceABStructure', 'FenixWarbringerColossusIceIterateTransport',
+                      'ColossusIceABNormal', 'ColossusIceABHeroic', 'ColossusIceABStructure', 'ColossusIceIterateTransport',
+                      'FenixTalisAdeptBounceShotLM4', 'FenixTalisAdeptUpgradeSet', 'ImmortalBarrierBaseAB',
+                      'TargetIsEnemyOrNeutral', 'TargetisAnyCommander', 'NoFenixClolarionChargeBeamPhase2',
+                      'NoFenixClolarionChargeBeamPhase3', 'FenixWarbringerColossusPortrait', 'Warbringer_Missile_PowerUp',
+                      'ClolarionAndCarrier_UnitDX_Exclusivity', 'MojoAndScout_UnitDX_Exclusivity',
+                      'TaldarinAndImmortal_UnitDX_Exclusivity', 'TalisAndAdept_UnitDX_Exclusivity',
+                      'WarbringerAndColossusPurifier_UnitDX_Exclusivity', 'CountUpgradePlayerCommanderCompleteOnly']
+CRATER = ('    <CModel id="FenixDragoonPurifierCoopSolarBeamOverchargedCraterTrail">\n'
+          '        <Model value="Assets\\Effects\\Protoss\\Dragoon_Purifier_Coop_SolarBeam_RockTrail\\Dragoon_Purifier_Coop_SolarBeam_RockTrail.m3" />\n'
+          '        <VariationCount value="5" />\n    </CModel>\n')
 LOCALES = ['kokr', 'enus', 'dede', 'eses', 'esmx', 'frfr', 'itit', 'plpl', 'ptbr', 'ruru', 'zhcn', 'zhtw']
 ATK_G = '<n/><n/><c val="#ColorAttackInfo">{0}</c>'
 STRINGS = {
@@ -142,6 +156,12 @@ STRINGS = {
     'Button/Name/FenixClolarionSolarBeam': '태양 광선 /// Solar Beam',
     'Button/Tooltip/FenixClolarionSolarBeam': '클로라리온이 한 대상을 오래 공격할수록 태양 광선의 피해가 커집니다. /// The damage of Clolarion\'s Solar Beam increases the longer Clolarion remains on a single target.',
 }
+# Tooltip variants the buttons switch to (upgraded / '...Base' appenders, Codex review).
+for k, src in (('FenixTalisAdeptBounceShotUpgraded', 'FenixTalisAdeptBounceShot'),
+               ('FenixWarbringerColossusPowerShotBase', 'FenixWarbringerColossusPowerShot'),
+               ('FenixImmortalDetonationShotBase', 'FenixImmortalDetonationShot'),
+               ('FenixKaldalisZealotCleaveBase', 'FenixKaldalisZealotCleave')):
+    STRINGS['Button/Tooltip/' + k] = STRINGS['Button/Tooltip/' + src]
 # Dummy-face buttons that also show on Clolarion's card.
 STRINGS['Button/Name/FenixClolarionBomberDummy'] = STRINGS['Button/Name/FenixClolarionBomber']
 STRINGS['Button/Tooltip/FenixClolarionBomberDummy'] = STRINGS['Button/Tooltip/FenixClolarionBomber']
@@ -185,6 +205,12 @@ def data(gd, m):
     edit(gd / 'effectdata.xml', lambda t: talis(t, 'CEffectCreateUnit', ['FenixTalisShadeSpawnShade'], '        <ValidatorArray value="IsFenixCoopCommander" />\n'))
     edit(gd / 'effectdata.xml', lambda t: talis(t, 'CEffectModifyUnit', ['FenixTalisSpawnShadeSetCooldown'], '        <ValidatorArray value="IsFenixCoopCommander" />\n'))
     edit(gd / 'behaviordata.xml', lambda t: talis(t, 'CBehaviorBuff', ['FenixTalisShadeCooldown'], '        <RemoveValidatorArray value="IsFenixCoopCommander" />\n'))
+    # Warbringer's impact crater model (a Fenix dragoon model the port does not follow) and its portrait light
+    # (light catalog is not in these maps; the portrait uses the default light, Codex review).
+    mo = gd / 'modeldata.xml'
+    if 'id="FenixDragoonPurifierCoopSolarBeamOverchargedCraterTrail"' not in mo.read_text('utf-8'):
+        edit(mo, lambda t: once(t, '</Catalog>', CRATER + '</Catalog>'))
+    edit(mo, lambda t: once(t, '        <Lighting value="FenixWarbringerColossusPortrait" />\n', ''))
     a = gd / 'actordata.xml'
     if 'id="Colossus_Land"' not in a.read_text('utf-8'):
         edit(a, lambda t: once(t, '</Catalog>', '    <CActorSound id="Colossus_Land" parent="SoundOneShot" />\n</Catalog>'))
