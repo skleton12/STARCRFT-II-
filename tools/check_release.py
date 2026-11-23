@@ -107,6 +107,13 @@ def check_map(base, name):
     m = base / name
     print(name)
     ally_names(m, name)
+    # 같은 파일 안 같은 ID 두 번 정의 (0.8.5: 0.8.3 다이아몬드백 버튼이 두 번째 FactoryTechLab 정의에 들어가 게임에서 안 나옴)
+    for f in sorted((m / 'base.sc2data/gamedata').glob('*.xml')):
+        seen = set()
+        body = re.sub(r'<!--.*?-->', '', f.read_text(encoding='utf-8', errors='replace'), flags=re.S)
+        for mm in re.finditer(r'<(C\w+)\s[^>]*?\bid\s*=\s*["\']([^"\']+)["\']', body):
+            if mm.groups() in seen: fail(f'{name} {f.name}: {mm.group(1)} {mm.group(2)} 두 번 정의 (첫 정의에 합칠 것)')
+            seen.add(mm.groups())
     # And/Or 피연산자는 늘어나는 배열이라 번호(index)를 붙이면 엔진이 무시해 조건이 거짓이 된다 (0.4.49, 연구 버튼 숨김).
     # 블리자드 원본 And/Or 약 780개는 번호를 안 쓴다. Not/Eq 같은 고정 칸 노드는 번호가 맞다.
     rn = m / 'base.sc2data/gamedata/requirementnodedata.xml'
