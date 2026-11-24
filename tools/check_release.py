@@ -49,6 +49,12 @@ KNOWN_LINKS = set()
 COMMANDER_LEVEL = re.compile(r'^(Raynor|Kerrigan|Artanis|Swann|Zagara|Vorazun|Karax|Abathur|Alarak|Nova|Stukov|Fenix|Dehaka|Horner|Han|Tychus|Zeratul|Stetmann|Mengsk)Level\d\d$')
 
 fails = []
+# Galaxy 함수 정의(호출·선언·주석 제외)
+_AI_DEF = re.compile(r'^\s*(?:static\s+)?\w+\s+(AIThink\w+)\s*\([^)]*\)\s*\{', re.M)
+
+
+def _nocomment(t):
+    return re.sub(r'/\*.*?\*/', '', re.sub(r'//[^\n]*', '', t), flags=re.S)
 
 
 def fail(msg):
@@ -358,6 +364,21 @@ def check_map(base, name):
         mv = el.find('Mover')
         if el.tag == 'CUnit' and mv is not None and mv.get('value') and mv.get('value') not in movers:
             fail(f'{name} 유닛 {el.get("id")}: 이동기 {mv.get("value")} 정의 없음 (의존성 밖)')
+
+    # 유닛 전술 AI 함수(TacticalAIThink)가 자날 라이브러리·맵 스크립트에 없으면 그 유닛 AI가 멈춘다
+    # (0.9.6 탈리스: 협동전 전용 AIThinkFenixTalisAdept, "움직이다 마는" 증상)
+    global _ai_funcs
+    if '_ai_funcs' not in globals():
+        _ai_funcs = set()
+        for d in DEPS:
+            for g in glob.glob(str(S / d) + '/**/*.galaxy', recursive=True):
+                _ai_funcs |= set(re.findall(_AI_DEF, _nocomment(Path(g).read_text(encoding='utf-8', errors='replace'))))
+    own_script = _nocomment((m / 'mapscript.galaxy').read_text(encoding='utf-8', errors='replace'))
+    for el in ET.parse(m / 'base.sc2data/gamedata/unitdata.xml').getroot():
+        th = el.find('TacticalAIThink')
+        if el.tag == 'CUnit' and th is not None and th.get('value') and th.get('value') not in _ai_funcs \
+                and th.get('value') not in re.findall(_AI_DEF, own_script):
+            fail(f'{name} 유닛 {el.get("id")}: 전술 AI 함수 {th.get("value")} 정의 없음 (자날에 없음)')
 
     # 투사체 발사 효과의 탄환 유닛(AmmoUnit)이 없으면 그 공격·능력이 나가지 않는다
     # (0.6.33 3번 피닉스 태양 대포: ChargedBuster 유닛이 공용 엔트리로 빠져 Q가 안 나감; 0.4.67 이지스도 같은 유형)
