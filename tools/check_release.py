@@ -200,6 +200,13 @@ def check_map(base, name):
         p, q = model_path(eff, i), model_path(src, i)
         if (p is None or '##' in p) and q and '##' not in q:
             fail(f'{name} 모델 경로 빠짐 {i} (원본 {q})')
+    # 0.9.3: ModelSwap 대상 모델에 실제 파일 경로가 없으면 오류 구 (협동전 스킨 *_Collection 모델은 경로 없이 정의됨).
+    acts = (m / 'base.sc2data/gamedata/actordata.xml').read_text(encoding='utf-8')
+    full = records(list(dep) + [m], 'modeldata.xml')
+    for t in sorted(set(re.findall(r'Send="ModelSwap ([^" ]+_Collection)"', acts))):
+        p = model_path(full, t)
+        if p is None or '##' in p:
+            fail(f'{name} ModelSwap 대상 {t}: 모델 파일 경로 없음 (오류 구)')
 
     ids = {}
     for L in dep:
