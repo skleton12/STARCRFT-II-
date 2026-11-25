@@ -17,6 +17,8 @@ OPT = dict(a.split('=', 1) if '=' in a else (a, '.') for a in sys.argv[4:])
 # allow=REGEX (0.10.2): also take the map's override of a base id when it matches (e.g. ZealotPurifier legionnaire stats)
 ALLOW = re.compile(OPT['allow']) if 'allow' in OPT else None
 cand = {i for i in src if i not in base or (ALLOW and ALLOW.search(i))}
+# skip=REGEX (0.10.6): never follow ids matching it (e.g. merge/level-3 branches)
+if 'skip' in OPT: cand = {i for i in cand if not re.search(OPT['skip'], i)}
 seen, todo = set(), [r for r in roots if r in cand]
 while todo:
     i = todo.pop()
