@@ -21,7 +21,8 @@ from pathlib import Path
 
 ROOT = Path(__file__).resolve().parent.parent
 S = ROOT / 'source'
-MAPS = ['TRaynor01.SC2Map', 'TRaynor02.SC2Map', 'TRaynor03.SC2Map', 'TTychus01.SC2Map', 'TTosh01.SC2Map', 'THanson01.SC2Map', 'TTosh02.SC2Map', 'THorner01.SC2Map', 'THorner02.SC2Map']
+MAPS = ['TRaynor01.SC2Map', 'TRaynor02.SC2Map', 'TRaynor03.SC2Map', 'TTychus01.SC2Map', 'TTosh01.SC2Map', 'THanson01.SC2Map', 'TTosh02.SC2Map', 'THorner01.SC2Map', 'THorner02.SC2Map', 'TTosh03A.SC2Map']
+NO_ALLY_MAPS = {'TTosh03A.SC2Map'}
 LOCALES = ['enus', 'dede', 'eses', 'esmx', 'frfr', 'itit', 'plpl', 'ptbr', 'ruru', 'zhcn', 'zhtw']
 DEPS = ['core.sc2mod', 'liberty.sc2mod', 'liberty.sc2campaign', 'libertystory.sc2campaign']
 ALL_SRC = DEPS + ['swarm.sc2mod', 'void.sc2mod', 'voidmulti.sc2mod', 'starcoop/starcoop.sc2mod',
@@ -97,6 +98,7 @@ def strings(path):
 def ally_names(m, name):
     """플레이어 이름 문자열 MapInfo/PlayerNN/Name의 NN은 플레이어 번호가 아니라 mapinfo 레코드 순서다 (0.5.14).
     원본에 빈 플레이어 번호가 있으면(레드스톤 3·7번) 동맹 레코드 순서가 번호와 달라져 '컴퓨터 8'로 보였다."""
+    if name in NO_ALLY_MAPS: return  # 영웅 미션: 동맹 플레이어 칸을 쓰지 않음 (0.10.1 탈옥, 8·9번은 원작 레이너 특공대)
     allies = {10: '정화자', 11: '원시저그'} if name == 'TRaynor03.SC2Map' else {8: '정화자', 9: '원시저그'}
     ids = [int(x.group(1)[0]) for x in re.finditer(rb'([\x01-\x0f])[\x01-\x03]\x00\x00\x00.{4}(?:Terr|Zerg|Prot|Neut)',
                                                     (m / 'mapinfo').read_bytes(), re.S)]

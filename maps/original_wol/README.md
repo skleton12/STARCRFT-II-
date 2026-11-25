@@ -43,3 +43,7 @@
 ## thorner02 (Cutthroat, 망자의 항구 — 9번)
 
 2026-11-24: 사용자 드라이브의 블리자드 캠페인 추출 폴더 `thorner02.sc2map`(2026-10-13)에서 37개 파일을 그대로 받았다. 크기 모두 드라이브와 일치. gamedata는 환경 파일 4개뿐(actordata·sounddata·unitdata 없음, 드라이브에도 없음). 손대지 않는 원본 보관본이다.
+
+## ttosh03a · ttosh03b · thorner03 (뉴 폴섬 탈옥·유령의 기회, 발할라 — 10·11번 예정)
+
+2026-11-25: 사용자 드라이브의 블리자드 캠페인 추출 폴더 `ttosh03a.sc2map`(40개)·`ttosh03b.sc2map`(34개)·`thorner03.sc2map`(34개)을 tools/drive_download.py로 받았다(다른 언어·preloadassetdb 제외). 손대지 않는 원본 보관본이다.
