@@ -47,3 +47,7 @@
 ## ttosh03a · ttosh03b · thorner03 (뉴 폴섬 탈옥·유령의 기회, 발할라 — 10·11번 예정)
 
 2026-11-25: 사용자 드라이브의 블리자드 캠페인 추출 폴더 `ttosh03a.sc2map`(40개)·`ttosh03b.sc2map`(34개)·`thorner03.sc2map`(34개)을 tools/drive_download.py로 받았다(다른 언어·preloadassetdb 제외). 손대지 않는 원본 보관본이다.
+
+## thorner04 (Media Blitz, 미디어 전격전 — 12번)
+
+2026-11-26: 사용자 드라이브의 추출 폴더 `thorner04.sc2map`(36개)을 tools/drive_download.py로 받았다. 손대지 않는 원본 보관본이다.
