@@ -1349,3 +1349,8 @@ GitHub는 파일 하나가 100MiB를 넘으면 푸시를 거부한다 (한도는
 ## 2026-11-26: 아스테리아 망령 고철 외형 — 0.11.7 (사용자 "망령 그냥 망령 키워놓은것처럼 보이는데")
 
 11번(THorner03): 협동전 HHWraith 기본 모델은 일반 레이스(Wraith.m3) 1.3배이고(Horner 문양 데칼만 다름), 미라 강화 때 고철 레이스(Wraith_Junker_Collection)로 바뀐다. 스킨 모델은 데이터에 경로가 없어 HHWraith 모델 첫 정의의 파일 경로를 `Assets\Units\Terran\Wraith_Junker_Collection\Wraith_Junker_Collection.m3`로 직접 적었다 — 다른 *_Junker_Collection 경로 규칙으로 추정, 게임에서 빨간 오류 구면 되돌린다. 크기 1.3배·사망 모델(일반 레이스)은 그대로. check_release 통과, 코덱스 검토(경로 규칙 일치, 실재는 미확인). 게임 미실행. 도구: tools/build_v0117.py.
+
+
+## 2026-11-26: 정화자 정찰기 외형 — 0.11.8 (사용자 "정화자 정찰기가 그냥 정찰기 모델임 검수 똑바로 않해?")
+
+4~9·11번: 정찰기(Scout)는 불멸자·우주모함·관측선과 달리 동맹 외형 바꿈(RM3_AllySkin ModelSwap)이 빠져 일반 정찰기로 보였다(0.4.42부터). Scout 액터 첫 정의에 동맹 소유일 때 협동전 피닉스 정찰기 모델(FenixMojoScout = Scout_Purifier_Coop.m3, 맵에 경로 있음)로 바꾸는 줄을 넣고, 차원 소환이 끝날 때 원작이 일반 정찰기로 되돌리는 것도 다시 바꾼다(상태 RMSkin). 적 정찰기는 그대로. 함께 찾은 것(미수정): 보전기(SentryFenix)는 협동전 스킨 Sentry_Purifier_Collection을 쓰는데 경로가 없어 일반 파수기 외형일 가능성 — 고치려면 경로 추정 필요, 사용자 확인 대기. check_release 통과, 코덱스 검토 OK. 게임 미실행. 도구: tools/build_v0118.py.
