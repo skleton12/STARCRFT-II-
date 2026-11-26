@@ -113,6 +113,11 @@ def script(raw, mod):
     defb = mod.replace('\r\n', '\n')
     k0 = defb.index('// 0.11.9 (user 2026-11-26): enemy base defenders grow')
     assert k0 >= defb.index('// 0.8.2 (user 2026-11-23): Ultra-Capacitors')  # already inside block c
+    # Codex: gt_RecreateBase removes the geyser and builds a normal Refinery; keep the rich one (+100%).
+    t = sub1(t, 'UnitGroup("VespeneGeyser", c_playerAny, RegionFromId(34),', 'UnitGroup("RichVespeneGeyser", c_playerAny, RegionFromId(34),')
+    t = sub1(t, '    libNtve_gf_CreateUnitsWithDefaultFacing(1, "Refinery", 0, lv_player, RegionGetCenter(RegionFromId(34)));\n',
+             '    libNtve_gf_CreateUnitsWithDefaultFacing(1, "RefineryRich", 0, lv_player, RegionGetCenter(RegionFromId(34)));\n'
+             '    UnitSetPropertyFixed(UnitLastCreated(), c_unitPropResources, 5000.0);  // RM 0.12.1: rich, +100%\n')
     t = sub1(t, 'void InitMap () {\n', c + 'void InitMap () {\n')
     t = sub1(t, 'void InitMap () {\n    InitLibs();\n    InitGlobals();\n    InitTriggers();\n}',
              'void InitMap () {\n    InitLibs();\n'
