@@ -432,6 +432,11 @@ def undeclared(name, script):
         fail(f'{name} 스크립트: 함수 {f}를 두 번 정의')
     for f in sorted(set(re.findall(r'(?<![\w.])(gf_\w+)\s*\(', body)) - decl_f):
         fail(f'{name} 스크립트: 선언 없는 함수 {f}')
+    # C식 배열 선언(bool x[16];)은 Galaxy 문법이 아니라 스크립트 전체가 컴파일되지 않는다 (0.9.7~0.11.3 gv_rmLabDone).
+    # Galaxy는 bool[16] x; 로 쓴다.
+    for m in re.finditer(r'^[ \t]*(?:static\s+)?(?:const\s+)?([A-Za-z_]\w*)\s+([A-Za-z_]\w*)\s*\[[^\]\n]*\]\s*[;=]', body, re.M):
+        if m.group(1) not in ('return', 'else', 'if', 'while', 'for', 'break', 'continue'):
+            fail(f'{name} 스크립트: C식 배열 선언 {m.group(1)} {m.group(2)}[...] (Galaxy는 {m.group(1)}[N] {m.group(2)})')
 
 
 def check_hub(t):

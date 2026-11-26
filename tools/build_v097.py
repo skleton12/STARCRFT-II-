@@ -73,7 +73,7 @@ def xml_parts():
 
 def script():
     s = ['// 0.9.7 (user 2026-11-24): research the lab option you did NOT pick in the Engineering Bay (Lab Research page).',
-         'trigger gt_rmLab;', 'bool gv_rmLabDone[16];', '',
+         'trigger gt_rmLab;', 'bool[16] gv_rmLabDone;', '',
          'void gf_rmLabApply (int id, int n) {',
          '    string u1 = libCamp_gf_TS_StoryResearchRewardUpgrade1(id);',
          '    string u2 = libCamp_gf_TS_StoryResearchRewardUpgrade2(id);',
