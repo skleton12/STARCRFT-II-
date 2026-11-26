@@ -1420,3 +1420,8 @@ GitHub는 파일 하나가 100MiB를 넘으면 푸시를 거부한다 (한도는
 ## 2026-11-26: 발할라 창고 침투대 무기고 구매 반영 — 0.11.6 (사용자 "침투조 왜 무기고 능력이 없지 스팀팩이 없던데")
 
 11번(THorner03): 히페리온 무기고 구매를 미션 연구로 바꾸는 처리(자극제 → RM3_Stim1, 충격탄 → PunisherGrenades, 전투 방패 → 미션 연구 막음)가 호위 단계 시작(gf_m11_Start)에만 있어 창고 단계 전쟁광은 자극제(RM4_MercStimpack, RM3_Stim1 필요)를 못 썼다. gf_m11_Armory로 떼어 모드 초기화 끝(인트로 전)에도 부른다(두 번 불러도 겹치지 않음). 아스테리아 망령 외형: 협동전 원본 HHWraith 모델도 일반 레이스 모델 1.3배(Wraith.m3, ScaleMin/Max 1.3)라 원본과 같다. 다른 외형은 협동전 고철 스킨(Wraith_Junker_Collection, 데이터에 파일 경로 없음)뿐 — 사용자 결정 대기. check_release 통과, 코덱스 검토 OK. 게임 미실행. 도구: tools/build_v0116.py.
+
+
+## 2026-11-26: 아스테리아 망령 고철 외형 — 0.11.7 (사용자 "망령 그냥 망령 키워놓은것처럼 보이는데")
+
+11번(THorner03): 협동전 HHWraith 기본 모델은 일반 레이스(Wraith.m3) 1.3배이고(Horner 문양 데칼만 다름), 미라 강화 때 고철 레이스(Wraith_Junker_Collection)로 바뀐다. 스킨 모델은 데이터에 경로가 없어 HHWraith 모델 첫 정의의 파일 경로를 `Assets\Units\Terran\Wraith_Junker_Collection\Wraith_Junker_Collection.m3`로 직접 적었다 — 다른 *_Junker_Collection 경로 규칙으로 추정, 게임에서 빨간 오류 구면 되돌린다. 크기 1.3배·사망 모델(일반 레이스)은 그대로. check_release 통과, 코덱스 검토(경로 규칙 일치, 실재는 미확인). 게임 미실행. 도구: tools/build_v0117.py.
