@@ -21,7 +21,8 @@ maps 3~9·11·12 (탈리스가 있는 맵):
   - 테란 적 함선 공방 줄도 등록 (코덱스). 수비대는 유닛 종류별 배치·레이너 본진과 길 연결 확인, 6칸 넘게 먼 적이면 다시 지시,
     본진을 잃으면 스크립트 조종을 풀고 원래 AI에 돌려준다 (코덱스).
   - 코랄의 후예 전투 방패 (사용자 "업그레이드 돼있어야하는데"): 협동전 업그레이드 RMK_MarineMengskCombatShield를 아무도 안 줘서
-    꺼져 있었다 — 1~9·11·12번 시작 때(gf_rmFreeMercContracts) 레이너에게 지급.
+    꺼져 있었다 — 1~9·11·12번 시작 때(gf_rmFreeMercContracts) 레이너에게 지급. 3번부터는 방패 조건이 미션 연구 RM3_Shield를
+    세고 있어(코덱스) 지급한 업그레이드를 세게 바꿈. 튕기는 탄 분기에도 분신 생성 유지, 수비대는 목표가 6칸 넘게 바뀌면 다시 지시 (코덱스 3차).
   - 정화자 대의회 시간 가속 재사용 대기 30 → 10초 (사용자 "시간 가속 10초로 해줘", 4~9·11·12번, 지속 20초 그대로).
 피해·튕김 수·대상은 원작 그대로. Game not run.
 
@@ -43,6 +44,7 @@ EFFECTS = '''    <CEffectSwitch id="RM14_TalisAttackSet">
     <CEffectSet id="RM14_TalisBounceSet">
         <EditorCategories value="Race:Protoss" />
         <EffectArray value="RM14_TalisBounceCDAB" />
+        <EffectArray value="FenixTalisSpawnShadeSet" />
         <EffectArray value="FenixTalisAdeptBounceShotLM1" />
     </CEffectSet>
     <CEffectApplyBehavior id="RM14_TalisBounceCDAB">
@@ -198,7 +200,7 @@ bool gt_rmGuardAct_Func (bool testConds, bool runActions) {
             if (!UnitIsAlive(u)) { continue; }
             if (UnitGroupCount(foes, c_unitCountAlive) > 0) {
                 f = UnitGetPosition(UnitGroupClosestToPoint(foes, UnitGetPosition(u)));
-                if (UnitOrderCount(u) == 0 || DistanceBetweenPoints(UnitGetPosition(u), f) > 6.0) { UnitIssueOrder(u, OrderTargetingPoint(AbilityCommand("attack", 0), f), c_orderQueueReplace); }
+                if (UnitOrderCount(u) == 0 || OrderGetTargetType(UnitOrder(u, 0)) != c_orderTargetPoint || DistanceBetweenPoints(OrderGetTargetPoint(UnitOrder(u, 0)), f) > 6.0) { UnitIssueOrder(u, OrderTargetingPoint(AbilityCommand("attack", 0), f), c_orderQueueReplace); }
             }
             else if (DistanceBetweenPoints(UnitGetPosition(u), pt) > 8.0) {
                 UnitIssueOrder(u, OrderTargetingPoint(AbilityCommand("attack", 0), pt), c_orderQueueReplace);
@@ -265,6 +267,14 @@ def p_chrono_str(d, m, loc):
     return b'\n'.join(lines)
 
 
+def p_shield_node(t, m):
+    # 3~12: the Sons of Korhal shield node counted the mission research RM3_Shield; count the granted upgrade instead.
+    e = one(t, 'CRequirementCountUpgrade', 'RMK_CountUpgradeMarineMengskCombatShieldCompleteOnly1321814377'); b = e.group(0)
+    a = '<Count Link="RM3_Shield" State="CompleteOnly" />'
+    if a not in b: return t
+    return t[:e.start()] + b.replace(a, '<Count Link="RMK_MarineMengskCombatShield" State="CompleteOnly" />') + t[e.end():]
+
+
 def build(src, out):
     if out.exists(): raise ValueError('Output must be new')
     with zipfile.ZipFile(src) as prev:
@@ -289,6 +299,8 @@ def build(src, out):
             raw = files[k].decode('utf-8-sig'); nl = '\r\n' if '\r\n' in raw else '\n'
             files[k] = p_script(raw.replace('\r\n', '\n'), m).replace('\n', nl).encode('utf-8'); changed.add(k)
         for m in SHIELD_MAPS:
+            k = m + G + 'requirementnodedata.xml'; n = p_shield_node(files[k].decode('utf-8'), m).encode('utf-8')
+            if n != files[k]: files[k] = n; changed.add(k)
             k = f'{m}.SC2Map/mapscript.galaxy'
             raw = files[k].decode('utf-8-sig'); nl = '\r\n' if '\r\n' in raw else '\n'
             files[k] = p_shield(raw.replace('\r\n', '\n'), m).replace('\n', nl).encode('utf-8'); changed.add(k)
