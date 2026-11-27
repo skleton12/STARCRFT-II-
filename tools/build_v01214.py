@@ -9,7 +9,7 @@ FenixTalisAdeptBounceShot은 공격 명령에 붙는 CAbilAugment이고, 첫 탄
 maps 3~9·11·12 (탈리스가 있는 맵):
   - 탈리스 능력 목록에서 증강 능력을 빼고, 명령 카드 (2,1) 버튼은 같은 아이콘의 패시브 표시로.
   - 대신 무기 효과를 묶음(RM14_TalisAttackSet)으로: 원래 탄(FenixTalisAdeptLM) + 튕기는 탄.
-    튕기는 탄은 숨은 5초 대기 행동(RM14_TalisBounceCD)이 없을 때만 나가고 나가면 대기를 건다 = 원래 재사용 대기 5초.
+    5초 대기 행동(RM14_TalisBounceCD)이 없으면 일반 탄 대신 튕기는 탄을 쏘고 대기를 건다 = 원래 재사용 대기 5초 (코덱스: 두 번 맞음 방지).
   - 튕기는 첫 탄(FenixTalisAdeptBounceShotLM1)에서 길 거리 검사를 뺀다 (무기 사거리 4 안, 연출 ID 유지 — 코덱스 검토).
   - 적 업그레이드 3/3 (사용자 "적들 업그레이드 3/3 까지 할수 있게 해줘 동맹있으니 너무 잘 갈린다"): 7-1 강화를 받는 적의
     공방 줄(gf_rmVHAdd에 등록된 줄, 모든 난이도)이 임무 10분에 2단계, 18분에 3단계 (쉬움·보통 ×1.2, 아주 어려움 ×0.8, 시험값).
@@ -18,6 +18,10 @@ maps 3~9·11·12 (탈리스가 있는 맵):
     본진 앞 수비대(스크립트 조종, 공세에 안 빠짐). 임무 3분부터 60초마다, 본진 25칸 안에 레이너·동맹이 없을 때
     상한(쉬움 6·보통 8·어려움 12·아주 어려움 16)까지 보충. 테란 해병·불곰·공성 전차, 저그 저글링·바퀴·히드라,
     프로토스 광전사·추적자. 3초마다 본진 22칸 안 적을 치고, 없으면 제자리로. 모두 시험값.
+  - 테란 적 함선 공방 줄도 등록 (코덱스). 수비대는 유닛 종류별 배치·레이너 본진과 길 연결 확인, 6칸 넘게 먼 적이면 다시 지시,
+    본진을 잃으면 스크립트 조종을 풀고 원래 AI에 돌려준다 (코덱스).
+  - 코랄의 후예 전투 방패 (사용자 "업그레이드 돼있어야하는데"): 협동전 업그레이드 RMK_MarineMengskCombatShield를 아무도 안 줘서
+    꺼져 있었다 — 1~9·11·12번 시작 때(gf_rmFreeMercContracts) 레이너에게 지급.
   - 정화자 대의회 시간 가속 재사용 대기 30 → 10초 (사용자 "시간 가속 10초로 해줘", 4~9·11·12번, 지속 20초 그대로).
 피해·튕김 수·대상은 원작 그대로. Game not run.
 
@@ -31,14 +35,13 @@ OLD, NEW = b'version=0.12.13', b'version=0.12.14'
 MAPS = ['TRaynor03', 'TTychus01', 'TTosh01', 'THanson01', 'TTosh02', 'THorner01', 'THorner02', 'THorner03', 'THorner04']
 G = '.SC2Map/base.sc2data/gamedata/'
 
-EFFECTS = '''    <CEffectSet id="RM14_TalisAttackSet">
+EFFECTS = '''    <CEffectSwitch id="RM14_TalisAttackSet">
         <EditorCategories value="Race:Protoss" />
-        <EffectArray value="FenixTalisAdeptLM" />
-        <EffectArray value="RM14_TalisBounceSet" />
-    </CEffectSet>
+        <CaseArray Validator="RM14_TalisBounceReady" Effect="RM14_TalisBounceSet" />
+        <CaseDefault value="FenixTalisAdeptLM" />
+    </CEffectSwitch>
     <CEffectSet id="RM14_TalisBounceSet">
         <EditorCategories value="Race:Protoss" />
-        <ValidatorArray value="RM14_TalisBounceReady" />
         <EffectArray value="RM14_TalisBounceCDAB" />
         <EffectArray value="FenixTalisAdeptBounceShotLM1" />
     </CEffectSet>
@@ -144,6 +147,8 @@ bool gt_rmGuardTop_Func (bool testConds, bool runActions) {
     int used = 0;
     unit h;
     point pt;
+    point at;
+    point home;
     string kind;
     if (!runActions || GameGetMissionTime() < 180.0) { return true; }
     for (p = 2; p <= 15; p += 1) {
@@ -153,12 +158,14 @@ bool gt_rmGuardTop_Func (bool testConds, bool runActions) {
         used += 1;
         if (gv_rmGuard[p] == null) { gv_rmGuard[p] = UnitGroupEmpty(); }
         pt = gf_rmGuardPt(p, h);
+        home = gf_rmVHTarget();
         if (gf_rmGuardIntrudersFor(p, UnitGetPosition(h), 25.0)) { continue; }
         for (k = UnitGroupCount(gv_rmGuard[p], c_unitCountAlive); k < gf_rmGuardCap(); k += 1) {
             kind = gf_rmGuardKind(p, gv_rmGuardMade[p]);
             gv_rmGuardMade[p] += 1;
-            if (!PointPathingPassable(pt)) { break; }
-            UnitCreate(1, kind, 0, p, pt, 270.0);
+            at = UnitTypePlacementFromPoint(kind, p, pt, 8.0);
+            if (at == null || !PointPathingPassable(at) || (home != null && !PointPathingIsConnected(at, home))) { continue; }
+            UnitCreate(1, kind, 0, p, at, 270.0);
             if (UnitLastCreated() == null) { continue; }
             AISetUnitScriptControlled(UnitLastCreated(), true);
             UnitGroupAdd(gv_rmGuard[p], UnitLastCreated());
@@ -173,19 +180,25 @@ bool gt_rmGuardAct_Func (bool testConds, bool runActions) {
     unit h;
     unit u;
     point pt;
+    point f;
     unitgroup foes;
     if (!runActions) { return true; }
     for (p = 2; p <= 15; p += 1) {
         if (gv_rmGuard[p] == null || UnitGroupCount(gv_rmGuard[p], c_unitCountAlive) == 0) { continue; }
         h = gf_rmVHHall(p);
-        if (h == null) { continue; }
+        if (h == null) {
+            for (i = UnitGroupCount(gv_rmGuard[p], c_unitCountAll); i > 0; i -= 1) { AISetUnitScriptControlled(UnitGroupUnit(gv_rmGuard[p], i), false); }
+            gv_rmGuard[p] = UnitGroupEmpty();
+            continue;
+        }
         pt = gf_rmGuardPt(p, h);
         foes = UnitGroupAlliance(p, c_unitAllianceEnemy, RegionCircle(UnitGetPosition(h), 22.0), UnitFilter(0, 0, (1 << c_targetFilterMissile), (1 << (c_targetFilterDead - 32)) | (1 << (c_targetFilterHidden - 32)) | (1 << (c_targetFilterInvulnerable - 32))), 0);
         for (i = UnitGroupCount(gv_rmGuard[p], c_unitCountAll); i > 0; i -= 1) {
             u = UnitGroupUnit(gv_rmGuard[p], i);
             if (!UnitIsAlive(u)) { continue; }
             if (UnitGroupCount(foes, c_unitCountAlive) > 0) {
-                if (UnitOrderCount(u) == 0) { UnitIssueOrder(u, OrderTargetingPoint(AbilityCommand("attack", 0), UnitGetPosition(UnitGroupClosestToPoint(foes, UnitGetPosition(u)))), c_orderQueueReplace); }
+                f = UnitGetPosition(UnitGroupClosestToPoint(foes, UnitGetPosition(u)));
+                if (UnitOrderCount(u) == 0 || DistanceBetweenPoints(UnitGetPosition(u), f) > 6.0) { UnitIssueOrder(u, OrderTargetingPoint(AbilityCommand("attack", 0), f), c_orderQueueReplace); }
             }
             else if (DistanceBetweenPoints(UnitGetPosition(u), pt) > 8.0) {
                 UnitIssueOrder(u, OrderTargetingPoint(AbilityCommand("attack", 0), pt), c_orderQueueReplace);
@@ -218,7 +231,18 @@ def p_script(t, m):
     rep('void gf_rmVHAdd (int p, string line) {', 'void gf_rmGuardStart ();\nvoid gf_rmVHAdd (int p, string line) {')
     a = 'bool gf_rmVHBaseBuild (int p, string k, point c) {'
     rep(a, GUARD + a)
+    rep('    gf_rmVHAdd(p,"TerranVehicleArmorsLevel");\n}', '    gf_rmVHAdd(p,"TerranVehicleArmorsLevel");\n    gf_rmVHAdd(p,"TerranShipWeaponsLevel");\n    gf_rmVHAdd(p,"TerranShipArmorsLevel");\n}')
     return t
+
+
+SHIELD_MAPS = ['TRaynor01', 'TRaynor02', 'TRaynor03', 'TTychus01', 'TTosh01', 'THanson01', 'TTosh02', 'THorner01', 'THorner02', 'THorner03', 'THorner04']
+
+
+def p_shield(t, m):
+    a = 'void gf_rmFreeMercContracts () {\n    int i=libCamp_gv_TSC_MERC_FIRST;\n    int m;\n'
+    assert t.count(a) == 1, m
+    return t.replace(a, a + '    // 0.12.14 (user 2026-11-27): Sons of Korhal Combat Shield comes already researched (was never granted).\n'
+                     '    if (TechTreeUpgradeCount(1,"RMK_MarineMengskCombatShield",c_techCountCompleteOnly)==0) { TechTreeUpgradeAddLevel(1,"RMK_MarineMengskCombatShield",1); }\n')
 
 
 CHRONO_MAPS = ['TTychus01', 'TTosh01', 'THanson01', 'TTosh02', 'THorner01', 'THorner02', 'THorner03', 'THorner04']
@@ -264,6 +288,10 @@ def build(src, out):
             k = f'{m}.SC2Map/mapscript.galaxy'
             raw = files[k].decode('utf-8-sig'); nl = '\r\n' if '\r\n' in raw else '\n'
             files[k] = p_script(raw.replace('\r\n', '\n'), m).replace('\n', nl).encode('utf-8'); changed.add(k)
+        for m in SHIELD_MAPS:
+            k = f'{m}.SC2Map/mapscript.galaxy'
+            raw = files[k].decode('utf-8-sig'); nl = '\r\n' if '\r\n' in raw else '\n'
+            files[k] = p_shield(raw.replace('\r\n', '\n'), m).replace('\n', nl).encode('utf-8'); changed.add(k)
         try:
             with zipfile.ZipFile(out, 'x', compression=zipfile.ZIP_DEFLATED, compresslevel=9) as z:
                 for info in prev.infolist():
