@@ -172,7 +172,8 @@ def strings(orig, mod, orig_src_keys):
         if k in have or k in orig_src_keys or k.startswith('MapInfo/') or k.startswith('Param/Value/RM12_'): continue
         add[k] = v
     out = (text + '\n' + '\n'.join(f'{k}={v}' for k, v in add.items()) + '\n').replace('\n', '\r\n').encode('utf-8')
-    return set_strings(out, {k: f'{ko} /// {en}' for k, (ko, en) in NAMES.items()})
+    fix = {**NAMES, 'Param/Value/C51B7699': ('유닛 없음', 'NO UNIT')}  # original leaves this one English only
+    return set_strings(out, {k: f'{ko} /// {en}' for k, (ko, en) in fix.items()})
 
 
 def build(source, folder, output):
