@@ -10,7 +10,7 @@
   - 차량 공방업(평소판·울트라 축전기·바나듐판 포함)과 대혼란 탄 등 공성 파괴단을 가리키는 모든 업그레이드 항목을
     멩스크 전차 무기·효과·유닛에 같은 값으로 붙인다. 충격포 폭발 범위 확장(RMC_TankSplash)은 멩스크 폭발 반경에도 +50%.
   - 스크립트의 "SiegeBreaker"/"SiegeBreakerSieged"(군수 공장 생산 바꿈·주기 바꿈·수송선 화물·해금 확인 등)를 멩스크 전차로.
-  - 한국어 이름 '충격 사단'은 공식 번역 미확인.
+  - 한국어 이름 '충격 전차'(공식, 4.11.4 패치 노트).
 Game not run. Usage: python3 tools/build_v0153.py <0.15.2 zip> <new output zip>
 """
 import copy, re, subprocess, sys, tempfile, zipfile
@@ -41,7 +41,7 @@ ELITE = ('<CBehaviorBuff id="RM15_TankElite"><BehaviorFlags index="Permanent" va
          '<InfoIcon value="Assets\\Textures\\btn-upgrade-terran-vehicleweaponslevel3.dds" /><Modification>'
          '<DamageDealtFraction index="Melee" value="0.75" /><DamageDealtFraction index="Ranged" value="0.75" />'
          '<DamageDealtFraction index="Splash" value="0.75" /></Modification></CBehaviorBuff>')
-NAME = ('충격 사단', 'Shock Division')
+NAME = ('충격 전차', 'Shock Division')
 STR = {
     'Unit/Name/SiegeTankMengsk': f'{NAME[0]} /// {NAME[1]}',
     'Button/Name/SiegeTankMengsk': f'{NAME[0]} /// {NAME[1]}',
@@ -56,7 +56,7 @@ STR = {
     'Button/Tooltip/SiegeTankMengskStun': '공성 모드 포격이 맞은 지상 유닛을 잠깐 기절시킵니다. 영웅 유닛은 느려집니다. 3등급 능력입니다. /// Siege shots briefly stun ground units hit. Heroic units are slowed instead. Rank 3 ability.',
     'Weapon/Name/SiegeTankMengsk': '90mm 포 /// 90mm Cannons',
     'Weapon/Name/SiegeTankMengskSieged': '충격포 /// Shock Cannon',
-    'Behavior/Name/RM15_TankElite': '3등급 충격 사단 /// Rank 3 Shock Division',
+    'Behavior/Name/RM15_TankElite': '3등급 충격 전차 /// Rank 3 Shock Division',
     'Behavior/Tooltip/RM15_TankElite': '처음부터 3등급입니다. 주는 피해 +75%. 경험치 성장은 없습니다. /// Rank 3 from the start. +75% damage dealt. Does not gain experience.',
     'Behavior/Name/SiegeTankMengskStun': '기절 /// Stunned',
     'Behavior/Name/SiegeTankMengskSlowHeroic': '감속 /// Slowed',
