@@ -33,7 +33,7 @@ sys.path.insert(0, str(HERE))
 import build_v035 as V35
 import build_v0101 as B
 
-OLD, NEW = b'version=0.12.14', b'version=0.13.1'
+OLD, NEW = b'version=0.12.14', b'version=0.13.2'
 M = 'THorner05S.SC2Map'
 SRC = 'THorner04.SC2Map'
 LOCALES = B.LOCALES
@@ -206,6 +206,24 @@ def port(m, src):
     return ids
 
 
+# 0.13.2 (user "레일건 투사가 좀 이상해보이고 그 점화자 불 안보임"): actors that point AT the ported weapons/effects
+REV_ACTORS = ('DehakaRoachAttackStart,DehakaRoachConeAttackImpact,DehakaRoachConeAttackImpactSound,DehakaRoachConeAttackImpactUpgraded,'
+              'DehakaRoachLevel3Attack,DehakaRoachLevel3AttackMissile,DehakaRoachLevel3BurrowedSplat,FenixKaldalisZealotAttack,'
+              'FenixKaldalisZealotChargeGroundBlast,FenixKaldalisZealot_DeathVoxSound,RMK_MagrailMunition,RMK_MagrailMunitionInvisibleMissile,'
+              'RMK_MarineMengskAttackSpeedBoostEnd,RMK_MarineMengskAttackSpeedBoostSound,RMK_MarineMengskAttackSpeedBoostStart,RMK_MarineMengskDeath')
+
+
+def port_actors(m, src):
+    out = subprocess.run([sys.executable, str(HERE / 'catalog_closure.py'), str(src / 'base.sc2data/gamedata'), REV_ACTORS,
+                          ','.join(map(str, BASE)), 'rm', SKIP + '|Guardian|Merge$|^ZealotPurifier'], check=True, capture_output=True, text=True).stdout
+    items, ids = {}, set()
+    for line in out.splitlines():
+        i, files = line.split(' ', 1); ids.add(i)
+        for fn in files.split(','): items.setdefault(fn, []).append(i)
+    print('attack actors', B.add_records(m / 'base.sc2data/gamedata', src / 'base.sc2data/gamedata', items))
+    return ids
+
+
 def upgrades(m, src):
     gd = m / 'base.sc2data/gamedata'
     def kind(fn):
@@ -318,6 +336,7 @@ def build(source, folder, output):
         shutil.copytree(folder, m)
         gd = m / 'base.sc2data/gamedata'
         ids = port(m, src)
+        ids |= port_actors(m, src)
         upgrades(m, src)
         kaldalis(gd)
         assets(m, src)
