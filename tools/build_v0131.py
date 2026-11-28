@@ -33,7 +33,7 @@ sys.path.insert(0, str(HERE))
 import build_v035 as V35
 import build_v0101 as B
 
-OLD, NEW = b'version=0.12.14', b'version=0.13.2'
+OLD, NEW = b'version=0.12.14', b'version=0.13.3'
 M = 'THorner05S.SC2Map'
 SRC = 'THorner04.SC2Map'
 LOCALES = B.LOCALES
@@ -87,6 +87,30 @@ void gf_rm13EnemyUp (int p) {
     gf_rm13Lines(p, "ProtossGroundWeaponsLevel");
     gf_rm13Lines(p, "ProtossGroundArmorsLevel");
     gf_rm13Lines(p, "ProtossShieldsLevel");
+    // 0.13.3 (user "적들에게 캠페인 업그레이드 싹다"): every campaign unit research for the enemy's unit types, all difficulties
+    gf_rm13Grant(p, "CombatShield");
+    gf_rm13Grant(p, "ShieldWall");
+    gf_rm13Grant(p, "Stimpack");
+    gf_rm13Grant(p, "MarineStimpack");
+    gf_rm13Grant(p, "PunisherGrenades");
+    gf_rm13Grant(p, "MarauderLifeBoost");
+    gf_rm13Grant(p, "JuggernautPlating");
+    gf_rm13Grant(p, "FirebatJuggernautPlating");
+    gf_rm13Grant(p, "SiegeTech");
+    gf_rm13Grant(p, "HiSecAutoTracking");
+    gf_rm13Grant(p, "TerranBuildingArmor");
+    gf_rm13Grant(p, "NeosteelFrame");
+    gf_rm13Grant(p, "330mmBarrageCannons");
+    gf_rm13Grant(p, "zerglingmovementspeed");
+    gf_rm13Grant(p, "zerglingattackspeed");
+    gf_rm13Grant(p, "GlialReconstitution");
+    gf_rm13Grant(p, "TunnelingClaws");
+    gf_rm13Grant(p, "OrganicCarapace");
+    gf_rm13Grant(p, "hydraliskspeed");
+    gf_rm13Grant(p, "CentrificalHooks");
+    gf_rm13Grant(p, "ChitinousPlating");
+    gf_rm13Grant(p, "AnabolicSynthesis");
+    gf_rm13Grant(p, "Charge");
 }
 
 void gf_rm13Hero (string k, fixed ang) {

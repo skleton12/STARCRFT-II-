@@ -32,7 +32,7 @@ from build_v051 import mapinfo as mapinfo51, sub1, set_strings
 from build_v0111 import blocks, FREE, ENV, GD, KO
 from build_v0121 import inits_of
 
-OLD, NEW = b'version=0.13.2', b'version=0.14.1'
+OLD, NEW = b'version=0.13.3', b'version=0.14.1'
 SRC, DST = 'THorner04.SC2Map/', 'TTychus03.SC2Map/'
 CC = (180.5, 77.5)
 OLD_CC = '34.5,21.5'
@@ -57,8 +57,8 @@ def adapt(block):
              "// Coordinates and timings are trial values (docs/missions/14_moebius_factor.md).")
     t = sub1(t, '    return ((p>=2 && p<=5) || p==11);', '    return (p==2 || p==5 || p==7);')
     t = sub1(t, f'Point({OLD_CC})', f'Point({CC[0]},{CC[1]})', 4)
-    t = sub1(t, 'rally=Point(40.0,27.0);', 'rally=Point(174.0,72.0);')
-    t = sub1(t, 'rally=Point(43.0,26.0);', 'rally=Point(177.0,71.0);')
+    t = sub1(t, 'rally=Point(40.0,27.0);', 'rally=Point(172.0,75.0);')
+    t = sub1(t, 'rally=Point(43.0,26.0);', 'rally=Point(175.0,74.0);')
     t = sub1(t, 'Point(40.5,24.0)', 'Point(175.5,73.0)')
     t = sub1(t, 'Point(39.5+1.0*i,24.0)', 'Point(174.5+1.0*i,73.0)')
     t = sub1(t, 'Point(38.5,25.0)', 'Point(173.5,74.0)')
@@ -111,6 +111,9 @@ def script(raw, mod):
     t = sub1(t, '    AICampaignStart(gv_p05_ZERG_BASE);\n', '    // 7-1: enemy AI one step up (0.6.18), before the campaign AI starts.\n'
              + ''.join(f'    gf_rmAIUp({p});\n' for p in ENEMIES) + '    AICampaignStart(gv_p05_ZERG_BASE);\n')
     t = sub1(t, '    TriggerExecute(gt_StartGame, true, false);\n', '    gf_m14_Start();\n    TriggerExecute(gt_StartGame, true, false);\n')
+    # Codex: the victory cinematic keeps Refinery/AutomatedRefinery only; keep the rich one too
+    t = sub1(t, '(UnitGetType(autoFAB23EE7_var) != "Refinery") && (UnitGetType(autoFAB23EE7_var) != "AutomatedRefinery")',
+             '(UnitGetType(autoFAB23EE7_var) != "Refinery") && (UnitGetType(autoFAB23EE7_var) != "RefineryRich") && (UnitGetType(autoFAB23EE7_var) != "AutomatedRefinery")')
     t = sub1(t, 'void InitMap () {\n', c + 'void InitMap () {\n')
     t = sub1(t, 'void InitMap () {\n    InitLibs();\n    InitGlobals();\n    InitTriggers();\n}',
              'void InitMap () {\n    InitLibs();\n'
