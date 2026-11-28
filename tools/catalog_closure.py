@@ -19,6 +19,8 @@ ALLOW = re.compile(OPT['allow']) if 'allow' in OPT else None
 cand = {i for i in src if i not in base or (ALLOW and ALLOW.search(i))}
 # skip=REGEX (0.10.6): never follow ids matching it (e.g. merge/level-3 branches)
 if 'skip' in OPT: cand = {i for i in cand if not re.search(OPT['skip'], i)}
+# rm (0.13.1): also follow RM* mod ids (ports a mod unit with its mod research chain)
+NOFOLLOW = ('gv_',) if 'rm' in OPT else ('RM', 'gv_')
 seen, todo = set(), [r for r in roots if r in cand]
 while todo:
     i = todo.pop()
@@ -26,7 +28,7 @@ while todo:
     seen.add(i)
     for fn, body in src[i]:
         for tok in set(re.findall(r'[A-Za-z_][A-Za-z0-9_@]*', body)):
-            if tok in cand and tok not in seen and not tok.startswith(('RM', 'gv_')): todo.append(tok)
+            if tok in cand and tok not in seen and not tok.startswith(NOFOLLOW): todo.append(tok)
 # reverse pass (0.10.2): actors that point AT the chosen records (attack actions, missiles, turrets)
 # are not reachable forward. Pull actordata records that mention a chosen id used by few records.
 if 'reverse' in OPT:
@@ -51,5 +53,5 @@ if 'reverse' in OPT:
                     seen.add(j); changed = True
                     for fn, b in src[j]:
                         for tok in set(re.findall(r'[A-Za-z_][A-Za-z0-9_@]*', b)):
-                            if tok in cand and tok not in seen and not tok.startswith(('RM', 'gv_')): todo.append(tok)
+                            if tok in cand and tok not in seen and not tok.startswith(NOFOLLOW): todo.append(tok)
 for i in sorted(seen): print(i, ','.join(sorted({f for f, _ in src[i]})))
