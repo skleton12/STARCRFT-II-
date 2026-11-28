@@ -2,8 +2,8 @@
 """0.14.1 -> 0.14.2: 공성 전차 연구 (사용자 2026-11-28 "공성전차 업그레이드도 적용됨 협동전 연구 일부 포함해서").
 
 군수 공장 기술실·기술 반응로 (군수 공장이 있는 4~9·11·12·14번), 0.9.2 벌처와 같은 방식(첫 정의 안에 합침):
-  - 대혼란 탄 (MaelstromRounds, 자날 무기고: 공성 모드 포격이 대상에게 +40 추가 피해) (0,3) M
-  - 성형 폭발 (SiegeTankShapedBlast, 자날 무기고: 공성 포격이 아군에게 주는 피해가 줄어듦) (0,4) H
+  - 대혼란 탄 (MaelstromRounds, 자날 무기고: 공성 모드 포격이 대상에게 +40 추가 피해) (0,3) E
+  - 성형 폭발 (SiegeTankShapedBlast, 자날 무기고: 공성 포격이 아군에게 주는 피해가 줄어듦) (0,4) S
     두 연구 모두 원작 업그레이드 그대로라 히페리온에서 샀으면 버튼이 숨고, 공성 파괴단(SiegeBreaker)에도 원작대로 적용된다.
   - [협동전 페이지] 충격포 폭발 범위 확장 (RMC_TankSplash, 협동전 SiegeTankSplashRadius 값: 공성 포격 범위 피해 반경 약 +50%) (0,1) D
     — 모드에서 재설계한 미션 내 연구. 성형 폭발을 연구했을 때 쓰는 적 피해 효과에도 같은 반경을 더한다(아군 피해 효과는 그대로).
@@ -29,10 +29,10 @@ NOTE = (' 히페리온 무기고에서 사지 않았을 때 미션 안에서 연
 COST = '<Resource index="Minerals" value="100" /><Resource index="Vespene" value="100" />'
 # (button, upgrade, research index, card, row, col, hotkey, icon, name, tooltip)
 ITEMS = [
-    ('RMA_Maelstrom', 'MaelstromRounds', 14, '0', 0, 3, 'M', 'Assets\\Textures\\btn-techupgrade-terran-maelstromrounds.dds',
+    ('RMA_Maelstrom', 'MaelstromRounds', 14, '0', 0, 3, 'E', 'Assets\\Textures\\btn-techupgrade-terran-maelstromrounds.dds',
      ('대혼란 탄', 'Maelstrom Rounds'), ('공성 모드 공성 전차·공성 파괴단의 포격이 대상에게 피해를 40 더 줍니다.' + NOTE[0],
                                        'Sieged Siege Tanks and Siege Breakers deal +40 damage to the primary target.' + NOTE[1])),
-    ('RMA_ShapedBlast', 'SiegeTankShapedBlast', 15, '0', 0, 4, 'H', 'Assets\\Textures\\btn-techupgrade-terran-shapedblast.dds',
+    ('RMA_ShapedBlast', 'SiegeTankShapedBlast', 15, '0', 0, 4, 'S', 'Assets\\Textures\\btn-techupgrade-terran-shapedblast.dds',
      ('성형 폭발', 'Shaped Blast'), ('공성 모드 포격이 아군에게 주는 범위 피해가 크게 줄어듭니다.' + NOTE[0],
                                      'Siege mode splash deals greatly reduced damage to friendly units.' + NOTE[1])),
     ('RMC_TankSplash', 'RMC_TankSplash', 16, 'RMC2', 0, 1, 'D', 'Assets\\Textures\\btn-techupgrade-terran-ripwavemissiles.dds',
