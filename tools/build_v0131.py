@@ -157,8 +157,13 @@ bool gt_rm13Tick_Func (bool testConds, bool runActions) {
         gf_rm13EnemyUp(13);
         gf_rm13Grant(1, "RM6_Multishot");
         gf_rm13Grant(1, "RMK_MarineMengskCombatShield");
-        if (TechTreeUpgradeCount(1, "MarineStimpack", c_techCountCompleteOnly) > 0) { gf_rm13Grant(1, "RM3_Stim1"); }
+        // 0.13.2 (user "용병 스팀팩이 3번째 버전이 아니넹"): stim line done up to stage 3 (Mengsk advanced combat stim)
+        gf_rm13Grant(1, "RM3_Stim1");
+        gf_rm13Grant(1, "RM3_Stim2");
+        gf_rm13Grant(1, "RM3_Stim3");
         TechTreeAbilityAllow(1, AbilityCommand("RM4_MercStimpack", 0), true);
+        TechTreeAbilityAllow(1, AbilityCommand("SuperStimpackMarine", 0), true);
+        TechTreeAbilityAllow(1, AbilityCommand("RMK_MarineMengskAttackSpeedBoost", 0), true);
         gf_rm13Grant(1, "FenixKaldalisCleave");
         gf_rm13Lines(1, "ProtossGroundWeaponsLevel");
         gf_rm13Lines(1, "ProtossGroundArmorsLevel");
@@ -210,7 +215,23 @@ def port(m, src):
 REV_ACTORS = ('DehakaRoachAttackStart,DehakaRoachConeAttackImpact,DehakaRoachConeAttackImpactSound,DehakaRoachConeAttackImpactUpgraded,'
               'DehakaRoachLevel3Attack,DehakaRoachLevel3AttackMissile,DehakaRoachLevel3BurrowedSplat,FenixKaldalisZealotAttack,'
               'FenixKaldalisZealotChargeGroundBlast,FenixKaldalisZealot_DeathVoxSound,RMK_MagrailMunition,RMK_MagrailMunitionInvisibleMissile,'
-              'RMK_MarineMengskAttackSpeedBoostEnd,RMK_MarineMengskAttackSpeedBoostSound,RMK_MarineMengskAttackSpeedBoostStart,RMK_MarineMengskDeath')
+              'RMK_MarineMengskAttackSpeedBoostEnd,RMK_MarineMengskAttackSpeedBoostSound,RMK_MarineMengskAttackSpeedBoostStart,RMK_MarineMengskDeath,'
+              'DehakaRoachConeAttackLaunch,DehakaRoachConeAttackLaunchUpgraded,DehakaRoachConeAttackLaunchSound')
+COOP = S / 'starcoop/starcoop.sc2mod/base.sc2data/gamedata'
+
+
+def coop_bits(gd):
+    # Igniter cone validator, and the sound-exclusivity groups the ported voice lines use (co-op only; a missing group
+    # can keep the line from playing - user "원래 칼달리스가 대사가 없나?")
+    B.add_records(gd, COOP, {'validatordata.xml': ['HaveDehakaGlevigRoachFireBreath']})
+    have = set()
+    for f in [gd / 'soundexclusivitydata.xml'] + [d / 'soundexclusivitydata.xml' for d in BASE]:
+        if f.exists(): have |= set(re.findall(r'\bid="([^"]+)"', f.read_text('utf-8', 'replace')))
+    used = set(re.findall(r'<Exclusivity value="([^"]+)"', (gd / 'sounddata.xml').read_text('utf-8')))
+    need = sorted(used - have)
+    n = B.add_records(gd, COOP, {'soundexclusivitydata.xml': need})
+    print('exclusivity', need, n)
+    assert set(re.findall(r'\bid="([^"]+)"', (gd / 'soundexclusivitydata.xml').read_text('utf-8'))) >= set(need)
 
 
 def port_actors(m, src):
@@ -337,6 +358,7 @@ def build(source, folder, output):
         gd = m / 'base.sc2data/gamedata'
         ids = port(m, src)
         ids |= port_actors(m, src)
+        coop_bits(m / 'base.sc2data/gamedata')
         upgrades(m, src)
         kaldalis(gd)
         assets(m, src)
