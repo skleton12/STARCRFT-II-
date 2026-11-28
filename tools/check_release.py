@@ -21,7 +21,7 @@ from pathlib import Path
 
 ROOT = Path(__file__).resolve().parent.parent
 S = ROOT / 'source'
-MAPS = ['TRaynor01.SC2Map', 'TRaynor02.SC2Map', 'TRaynor03.SC2Map', 'TTychus01.SC2Map', 'TTosh01.SC2Map', 'THanson01.SC2Map', 'TTosh02.SC2Map', 'THorner01.SC2Map', 'THorner02.SC2Map', 'TTosh03A.SC2Map', 'THorner03.SC2Map', 'THorner04.SC2Map', 'THorner05S.SC2Map']
+MAPS = ['TRaynor01.SC2Map', 'TRaynor02.SC2Map', 'TRaynor03.SC2Map', 'TTychus01.SC2Map', 'TTosh01.SC2Map', 'THanson01.SC2Map', 'TTosh02.SC2Map', 'THorner01.SC2Map', 'THorner02.SC2Map', 'TTosh03A.SC2Map', 'THorner03.SC2Map', 'THorner04.SC2Map', 'THorner05S.SC2Map', 'TTychus03.SC2Map']
 NO_ALLY_MAPS = {'TTosh03A.SC2Map', 'THorner05S.SC2Map'}
 LOCALES = ['enus', 'dede', 'eses', 'esmx', 'frfr', 'itit', 'plpl', 'ptbr', 'ruru', 'zhcn', 'zhtw']
 DEPS = ['core.sc2mod', 'liberty.sc2mod', 'liberty.sc2campaign', 'libertystory.sc2campaign']
