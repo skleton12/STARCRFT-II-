@@ -1558,3 +1558,8 @@ THorner04: 2단계(기지 인수)가 임무 4분 넘어 시작해 호출 버튼�
 ## 2026-11-28: 고용소 공성 파괴단 칸 → 충격 전차 — 0.15.5 (사용자 "용병유닛(용병고용소에서 고용하는 유닛)이 그 충격전차여야")
 
 군수 공장이 있는 10개 맵: 고용소 원작 공성 파괴단 칸(SummonMercenaries Train5)을 충격 전차(SiegeTankMengsk) 2기로. 0.3.1부터 숨겨 두었던(Suppressed) 칸을 Restricted로 되돌리고, 원작 버튼 HireSiegeBreakers의 이름·설명·아이콘을 충격 전차로 다시 정의(0.6.5 규칙). 히페리온 공성 파괴단 계약이 구매됨일 때만 고용 허용 + 버튼 요구조건 RM15_CanHireShock(0.6.11 방식). 충격 전차 액터에 고용 낙하 주머니(SiegeBreakerDropModel, 0.6.6 규칙). 충전·대기는 원작, 고용 가격 = 칸 비용 + 유닛 150/125 × 2(원작 공성 파괴단은 200/100 × 2). 공성·일반 모드 모델이 다르다는 보고: 데이터는 협동전 원본과 같은 두 모델(SiegeTank_Mengsk_COOP / _Sieged)을 씀 — 사용자 스크린샷 확인 대기. check_release 통과, 코덱스 검토 반영(Suppressed 지적). 게임 미실행. 도구: tools/build_v0155.py.
+
+
+## 2026-11-28: 충격 전차 모델 — 0.15.6 (사용자 스크린샷 "애초에 나와야하는게 저 전차가 아니잖아", "둘다 다른건데")
+
+공성 모드가 노바 블랙옵스 전차(SiegeTank_BlackOps)로 나옴: 협동전 액터의 'HaveBlackOps면 ModelSwap' 줄이 남았고 그 요구조건 노드(CountUpgradeBlackOpsCompleteOnly)가 맵에 없어 참으로 처리됨 → 모든 맵 액터의 BlackOps 이벤트 줄 삭제. 일반 모드 금색: MengskUnitColorMacro가 IsMengskCoopCommander(맵에서 거짓)일 때만 멩스크 빨강 팀 색을 입힘 → 조건 삭제(충격 전차·보급 벙커·이지스·대지파괴 포 모두 빨강). **협동전 액터를 옮길 때 사령관·스킨 조건 ModelSwap/색 이벤트를 확인한다.** 남은 것: 공성 해제 전환 액터 SiegeTankMengskMorph 누락(미수정). check_release 통과, 코덱스 검토 OK. 게임 미실행. 도구: tools/build_v0156.py.
