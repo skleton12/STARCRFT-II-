@@ -89,7 +89,6 @@ void gf_rm13EnemyUp (int p) {
     gf_rm13Lines(p, "ProtossShieldsLevel");
     // 0.13.3 (user "적들에게 캠페인 업그레이드 싹다"): every campaign unit research for the enemy's unit types, all difficulties
     gf_rm13Grant(p, "CombatShield");
-    gf_rm13Grant(p, "ShieldWall");
     gf_rm13Grant(p, "Stimpack");
     gf_rm13Grant(p, "MarineStimpack");
     gf_rm13Grant(p, "PunisherGrenades");
@@ -101,6 +100,16 @@ void gf_rm13EnemyUp (int p) {
     gf_rm13Grant(p, "TerranBuildingArmor");
     gf_rm13Grant(p, "NeosteelFrame");
     gf_rm13Grant(p, "330mmBarrageCannons");
+    gf_rm13Grant(p, "MaelstromRounds");
+    gf_rm13Grant(p, "SiegeTankShapedBlast");
+    gf_rm13Grant(p, "AdvancedMedicTraining");
+    gf_rm13Grant(p, "StabilizerMedPacks");
+    gf_rm13Grant(p, "OcularImplants");
+    gf_rm13Grant(p, "GhostMoebiusReactor");
+    gf_rm13Grant(p, "AresClassWeaponsSystemViking");
+    gf_rm13Grant(p, "VikingJotunBoosters");
+    gf_rm13Grant(p, "MechanicalRebirth");
+    gf_rm13Grant(p, "RegenerativeBioSteel");
     gf_rm13Grant(p, "zerglingmovementspeed");
     gf_rm13Grant(p, "zerglingattackspeed");
     gf_rm13Grant(p, "GlialReconstitution");
