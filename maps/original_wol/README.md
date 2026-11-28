@@ -51,3 +51,7 @@
 ## thorner04 (Media Blitz, 미디어 전격전 — 12번)
 
 2026-11-26: 사용자 드라이브의 추출 폴더 `thorner04.sc2map`(36개)을 tools/drive_download.py로 받았다. 손대지 않는 원본 보관본이다.
+
+## thorner05s (Piercing the Shroud, 장막 너머로 — 13번 비밀 임무)
+
+2026-11-28: 사용자 드라이브의 추출 폴더 `thorner05s.sc2map`(36개)을 tools/drive_download.py로 받았다. 손대지 않는 원본 보관본이다.
