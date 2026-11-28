@@ -42,10 +42,16 @@ BASE = B.BASE
 ROOTS = 'RMK_MarineMengsk,MercMedic,RM6_Multishot,FenixKaldalisZealot,DehakaRoachLevel3'
 SKIP = 'skip=^(RML|RMPL|RMZL|RM12|RM5_|RM7_|RM8_|RM9_|RMA_|RM4_HideOriginal)'
 UPS = ([f'ProtossGround{k}Level{n}' for k in ('Weapons', 'Armors') for n in (1, 2, 3)] + [f'ProtossShieldsLevel{n}' for n in (1, 2, 3)]
-       + [f'DehakaPrimal{k}Level{n}' for k in ('Weapons', 'Armor') for n in (1, 2, 3)])
+       + [f'DehakaPrimal{k}Level{n}' for k in ('Weapons', 'Armor') for n in (1, 2, 3)]
+       + ['TerranInfantryWeapons', 'TerranInfantryArmors']
+       + [f'TerranInfantry{k}Level{n}' for k in ('Weapons', 'Armors', 'WeaponsUltraCapacitors', 'ArmorsVanadiumPlating') for n in (1, 2, 3)])
 STR = {
     'Button/Name/RM13_KaldalisRegen': '재구축 /// Reconstruction',
     'Button/Tooltip/RM13_KaldalisRegen': '피해를 받지 않고 5초가 지나면 초당 생명력을 5씩 회복합니다. /// After 5 seconds without taking damage, regenerates 5 life per second.',
+    'Param/Value/C0D11339': '<s val="THorner05sAllButtons">요청: 코랄의 후예 8명</s> /// <s val="THorner05sAllButtons">Request: 8 Sons of Korhal</s>',
+    'Param/Value/B3607D5C': '<s val="THorner05sAllButtons">요청: 망치 경호대 3명</s> /// <s val="THorner05sAllButtons">Request: 3 Hammer Securities</s>',
+    'Param/Value/2D902983': '<s val="THorner05sAllButtons">요청: 악마의 개 4명</s> /// <s val="THorner05sAllButtons">Request: 4 Devil Dogs</s>',
+    'Param/Value/BB0EF13C': '<s val="THorner05sAllButtons">요청: 코랄의 후예 3명,<n/>용병 의무관 3명</s> /// <s val="THorner05sAllButtons">Request: 3 Sons of Korhal,<n/>3 Mercenary Medics</s>',
     'Param/Value/RM13_Heroes': '칼달리스와 원시 점화자가 합류했습니다. /// Kaldalis and a Primal Igniter have joined you.',
 }
 
@@ -102,12 +108,11 @@ void gf_rm13Clone (unit u, unit h) {
     int p = UnitGetOwner(u);
     point at;
     if (UnitGetCustomValue(u, 9) != 0.0 || gf_rm13Skip(u)) { return; }
-    UnitSetCustomValue(u, 9, 1.0);
-    gv_rm13Carry[p] += gv_rm13Extra;
-    if (gv_rm13Carry[p] < 1.0) { return; }
+    if (gv_rm13Carry[p] + gv_rm13Extra < 1.0) { gv_rm13Carry[p] += gv_rm13Extra; UnitSetCustomValue(u, 9, 1.0); return; }
     at = UnitTypePlacementFromPoint(UnitGetType(u), p, UnitGetPosition(u), 4.0);
     if (at == null || !PointPathingPassable(at) || (h != null && !PointPathingIsConnected(at, UnitGetPosition(h)))) { return; }
-    gv_rm13Carry[p] -= 1.0;
+    UnitSetCustomValue(u, 9, 1.0);
+    gv_rm13Carry[p] += gv_rm13Extra - 1.0;
     UnitCreate(1, UnitGetType(u), 0, p, at, UnitGetFacing(u));
     if (UnitLastCreated() != null) { UnitSetCustomValue(UnitLastCreated(), 9, 1.0); }
 }
@@ -209,6 +214,7 @@ def upgrades(m, src):
     srcrec = B.recs(src / 'base.sc2data/gamedata/upgradedata.xml')
     add = ''
     for u in UPS:
+        if u not in srcrec: continue
         r = srcrec[u]
         def keep(mm):
             ref = re.search(r'Reference="([A-Za-z]+),([^,"]+)', mm.group(0))
@@ -264,7 +270,7 @@ def script(t):
     rep('    UnitSetPropertyFixed(gv_raynor, c_unitPropLifePercent, 100.0);\n    UnitPauseAll(false);',
         '    UnitSetPropertyFixed(gv_raynor, c_unitPropLifePercent, 100.0);\n    gf_rm13SpawnHeroes();\n    UnitPauseAll(false);')
     rep('void InitMap () {\n    InitLibs();\n    InitGlobals();\n    InitTriggers();\n}',
-        'void InitMap () {\n    AchievementsDisable(1);\n    InitLibs();\n    InitGlobals();\n    gf_rm13ClonePlaced();\n    InitTriggers();\n    gf_rm13Init();\n}')
+        'void InitMap () {\n    AchievementsDisable(1);\n    InitLibs();\n    gf_rm13ClonePlaced();\n    InitGlobals();\n    InitTriggers();\n    gf_rm13Init();\n}')
     return t
 
 
@@ -286,6 +292,10 @@ def fixups(gd, src):
     assert ut2 != ut; u.write_text(ut2, 'utf-8')
     f = gd / 'effectdata.xml'; ft = f.read_text('utf-8')
     ft2 = ft.replace('\n        <EffectArray value="CommanderPrestigeFenixAvengerRefundZealot" />', '')
+    assert ft2 != ft; f.write_text(ft2, 'utf-8')
+    ab = gd / 'abildata.xml'; abt = ab.read_text('utf-8')
+    abt2 = abt.replace('\n        <Effect value="KerriganReviveHeal" />', ''); assert abt2 != abt; ab.write_text(abt2, 'utf-8')
+    ft = f.read_text('utf-8'); ft2 = re.sub(r'\s*<CEffectSet id="KerriganReviveHeal">.*?</CEffectSet>', '', ft, flags=re.S)
     assert ft2 != ft; f.write_text(ft2, 'utf-8')
     a = gd / 'actordata.xml'; t = a.read_text('utf-8')
     t2 = re.sub(r'\s*<On [^>]*Send="Create (?:Infestor_Land|GlazeSentinelRepair)"\s*/>', '', t)
@@ -315,7 +325,10 @@ def build(source, folder, output):
         ks = (src / 'kokr.sc2data/localizeddata/gamestrings.txt').read_bytes().decode('utf-8-sig')
         kh = (src / 'kokr.sc2data/localizeddata/gamehotkeys.txt').read_bytes().decode('utf-8-sig')
         ko = m / 'kokr.sc2data/localizeddata/gamestrings.txt'
-        B.add_lines(ko, {**B.strip_lines(ks, ids), **STR})
+        B.add_lines(ko, B.strip_lines(ks, ids))
+        kt = ko.read_bytes().decode('utf-8-sig'); nl = '\r\n' if '\r\n' in kt else '\n'
+        lines = [l for l in kt.splitlines() if l.split('=', 1)[0] not in STR] + [f'{k}={v}' for k, v in STR.items()]
+        ko.write_bytes((nl.join(lines) + nl).encode('utf-8'))
         ko.write_bytes(V35.fix_kokr(ko.read_bytes(), {}, V35.english_sources())[0])
         V35.gate('kokr', ko.read_bytes())
         for loc in V35.OTHER_LOCALES:
