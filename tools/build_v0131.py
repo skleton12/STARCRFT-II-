@@ -107,12 +107,14 @@ bool gf_rm13Skip (unit u) {
 void gf_rm13Clone (unit u, unit h) {
     int p = UnitGetOwner(u);
     point at;
+    unit before;
     if (UnitGetCustomValue(u, 9) != 0.0 || gf_rm13Skip(u)) { return; }
     if (gv_rm13Carry[p] + gv_rm13Extra < 1.0) { gv_rm13Carry[p] += gv_rm13Extra; UnitSetCustomValue(u, 9, 1.0); return; }
     at = UnitTypePlacementFromPoint(UnitGetType(u), p, UnitGetPosition(u), 4.0);
     if (at == null || !PointPathingPassable(at) || (h != null && !PointPathingIsConnected(at, UnitGetPosition(h)))) { return; }
+    before = UnitLastCreated();
     UnitCreate(1, UnitGetType(u), 0, p, at, UnitGetFacing(u));
-    if (UnitLastCreated() == null || UnitGetOwner(UnitLastCreated()) != p || UnitGetType(UnitLastCreated()) != UnitGetType(u)) { return; }
+    if (UnitLastCreated() == null || UnitLastCreated() == before) { return; }
     UnitSetCustomValue(UnitLastCreated(), 9, 1.0);
     UnitSetCustomValue(u, 9, 1.0);
     gv_rm13Carry[p] += gv_rm13Extra - 1.0;
