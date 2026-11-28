@@ -39,7 +39,7 @@ SRC = 'THorner04.SC2Map'
 LOCALES = B.LOCALES
 S = ROOT / 'source'
 BASE = B.BASE
-ROOTS = 'RMK_MarineMengsk,RM6_Multishot,FenixKaldalisZealot,DehakaRoachLevel3'
+ROOTS = 'RMK_MarineMengsk,MercMedic,RM6_Multishot,FenixKaldalisZealot,DehakaRoachLevel3'
 SKIP = 'skip=^(RML|RMPL|RMZL|RM12|RM5_|RM7_|RM8_|RM9_|RMA_|RM4_HideOriginal)'
 UPS = ([f'ProtossGround{k}Level{n}' for k in ('Weapons', 'Armors') for n in (1, 2, 3)] + [f'ProtossShieldsLevel{n}' for n in (1, 2, 3)]
        + [f'DehakaPrimal{k}Level{n}' for k in ('Weapons', 'Armor') for n in (1, 2, 3)])
@@ -98,12 +98,45 @@ bool gf_rm13Skip (unit u) {
     return false;
 }
 
+void gf_rm13Clone (unit u, unit h) {
+    int p = UnitGetOwner(u);
+    point at;
+    if (UnitGetCustomValue(u, 9) != 0.0 || gf_rm13Skip(u)) { return; }
+    UnitSetCustomValue(u, 9, 1.0);
+    gv_rm13Carry[p] += gv_rm13Extra;
+    if (gv_rm13Carry[p] < 1.0) { return; }
+    at = UnitTypePlacementFromPoint(UnitGetType(u), p, UnitGetPosition(u), 4.0);
+    if (at == null || !PointPathingPassable(at) || (h != null && !PointPathingIsConnected(at, UnitGetPosition(h)))) { return; }
+    gv_rm13Carry[p] -= 1.0;
+    UnitCreate(1, UnitGetType(u), 0, p, at, UnitGetFacing(u));
+    if (UnitLastCreated() != null) { UnitSetCustomValue(UnitLastCreated(), 9, 1.0); }
+}
+
+// placed units: before the triggers capture their groups (Codex review)
+void gf_rm13ClonePlaced () {
+    int p;
+    int i;
+    unitgroup g;
+    for (p = 2; p <= 13; p += 11) {
+        g = UnitGroup(null, p, RegionEntireMap(), UnitFilter(0, 0, (1 << c_targetFilterStructure) | (1 << c_targetFilterWorker) | (1 << c_targetFilterHeroic) | (1 << c_targetFilterMissile),
+            (1 << (c_targetFilterDead - 32)) | (1 << (c_targetFilterHidden - 32)) | (1 << (c_targetFilterHallucination - 32)) | (1 << (c_targetFilterInvulnerable - 32))), 0);
+        for (i = UnitGroupCount(g, c_unitCountAll); i > 0; i -= 1) { gf_rm13Clone(UnitGroupUnit(g, i), null); }
+    }
+}
+
+void gf_rm13SpawnHeroes () {
+    if (gv_rm13Heroes || gv_raynor == null) { return; }
+    gv_rm13Heroes = true;
+    gf_rm13Hero("FenixKaldalisZealot", 200.0);
+    gf_rm13Hero("DehakaRoachLevel3", 340.0);
+    UIDisplayMessage(PlayerGroupAll(), c_messageAreaSubtitle, StringExternal("Param/Value/RM13_Heroes"));
+}
+
 bool gt_rm13Tick_Func (bool testConds, bool runActions) {
     int p;
     int i;
     unit u;
     unit h;
-    point at;
     unitgroup g;
     if (!runActions || GameGetMissionTime() < 2.0) { return true; }
     if (!gv_rm13Up) {
@@ -125,28 +158,13 @@ bool gt_rm13Tick_Func (bool testConds, bool runActions) {
         gf_rm13Lines(1, "DehakaPrimalWeaponsLevel");
         gf_rm13Lines(1, "DehakaPrimalArmorLevel");
     }
-    if (!gv_rm13Heroes && gv_raynor != null && UnitIsAlive(gv_raynor) && UnitTransport(gv_raynor) == null
-        && !UnitTestState(gv_raynor, c_unitStateHidden)) {
-        gv_rm13Heroes = true;
-        gf_rm13Hero("FenixKaldalisZealot", 200.0);
-        gf_rm13Hero("DehakaRoachLevel3", 340.0);
-        UIDisplayMessage(PlayerGroupAll(), c_messageAreaSubtitle, StringExternal("Param/Value/RM13_Heroes"));
-    }
     h = gv_raynor;
     for (p = 2; p <= 13; p += 11) {
         g = UnitGroup(null, p, RegionEntireMap(), UnitFilter(0, 0, (1 << c_targetFilterStructure) | (1 << c_targetFilterWorker) | (1 << c_targetFilterHeroic) | (1 << c_targetFilterMissile),
             (1 << (c_targetFilterDead - 32)) | (1 << (c_targetFilterHidden - 32)) | (1 << (c_targetFilterHallucination - 32)) | (1 << (c_targetFilterInvulnerable - 32))), 0);
         for (i = UnitGroupCount(g, c_unitCountAll); i > 0; i -= 1) {
             u = UnitGroupUnit(g, i);
-            if (UnitGetCustomValue(u, 9) != 0.0 || gf_rm13Skip(u)) { continue; }
-            UnitSetCustomValue(u, 9, 1.0);
-            gv_rm13Carry[p] += gv_rm13Extra;
-            if (gv_rm13Carry[p] < 1.0) { continue; }
-            gv_rm13Carry[p] -= 1.0;
-            at = UnitTypePlacementFromPoint(UnitGetType(u), p, UnitGetPosition(u), 4.0);
-            if (at == null || !PointPathingPassable(at) || (h != null && !PointPathingIsConnected(at, UnitGetPosition(h)))) { continue; }
-            UnitCreate(1, UnitGetType(u), 0, p, at, UnitGetFacing(u));
-            if (UnitLastCreated() != null) { UnitSetCustomValue(UnitLastCreated(), 9, 1.0); }
+            gf_rm13Clone(u, h);
         }
     }
     return true;
@@ -157,6 +175,10 @@ void gf_rm13Init () {
 }
 
 '''
+
+
+def ids_of_file(f):
+    return set(re.findall(r'\bid="([^"]+)"', f.read_text('utf-8', 'replace'))) if f.exists() else set()
 
 
 def ids_of(gd):
@@ -178,16 +200,22 @@ def port(m, src):
 
 def upgrades(m, src):
     gd = m / 'base.sc2data/gamedata'
-    have = ids_of(gd)
-    for d in BASE: have |= ids_of(d)
+    def kind(fn):
+        out = ids_of_file(gd / fn)
+        for d in BASE: out |= ids_of_file(d / fn)
+        return out
+    have = {'Unit': kind('unitdata.xml'), 'Weapon': kind('weapondata.xml'), 'Effect': kind('effectdata.xml'),
+            'Behavior': kind('behaviordata.xml'), 'Abil': kind('abildata.xml')}
     srcrec = B.recs(src / 'base.sc2data/gamedata/upgradedata.xml')
     add = ''
     for u in UPS:
         r = srcrec[u]
         def keep(mm):
-            ref = re.search(r'Reference="[A-Za-z]+,([^,"]+)', mm.group(0))
-            return mm.group(0) if (ref is None or ref.group(1) in have) else ''
+            ref = re.search(r'Reference="([A-Za-z]+),([^,"]+)', mm.group(0))
+            if ref is None: return mm.group(0)
+            return mm.group(0) if ref.group(2) in have.get(ref.group(1), set()) else ''
         r = re.sub(r'\s*<EffectArray\b[^>]*/>', lambda mm: keep(mm), r)
+        r = re.sub(r'\s*<AffectedUnitArray value="([^"]+)"\s*/>', lambda mm: mm.group(0) if mm.group(1) in have['Unit'] else '', r)
         add += '    ' + r.strip() + '\n'
     p = gd / 'upgradedata.xml'
     body = p.read_text('utf-8') if p.exists() else '<?xml version="1.0" encoding="utf-8"?>\n<Catalog>\n</Catalog>\n'
@@ -233,8 +261,10 @@ def script(t):
     rep('UnitCargoCreate(gv_dropshipComputer05, "Medic", 3);', 'UnitCargoCreate(gv_dropshipComputer05, "MercMedic", 3);')
     a = '//--------------------------------------------------------------------------------------------------\n// Trigger: '
     i = t.index(a); t = t[:i] + SCRIPT + t[i:]
+    rep('    UnitSetPropertyFixed(gv_raynor, c_unitPropLifePercent, 100.0);\n    UnitPauseAll(false);',
+        '    UnitSetPropertyFixed(gv_raynor, c_unitPropLifePercent, 100.0);\n    gf_rm13SpawnHeroes();\n    UnitPauseAll(false);')
     rep('void InitMap () {\n    InitLibs();\n    InitGlobals();\n    InitTriggers();\n}',
-        'void InitMap () {\n    AchievementsDisable(1);\n    InitLibs();\n    InitGlobals();\n    InitTriggers();\n    gf_rm13Init();\n}')
+        'void InitMap () {\n    AchievementsDisable(1);\n    InitLibs();\n    InitGlobals();\n    gf_rm13ClonePlaced();\n    InitTriggers();\n    gf_rm13Init();\n}')
     return t
 
 
@@ -248,6 +278,15 @@ def assets(m, src):
 
 
 def fixups(gd, src):
+    u = gd / 'unitdata.xml'; ut = u.read_text('utf-8')
+    s = ut.index('<CUnit id="RMK_MarineMengsk">'); e = ut.index('</CUnit>', s)
+    blk = ut[s:e]; assert blk.count('<CargoSize value="2" />') == 1
+    ut = ut[:s] + blk.replace('<CargoSize value="2" />', '<CargoSize value="1" />') + ut[e:]
+    ut2 = re.sub(r'\s*<LayoutButtons Face="DehakaGlevigHaveRoachFireBreath"[^>]*/>', '', ut)
+    assert ut2 != ut; u.write_text(ut2, 'utf-8')
+    f = gd / 'effectdata.xml'; ft = f.read_text('utf-8')
+    ft2 = ft.replace('\n        <EffectArray value="CommanderPrestigeFenixAvengerRefundZealot" />', '')
+    assert ft2 != ft; f.write_text(ft2, 'utf-8')
     a = gd / 'actordata.xml'; t = a.read_text('utf-8')
     t2 = re.sub(r'\s*<On [^>]*Send="Create (?:Infestor_Land|GlazeSentinelRepair)"\s*/>', '', t)
     assert t2 != t; a.write_text(t2, 'utf-8')
