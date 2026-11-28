@@ -59,3 +59,7 @@
 ## ttychus03 (The Moebius Factor, 위기의 뫼비우스 — 14번, 질 행성)
 
 2026-11-28: 사용자 드라이브의 추출 폴더 `ttychus03.sc2map`(35개)을 tools/drive_download.py로 받았다. 손대지 않는 원본 보관본이다.
+
+## tzeratul01 (Whispers of Oblivion, 망각의 속삭임 — 16번, 제라툴 1번)
+
+2026-11-28: 사용자 드라이브의 추출 폴더 `tzeratul01.sc2map`(37개)을 tools/drive_download.py로 받았다. 손대지 않는 원본 보관본이다.
